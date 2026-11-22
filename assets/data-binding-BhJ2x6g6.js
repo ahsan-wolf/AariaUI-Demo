@@ -1,0 +1,1308 @@
+const s={"the-binding-model":{"what-a-control-can-be-bound-to":`<h3 id="what-a-control-can-be-bound-to">What a control can be bound to<a class="anchor" href="#what-a-control-can-be-bound-to" aria-label="Link to this section">#</a></h3>
+<div class="table-scroll"><table><thead><tr><th>Source</th><th>Example</th><th>What the control receives</th></tr></thead><tbody><tr><td>Array</td><td><code>grid.dataBind(rows)</code></td><td>A shallow copy of the array (<code>[...rows]</code>). The objects inside are <strong>not</strong> cloned.</td></tr><tr><td><code>DataView</code></td><td><code>grid.dataBind(new DataView(table))</code></td><td>One plain object per row returned by <code>view.toRows()</code> (row-state filter, <code>rowFilter</code> and <code>sort</code> are applied).</td></tr><tr><td><code>DataTable</code></td><td><code>grid.dataBind(table)</code></td><td>One plain object per non-deleted row, in table order, whatever its state. See <a href="#/api/data-binding/binding-matrix-per-control/which-inputs-each-control-accepts/2-binding-matrix-per-control">section 2</a> for a GridView bug.</td></tr><tr><td>Data source control</td><td><code>grid.dataBind(sqlDataSource)</code></td><td>The controller calls <code>select()</code> and accepts the result (see the matrix). Edits are forwarded to the source's <code>update</code> / <code>delete</code>.</td></tr></tbody></table></div>
+<p>A plain object is produced by <code>row.toObject()</code>: one property per <code>DataColumn</code>, keyed by <code>columnName</code>.</p>
+`,"the-bind-pipeline":`<h3 id="the-bind-pipeline">The bind pipeline<a class="anchor" href="#the-bind-pipeline" aria-label="Link to this section">#</a></h3>
+<p>For <code>GridViewController</code>, <code>dataBind()</code> runs these steps, awaiting every handler in turn:</p>
+<ol><li>Resolve the source (remember it, if you passed one; see the matrix).</li><li>Produce the rows. For a data source control this is where <code>select()</code> runs (and the source's own <code>selecting</code> / <code>selected</code> events fire).</li><li>Raise <code>dataBinding</code> with <code>{ itemCount }</code>. The controller's <code>dataSource</code> / <code>visibleRows</code> still hold the <strong>old</strong> rows at this point.</li><li>Replace the controller's rows with the new ones and clamp <code>pageIndex</code> into range.</li><li>For every row, in order: raise <code>rowCreated</code>, then <code>rowDataBound</code>, both with <code>{ rowIndex, dataItem }</code>.</li><li>Raise <code>dataBound</code> with <code>{ itemCount }</code>.</li><li>Raise <code>stateChanged</code> with <code>{ reason: &quot;dataBind&quot; }</code>. UI adapters re-render from this event.</li></ol>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span>, <span class="tok-t">DataView</span>, <span class="tok-t">GridViewController</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">interface</span> <span class="tok-t">Product</span> { id: number; name: string; price: number; }
+
+<span class="tok-k">const</span> table = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;Products&quot;</span>);
+table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;name&quot;</span> }));
+table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;price&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+table.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">1</span>, name: <span class="tok-s">&quot;Hammer&quot;</span>, price: <span class="tok-n">12.5</span> }).<span class="tok-f">acceptChanges</span>();
+table.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">2</span>, name: <span class="tok-s">&quot;Saw&quot;</span>, price: <span class="tok-n">20</span> }).<span class="tok-f">acceptChanges</span>();
+
+<span class="tok-k">const</span> grid = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Product</span>&gt;({
+  id: <span class="tok-s">&quot;gv&quot;</span>,
+  dataKeyField: <span class="tok-s">&quot;id&quot;</span>,
+  columns: [
+    { <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;name&quot;</span>, dataField: <span class="tok-s">&quot;name&quot;</span>, headerText: <span class="tok-s">&quot;Name&quot;</span> },
+    { <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;price&quot;</span>, dataField: <span class="tok-s">&quot;price&quot;</span>, headerText: <span class="tok-s">&quot;Price&quot;</span> }
+  ]
+});
+
+<span class="tok-k">const</span> log: string[] = [];
+grid.dataBinding.<span class="tok-f">subscribe</span>((_s, e) =&gt; { log.<span class="tok-f">push</span>(<span class="tok-s">\`dataBinding(itemCount=\${e.itemCount})\`</span>); });
+grid.rowCreated.<span class="tok-f">subscribe</span>((_s, e) =&gt; { log.<span class="tok-f">push</span>(<span class="tok-s">\`rowCreated(\${e.rowIndex})\`</span>); });
+grid.rowDataBound.<span class="tok-f">subscribe</span>((_s, e) =&gt; { log.<span class="tok-f">push</span>(<span class="tok-s">\`rowDataBound(\${e.rowIndex}, \${e.dataItem.name})\`</span>); });
+grid.dataBound.<span class="tok-f">subscribe</span>((_s, e) =&gt; { log.<span class="tok-f">push</span>(<span class="tok-s">\`dataBound(itemCount=\${e.itemCount})\`</span>); });
+
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>(<span class="tok-k">new</span> <span class="tok-t">DataView</span>(table));
+console.<span class="tok-f">log</span>(log);
+<span class="tok-c">// -&gt; [</span>
+<span class="tok-c">// -&gt;   'dataBinding(itemCount=2)',</span>
+<span class="tok-c">// -&gt;   'rowCreated(0)',</span>
+<span class="tok-c">// -&gt;   'rowDataBound(0, Hammer)',</span>
+<span class="tok-c">// -&gt;   'rowCreated(1)',</span>
+<span class="tok-c">// -&gt;   'rowDataBound(1, Saw)',</span>
+<span class="tok-c">// -&gt;   'dataBound(itemCount=2)'</span>
+<span class="tok-c">// -&gt; ]</span></code></pre></div>
+<p>The other three controls follow the same shape with different event names and a few differences worth knowing:</p>
+<div class="table-scroll"><table><thead><tr><th>Control</th><th>Event order for two rows</th><th>Notes</th></tr></thead><tbody><tr><td><code>RepeaterController</code></td><td><code>dataBinding(2)</code> &gt; <code>itemCreated(Header)</code> &gt; <code>itemCreated(Item 0)</code> &gt; <code>itemDataBound(0)</code> &gt; <code>itemCreated(Separator)</code> &gt; <code>itemCreated(AlternatingItem 1)</code> &gt; <code>itemDataBound(1)</code> &gt; <code>itemCreated(Footer)</code> &gt; <code>dataBound(2)</code></td><td><code>itemCreated</code> also fires for Header, Separator and Footer (no <code>dataItem</code>). It also raises <code>onItemCloned</code> and <code>onDrawItem</code> after each <code>itemDataBound</code>.</td></tr><tr><td><code>DataGridController</code></td><td><code>dataBinding(0)</code> &gt; <code>itemCreated(0)</code> &gt; <code>itemDataBound(0:C)</code> &gt; <code>dataBound(3)</code> (page size 2, page 2 of 3 rows)</td><td><code>dataBinding.itemCount</code> is always <code>0</code>. Item events fire for the <strong>visible page only</strong>, with page-relative indexes. <code>dataBound.itemCount</code> is the total.</td></tr><tr><td><code>DataListController</code></td><td><code>dataBinding(0)</code> &gt; <code>itemCreated(0)</code> &gt; <code>itemDataBound(0)</code> &gt; <code>itemCreated(1)</code> &gt; <code>itemDataBound(1)</code> &gt; <code>dataBound(2)</code></td><td><code>dataBinding.itemCount</code> is always <code>0</code>. Handlers receive <code>{ item }</code> (a <code>DataListItem</code>), not a row index.</td></tr></tbody></table></div>
+`,"snapshot-semantics":`<h3 id="snapshot-semantics">Snapshot semantics<a class="anchor" href="#snapshot-semantics" aria-label="Link to this section">#</a></h3>
+<p>The controllers do not hold your <code>DataTable</code> rows. They hold <strong>copies</strong> made with <code>row.toObject()</code>. Two consequences:</p>
+<ul><li>Editing a grid row (<code>updateRow</code>, a <code>rowDataBound</code> handler that changes <code>dataItem</code>, ...) changes the copy only; the table is untouched.</li><li>Changing the table afterwards does not change the grid until you call <code>dataBind()</code> again.</li></ul>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span>, <span class="tok-t">DataView</span>, <span class="tok-t">GridViewController</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">interface</span> <span class="tok-t">Product</span> { id: number; name: string; price: number; }
+
+<span class="tok-k">const</span> table = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;Products&quot;</span>);
+table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;name&quot;</span> }));
+table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;price&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+table.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">1</span>, name: <span class="tok-s">&quot;Hammer&quot;</span>, price: <span class="tok-n">12.5</span> }).<span class="tok-f">acceptChanges</span>();
+
+<span class="tok-k">const</span> grid = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Product</span>&gt;({
+  id: <span class="tok-s">&quot;gv&quot;</span>,
+  dataKeyField: <span class="tok-s">&quot;id&quot;</span>,
+  columns: [{ <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;name&quot;</span>, dataField: <span class="tok-s">&quot;name&quot;</span>, headerText: <span class="tok-s">&quot;Name&quot;</span> }]
+});
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>(<span class="tok-k">new</span> <span class="tok-t">DataView</span>(table));
+
+<span class="tok-k">const</span> first = grid.dataSource[<span class="tok-n">0</span>]!;
+first.name = <span class="tok-s">&quot;Claw hammer&quot;</span>;                         <span class="tok-c">// edit the grid's copy</span>
+console.<span class="tok-f">log</span>(table.rows.<span class="tok-k">get</span>(<span class="tok-n">0</span>)!.<span class="tok-f">item</span>(<span class="tok-s">&quot;name&quot;</span>));
+<span class="tok-c">// -&gt; Hammer                                        (table untouched)</span>
+
+table.rows.<span class="tok-k">get</span>(<span class="tok-n">0</span>)!.<span class="tok-f">setItem</span>(<span class="tok-s">&quot;name&quot;</span>, <span class="tok-s">&quot;Sledge&quot;</span>);       <span class="tok-c">// edit the table</span>
+console.<span class="tok-f">log</span>(grid.dataSource[<span class="tok-n">0</span>]!.name);
+<span class="tok-c">// -&gt; Claw hammer                                   (grid untouched)</span>
+
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>();                              <span class="tok-c">// re-bind: new copies</span>
+console.<span class="tok-f">log</span>(grid.dataSource[<span class="tok-n">0</span>]!.name);
+<span class="tok-c">// -&gt; Sledge</span></code></pre></div>
+<blockquote class=""><p><strong>Rule of thumb:</strong> the <code>DataTable</code> is the source of truth; a control is a disposable picture of it. Write changes to the table first, then call <code>dataBind()</code>.</p></blockquote>
+<hr>
+`},"binding-matrix-per-control":{"which-inputs-each-control-accepts":`<h3 id="which-inputs-each-control-accepts">Which inputs each control accepts<a class="anchor" href="#which-inputs-each-control-accepts" aria-label="Link to this section">#</a></h3>
+<div class="table-scroll"><table><thead><tr><th></th><th><code>GridViewController</code></th><th><code>RepeaterController</code></th><th><code>DataGridController</code></th><th><code>DataListController</code></th></tr></thead><tbody><tr><td>Array</td><td>yes</td><td>yes</td><td>yes</td><td>yes</td></tr><tr><td><code>DataView</code></td><td>yes (<code>view.toRows()</code>)</td><td>yes (<code>view.toRows()</code>)</td><td>yes, via <code>view.toTable()</code></td><td>yes, via <code>view.toTable()</code></td></tr><tr><td><code>DataTable</code></td><td>yes, but <strong>bug</strong>: treated as a data source control by <code>sort</code> / <code>updateRow</code> / <code>deleteRow</code> / <code>changePage</code></td><td>yes</td><td>yes</td><td>yes</td></tr><tr><td>Data source control</td><td>yes</td><td>yes</td><td>yes</td><td>yes</td></tr><tr><td><code>select()</code> result accepted</td><td>array, <code>DataTable</code>, <code>DataView</code>, <code>{ items: [...] }</code></td><td>array, <code>DataTable</code>, <code>DataView</code>, <code>{ items: [...] }</code></td><td><strong>array only</strong> (anything else binds empty)</td><td><strong>array only</strong> (anything else binds empty)</td></tr><tr><td>Arguments passed to <code>select()</code></td><td><code>{ startRowIndex, maximumRows, sortExpression }</code> (<code>startRowIndex</code> / <code>maximumRows</code> only when <code>allowPaging</code>)</td><td>none</td><td>none</td><td>none</td></tr><tr><td>Source given in the constructor</td><td><code>options.dataSource</code></td><td><code>options.dataSource</code></td><td><code>options.dataSource</code></td><td><code>options.dataSource</code></td></tr><tr><td><code>dataBind(arg)</code> remembers <code>arg</code>?</td><td><strong>yes</strong> (overwrites <code>options.dataSource</code>)</td><td><strong>yes</strong></td><td><strong>no</strong></td><td><strong>no</strong></td></tr><tr><td><code>dataBind()</code> with no argument</td><td>re-binds the remembered source</td><td>re-binds the remembered source</td><td>re-binds the <strong>constructor</strong> source, or empties the control if there is none</td><td>same as DataGrid</td></tr><tr><td>Auto-generated columns</td><td>no (you list <code>columns</code>)</td><td>no (templates)</td><td>yes (<code>autoGenerateColumns</code>, default <code>true</code>)</td><td>no (templates)</td></tr></tbody></table></div>
+`,"datatable-vs-dataview-in-practice":`<h3 id="datatable-vs-dataview-in-practice">DataTable vs DataView in practice<a class="anchor" href="#datatable-vs-dataview-in-practice" aria-label="Link to this section">#</a></h3>
+<p>A <code>DataTable</code> binds every non-deleted row regardless of state and ignores filters. A <code>DataView</code> applies its <code>rowStateFilter</code> (default <code>Unchanged</code>, <code>Added</code>, <code>Modified</code>), its <code>rowFilter</code> and its <code>sort</code>.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> {
+  <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span>, <span class="tok-t">DataView</span>,
+  <span class="tok-t">GridViewController</span>, <span class="tok-t">RepeaterController</span>, <span class="tok-t">DataGridController</span>, <span class="tok-t">DataListController</span>
+} <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">interface</span> <span class="tok-t">Product</span> { id: number; name: string; price: number; }
+
+<span class="tok-k">const</span> table = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;Products&quot;</span>);
+table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;name&quot;</span> }));
+table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;price&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+<span class="tok-k">for</span> (<span class="tok-k">const</span> [id, name, price] <span class="tok-k">of</span> [[<span class="tok-n">1</span>, <span class="tok-s">&quot;Hammer&quot;</span>, <span class="tok-n">12.5</span>], [<span class="tok-n">2</span>, <span class="tok-s">&quot;Saw&quot;</span>, <span class="tok-n">20</span>], [<span class="tok-n">3</span>, <span class="tok-s">&quot;Drill&quot;</span>, <span class="tok-n">99</span>]] <span class="tok-k">as</span> <span class="tok-k">const</span>) {
+  table.rows.<span class="tok-f">add</span>({ id, name, price }).<span class="tok-f">acceptChanges</span>();
+}
+table.rows.<span class="tok-k">get</span>(<span class="tok-n">2</span>)!.<span class="tok-k">delete</span>();                       <span class="tok-c">// Drill -&gt; state Deleted, still in the table</span>
+console.<span class="tok-f">log</span>(table.rows.count, table.rows.totalCount);
+<span class="tok-c">// -&gt; 2 3</span>
+
+<span class="tok-k">const</span> view = <span class="tok-k">new</span> <span class="tok-t">DataView</span>(table);
+view.rowFilter = <span class="tok-s">&quot;price &gt; 15&quot;</span>;                     <span class="tok-c">// only Saw matches</span>
+
+<span class="tok-k">const</span> cols = [{ <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span> <span class="tok-k">as</span> <span class="tok-k">const</span>, key: <span class="tok-s">&quot;name&quot;</span>, dataField: <span class="tok-s">&quot;name&quot;</span> <span class="tok-k">as</span> <span class="tok-k">const</span>, headerText: <span class="tok-s">&quot;Name&quot;</span> }];
+
+<span class="tok-k">const</span> grid = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Product</span>&gt;({ id: <span class="tok-s">&quot;g&quot;</span>, dataKeyField: <span class="tok-s">&quot;id&quot;</span>, columns: cols });
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>(table);  console.<span class="tok-f">log</span>(<span class="tok-s">&quot;grid&lt;-table&quot;</span>, grid.totalRecords);
+<span class="tok-c">// -&gt; grid&lt;-table 2</span>
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>(view);   console.<span class="tok-f">log</span>(<span class="tok-s">&quot;grid&lt;-view&quot;</span>, grid.totalRecords);
+<span class="tok-c">// -&gt; grid&lt;-view 1</span>
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>();       console.<span class="tok-f">log</span>(<span class="tok-s">&quot;grid remembered&quot;</span>, grid.totalRecords);
+<span class="tok-c">// -&gt; grid remembered 1</span>
+
+<span class="tok-k">const</span> rep = <span class="tok-k">new</span> <span class="tok-t">RepeaterController</span>&lt;<span class="tok-t">Product</span>&gt;({ id: <span class="tok-s">&quot;r&quot;</span> });
+<span class="tok-k">await</span> rep.<span class="tok-f">dataBind</span>(table);   console.<span class="tok-f">log</span>(<span class="tok-s">&quot;rep&lt;-table&quot;</span>, rep.itemCount);
+<span class="tok-c">// -&gt; rep&lt;-table 2</span>
+<span class="tok-k">await</span> rep.<span class="tok-f">dataBind</span>(view);    console.<span class="tok-f">log</span>(<span class="tok-s">&quot;rep&lt;-view&quot;</span>, rep.itemCount);
+<span class="tok-c">// -&gt; rep&lt;-view 1</span>
+<span class="tok-k">await</span> rep.<span class="tok-f">dataBind</span>();        console.<span class="tok-f">log</span>(<span class="tok-s">&quot;rep remembered&quot;</span>, rep.itemCount);
+<span class="tok-c">// -&gt; rep remembered 1</span>
+
+<span class="tok-k">const</span> dg = <span class="tok-k">new</span> <span class="tok-t">DataGridController</span>&lt;<span class="tok-t">Product</span>&gt;({ id: <span class="tok-s">&quot;d&quot;</span>, dataKeyField: <span class="tok-s">&quot;id&quot;</span> });
+<span class="tok-k">await</span> dg.<span class="tok-f">dataBind</span>(table);    console.<span class="tok-f">log</span>(<span class="tok-s">&quot;dg&lt;-table&quot;</span>, dg.totalRecords, dg.columns.<span class="tok-f">map</span>((c) =&gt; c.key));
+<span class="tok-c">// -&gt; dg&lt;-table 2 [ 'id', 'name', 'price' ]</span>
+<span class="tok-k">const</span> dg2 = <span class="tok-k">new</span> <span class="tok-t">DataGridController</span>&lt;<span class="tok-t">Product</span>&gt;({ id: <span class="tok-s">&quot;d2&quot;</span>, dataKeyField: <span class="tok-s">&quot;id&quot;</span> });
+<span class="tok-k">await</span> dg2.<span class="tok-f">dataBind</span>(view);    console.<span class="tok-f">log</span>(<span class="tok-s">&quot;dg&lt;-view&quot;</span>, dg2.totalRecords);
+<span class="tok-c">// -&gt; dg&lt;-view 1</span>
+<span class="tok-k">await</span> dg2.<span class="tok-f">dataBind</span>();        console.<span class="tok-f">log</span>(<span class="tok-s">&quot;dg remembered&quot;</span>, dg2.totalRecords);
+<span class="tok-c">// -&gt; dg remembered 0                               (DataGrid forgot the view)</span>
+
+<span class="tok-k">const</span> dl = <span class="tok-k">new</span> <span class="tok-t">DataListController</span>&lt;<span class="tok-t">Product</span>&gt;({ id: <span class="tok-s">&quot;l&quot;</span>, dataKeyField: <span class="tok-s">&quot;id&quot;</span> });
+<span class="tok-k">await</span> dl.<span class="tok-f">dataBind</span>(view);     console.<span class="tok-f">log</span>(<span class="tok-s">&quot;dl&lt;-view&quot;</span>, dl.itemCount);
+<span class="tok-c">// -&gt; dl&lt;-view 1</span>
+<span class="tok-k">await</span> dl.<span class="tok-f">dataBind</span>();         console.<span class="tok-f">log</span>(<span class="tok-s">&quot;dl remembered&quot;</span>, dl.itemCount);
+<span class="tok-c">// -&gt; dl remembered 0                               (DataList forgot it too)</span></code></pre></div>
+<blockquote class="note"><p><strong>Tip:</strong> for <code>DataGridController</code> and <code>DataListController</code>, pass the source in the constructor (<code>dataSource: view</code>), then call <code>dataBind()</code> with no argument every time. Passing it to <code>dataBind(view)</code> works once but is not remembered.</p></blockquote>
+`,"gridview-bound-to-a-datatable-known-bug-and-the-workaround":`<h3 id="gridview-bound-to-a-datatable-known-bug-and-the-workaround">GridView bound to a DataTable (known bug) and the workaround<a class="anchor" href="#gridview-bound-to-a-datatable-known-bug-and-the-workaround" aria-label="Link to this section">#</a></h3>
+<p><code>GridViewController</code> decides &quot;is this a data source control?&quot; by checking for a <code>select</code> function, and <code>DataTable</code> has one (<code>table.select(filter, sort)</code>). <code>dataBind()</code> tests <code>instanceof DataTable</code> first, so the initial bind works. But <code>sort()</code>, <code>changePage()</code>, <code>updateRow()</code> and <code>deleteRow()</code> test the &quot;has <code>select</code>&quot; rule, so a table bound to a GridView is treated as a data source control:</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span>, <span class="tok-t">GridViewController</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">interface</span> <span class="tok-t">Product</span> { id: number; name: string; price: number; }
+
+<span class="tok-k">const</span> table = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;Products&quot;</span>);
+table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;name&quot;</span> }));
+table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;price&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+table.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">1</span>, name: <span class="tok-s">&quot;Hammer&quot;</span>, price: <span class="tok-n">12.5</span> }).<span class="tok-f">acceptChanges</span>();
+table.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">2</span>, name: <span class="tok-s">&quot;Saw&quot;</span>, price: <span class="tok-n">20</span> }).<span class="tok-f">acceptChanges</span>();
+
+<span class="tok-k">const</span> bad = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Product</span>&gt;({
+  id: <span class="tok-s">&quot;gt&quot;</span>, dataKeyField: <span class="tok-s">&quot;id&quot;</span>, allowSorting: <span class="tok-k">true</span>, dataSource: table,
+  columns: [{ <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;name&quot;</span>, dataField: <span class="tok-s">&quot;name&quot;</span>, headerText: <span class="tok-s">&quot;Name&quot;</span> }]
+});
+<span class="tok-k">await</span> bad.<span class="tok-f">dataBind</span>();
+console.<span class="tok-f">log</span>(<span class="tok-k">await</span> bad.<span class="tok-f">sort</span>(<span class="tok-s">&quot;price&quot;</span>, <span class="tok-s">&quot;desc&quot;</span>), bad.dataSource.<span class="tok-f">map</span>((r) =&gt; r.name));
+<span class="tok-c">// -&gt; true [ 'Hammer', 'Saw' ]                      (reports success, but did NOT sort)</span>
+<span class="tok-k">try</span> { <span class="tok-k">await</span> bad.<span class="tok-f">updateRow</span>(<span class="tok-n">0</span>, { name: <span class="tok-s">&quot;X&quot;</span> }); } <span class="tok-k">catch</span> (e) { console.<span class="tok-f">log</span>((e <span class="tok-k">as</span> <span class="tok-t">Error</span>).message); }
+<span class="tok-c">// -&gt; this.options.dataSource.update is not a function</span>
+<span class="tok-k">try</span> { <span class="tok-k">await</span> bad.<span class="tok-f">deleteRow</span>(<span class="tok-n">0</span>); } <span class="tok-k">catch</span> (e) { console.<span class="tok-f">log</span>((e <span class="tok-k">as</span> <span class="tok-t">Error</span>).message); }
+<span class="tok-c">// -&gt; this.options.dataSource.delete is not a function</span></code></pre></div>
+<p><strong>Workaround:</strong> wrap the table in a view, <code>grid.dataBind(new DataView(table))</code>. A <code>DataView</code> is excluded by the <code>select</code> check (it has no <code>select</code> method). <code>RepeaterController</code>, <code>DataGridController</code> and <code>DataListController</code> do not have this problem. See <a href="#/api/guides/issues-needs-your-attention-first">Known issues</a>, item 2.</p>
+<hr>
+`},"binding-a-datatable-through-a-dataview":{overview:`<p>A <code>DataView</code> is a live, re-evaluated query over a table: it stores no rows, only <code>rowFilter</code>, <code>sort</code> and <code>rowStateFilter</code>. Every call to <code>toRows()</code>, <code>toObjects()</code> or <code>count</code> re-runs the query.</p>
+`,"filtering-expression-strings-and-predicates":`<h3 id="filtering-expression-strings-and-predicates">Filtering: expression strings and predicates<a class="anchor" href="#filtering-expression-strings-and-predicates" aria-label="Link to this section">#</a></h3>
+<p><code>rowFilter</code> accepts either form:</p>
+<ul><li>A <strong>string expression</strong>: <code>field op literal</code> conditions joined by <code>AND</code> / <code>OR</code> (operators <code>=</code>, <code>&lt;&gt;</code>, <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>LIKE</code> with <code>%</code> and <code>_</code>). Field names are case-insensitive and may contain only letters, digits and <code>_</code>. No parentheses, <code>IN</code>, <code>IS NULL</code> or <code>NOT</code>. A quoted literal is a string (so <code>salary = '100'</code> does <strong>not</strong> match the number 100).</li><li>A <strong>predicate</strong> <code>(row: DataRow) =&gt; boolean</code>. Use this for anything else (dates, <code>includes</code>, several columns, regular expressions).</li></ul>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span>, <span class="tok-t">DataView</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">const</span> emp = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;Employees&quot;</span>);
+emp.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+emp.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;name&quot;</span> }));
+emp.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;dept&quot;</span> }));
+emp.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;salary&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+<span class="tok-k">for</span> (<span class="tok-k">const</span> e <span class="tok-k">of</span> [
+  { id: <span class="tok-n">1</span>, name: <span class="tok-s">&quot;Ada&quot;</span>, dept: <span class="tok-s">&quot;Eng&quot;</span>, salary: <span class="tok-n">120</span> },
+  { id: <span class="tok-n">2</span>, name: <span class="tok-s">&quot;Bob&quot;</span>, dept: <span class="tok-s">&quot;Ops&quot;</span>, salary: <span class="tok-n">80</span> },
+  { id: <span class="tok-n">3</span>, name: <span class="tok-s">&quot;Cy&quot;</span>, dept: <span class="tok-s">&quot;Eng&quot;</span>, salary: <span class="tok-n">95</span> },
+  { id: <span class="tok-n">4</span>, name: <span class="tok-s">&quot;Di&quot;</span>, dept: <span class="tok-s">&quot;HR&quot;</span>, salary: <span class="tok-n">70</span> }
+]) emp.rows.<span class="tok-f">add</span>(e).<span class="tok-f">acceptChanges</span>();
+
+<span class="tok-k">const</span> view = <span class="tok-k">new</span> <span class="tok-t">DataView</span>(emp);
+<span class="tok-k">const</span> names = () =&gt; view.<span class="tok-f">toRows</span>().<span class="tok-f">map</span>((r) =&gt; r.<span class="tok-f">item</span>(<span class="tok-s">&quot;name&quot;</span>));
+
+view.rowFilter = <span class="tok-s">&quot;dept = 'Eng' AND salary &gt;= 100&quot;</span>;
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;string filter:&quot;</span>, <span class="tok-f">names</span>());
+<span class="tok-c">// -&gt; string filter: [ 'Ada' ]</span>
+
+view.rowFilter = (r) =&gt; <span class="tok-t">String</span>(r.<span class="tok-f">item</span>(<span class="tok-s">&quot;name&quot;</span>)).<span class="tok-f">toLowerCase</span>().<span class="tok-f">includes</span>(<span class="tok-s">&quot;i&quot;</span>) || r.<span class="tok-f">item</span>(<span class="tok-s">&quot;dept&quot;</span>) === <span class="tok-s">&quot;Ops&quot;</span>;
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;predicate:&quot;</span>, <span class="tok-f">names</span>());
+<span class="tok-c">// -&gt; predicate: [ 'Bob', 'Di' ]</span>
+
+view.rowFilter = <span class="tok-s">&quot;dept LIKE 'E%'&quot;</span>;
+view.sort = <span class="tok-s">&quot;salary DESC&quot;</span>;
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;like+sort:&quot;</span>, <span class="tok-f">names</span>(), view.count);
+<span class="tok-c">// -&gt; like+sort: [ 'Ada', 'Cy' ] 2</span>
+
+view.rowFilter = <span class="tok-k">null</span>;
+view.sort = <span class="tok-s">&quot;dept, salary DESC&quot;</span>;
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;multi sort:&quot;</span>, <span class="tok-f">names</span>());
+<span class="tok-c">// -&gt; multi sort: [ 'Ada', 'Cy', 'Di', 'Bob' ]</span></code></pre></div>
+`,sorting:`<h3 id="sorting">Sorting<a class="anchor" href="#sorting" aria-label="Link to this section">#</a></h3>
+<p><code>view.sort</code> is a comma-separated list of <code>column [ASC|DESC]</code>. Numbers compare numerically, dates by time, everything else with <code>localeCompare</code>. <code>null</code> sorts first ascending. Any direction word other than <code>ASC</code> (even a typo such as <code>ASCENDING</code>) behaves as <code>DESC</code>. An unknown column name throws <code>Column 'x' does not belong to table 'T'.</code> when the view is evaluated, i.e. inside <code>dataBind()</code>.</p>
+`,"filtering-by-row-state":`<h3 id="filtering-by-row-state">Filtering by row state<a class="anchor" href="#filtering-by-row-state" aria-label="Link to this section">#</a></h3>
+<p><code>rowStateFilter</code> is an array of <code>DataRowState</code> values. The default is <code>[&quot;Unchanged&quot;, &quot;Added&quot;, &quot;Modified&quot;]</code>, which hides deleted rows. Include <code>&quot;Deleted&quot;</code> to see them (deleted rows report their <strong>original</strong> values).</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span>, <span class="tok-t">DataView</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">const</span> emp = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;Employees&quot;</span>);
+emp.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+emp.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;name&quot;</span> }));
+emp.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;salary&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+<span class="tok-k">for</span> (<span class="tok-k">const</span> e <span class="tok-k">of</span> [
+  { id: <span class="tok-n">1</span>, name: <span class="tok-s">&quot;Ada&quot;</span>, salary: <span class="tok-n">120</span> },
+  { id: <span class="tok-n">2</span>, name: <span class="tok-s">&quot;Bob&quot;</span>, salary: <span class="tok-n">80</span> },
+  { id: <span class="tok-n">3</span>, name: <span class="tok-s">&quot;Cy&quot;</span>, salary: <span class="tok-n">95</span> },
+  { id: <span class="tok-n">4</span>, name: <span class="tok-s">&quot;Di&quot;</span>, salary: <span class="tok-n">70</span> }
+]) emp.rows.<span class="tok-f">add</span>(e).<span class="tok-f">acceptChanges</span>();
+
+emp.rows.<span class="tok-k">get</span>(<span class="tok-n">1</span>)!.<span class="tok-f">setItem</span>(<span class="tok-s">&quot;salary&quot;</span>, <span class="tok-n">85</span>);                       <span class="tok-c">// Bob -&gt; Modified</span>
+emp.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">5</span>, name: <span class="tok-s">&quot;Ed&quot;</span>, salary: <span class="tok-n">60</span> });              <span class="tok-c">// Ed  -&gt; Added</span>
+emp.rows.<span class="tok-k">get</span>(<span class="tok-n">3</span>)!.<span class="tok-k">delete</span>();                                    <span class="tok-c">// Di  -&gt; Deleted</span>
+
+<span class="tok-k">const</span> view = <span class="tok-k">new</span> <span class="tok-t">DataView</span>(emp);
+view.sort = <span class="tok-s">&quot;id&quot;</span>;
+<span class="tok-k">const</span> states = () =&gt; view.<span class="tok-f">toRows</span>().<span class="tok-f">map</span>((r) =&gt; <span class="tok-s">\`\${r.item(&quot;name&quot;)}:\${r.rowState}\`</span>);
+
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;default:&quot;</span>, <span class="tok-f">states</span>());
+<span class="tok-c">// -&gt; default: [ 'Ada:Unchanged', 'Bob:Modified', 'Cy:Unchanged', 'Ed:Added' ]</span>
+view.rowStateFilter = [<span class="tok-s">&quot;Modified&quot;</span>, <span class="tok-s">&quot;Added&quot;</span>];
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;changed:&quot;</span>, <span class="tok-f">states</span>());
+<span class="tok-c">// -&gt; changed: [ 'Bob:Modified', 'Ed:Added' ]</span>
+view.rowStateFilter = [<span class="tok-s">&quot;Deleted&quot;</span>];
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;deleted:&quot;</span>, <span class="tok-f">states</span>());
+<span class="tok-c">// -&gt; deleted: [ 'Di:Deleted' ]</span>
+view.rowStateFilter = [<span class="tok-s">&quot;Unchanged&quot;</span>, <span class="tok-s">&quot;Added&quot;</span>, <span class="tok-s">&quot;Modified&quot;</span>, <span class="tok-s">&quot;Deleted&quot;</span>];
+view.rowFilter = <span class="tok-s">&quot;id &gt; 0&quot;</span>;                         <span class="tok-c">// a string filter drops Deleted rows</span>
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;all + string filter:&quot;</span>, <span class="tok-f">states</span>());
+<span class="tok-c">// -&gt; all + string filter: [ 'Ada:Unchanged', 'Bob:Modified', 'Cy:Unchanged', 'Ed:Added' ]</span></code></pre></div>
+<blockquote class="warn"><p><strong>Gotcha:</strong> with a <strong>string</strong> <code>rowFilter</code>, <code>Deleted</code> rows are dropped even when <code>rowStateFilter</code> includes <code>&quot;Deleted&quot;</code> (the last line above: <code>Di</code> is missing). Use a predicate function when you need to filter deleted rows.</p></blockquote>
+<p>A common use of <code>rowStateFilter</code> is a &quot;pending changes&quot; grid: <code>view.rowStateFilter = [&quot;Added&quot;, &quot;Modified&quot;, &quot;Deleted&quot;]</code>.</p>
+`,"rebinding-after-changes-there-are-no-change-events":`<h3 id="rebinding-after-changes-there-are-no-change-events">Rebinding after changes; there are no change events<a class="anchor" href="#rebinding-after-changes-there-are-no-change-events" aria-label="Link to this section">#</a></h3>
+<p><code>@wf-controls/data</code> has <strong>no events at all</strong>: no <code>RowChanged</code>, <code>ListChanged</code> or <code>CollectionChanged</code>. A grid bound to a view never refreshes itself, as the example shows:</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span>, <span class="tok-t">DataView</span>, <span class="tok-t">GridViewController</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">interface</span> <span class="tok-t">Emp</span> { id: number; name: string; }
+
+<span class="tok-k">const</span> emp = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;Employees&quot;</span>);
+emp.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+emp.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;name&quot;</span> }));
+emp.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">1</span>, name: <span class="tok-s">&quot;Ada&quot;</span> }).<span class="tok-f">acceptChanges</span>();
+
+<span class="tok-k">const</span> grid = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Emp</span>&gt;({
+  id: <span class="tok-s">&quot;g&quot;</span>, dataKeyField: <span class="tok-s">&quot;id&quot;</span>,
+  columns: [{ <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;n&quot;</span>, dataField: <span class="tok-s">&quot;name&quot;</span>, headerText: <span class="tok-s">&quot;Name&quot;</span> }]
+});
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>(<span class="tok-k">new</span> <span class="tok-t">DataView</span>(emp));
+console.<span class="tok-f">log</span>(grid.totalRecords);
+<span class="tok-c">// -&gt; 1</span>
+emp.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">2</span>, name: <span class="tok-s">&quot;Bob&quot;</span> });
+console.<span class="tok-f">log</span>(grid.totalRecords);
+<span class="tok-c">// -&gt; 1                                             (stale)</span>
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>();
+console.<span class="tok-f">log</span>(grid.totalRecords);
+<span class="tok-c">// -&gt; 2</span></code></pre></div>
+<p>The pattern that removes the chore is a tiny wrapper that owns the mutations and announces them. This one uses the library's own <code>EventDispatcher</code>:</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span>, <span class="tok-t">DataView</span>, <span class="tok-t">DataRow</span>, <span class="tok-t">EventDispatcher</span>, <span class="tok-t">GridViewController</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-c">/** Wraps a DataTable and announces every change made through it. */</span>
+<span class="tok-k">class</span> <span class="tok-t">ObservableTable</span> {
+  <span class="tok-k">readonly</span> changed = <span class="tok-k">new</span> <span class="tok-t">EventDispatcher</span>&lt;<span class="tok-t">ObservableTable</span>, { kind: string }&gt;();
+  <span class="tok-k">readonly</span> table: <span class="tok-t">DataTable</span>;
+  <span class="tok-f">constructor</span>(table: <span class="tok-t">DataTable</span>) { <span class="tok-k">this</span>.table = table; }
+
+  <span class="tok-k">async</span> <span class="tok-f">insert</span>(values: <span class="tok-t">Record</span>&lt;string, unknown&gt;): <span class="tok-t">Promise</span>&lt;<span class="tok-t">DataRow</span>&gt; {
+    <span class="tok-k">const</span> row = <span class="tok-k">this</span>.table.rows.<span class="tok-f">add</span>(values);
+    <span class="tok-k">await</span> <span class="tok-k">this</span>.changed.<span class="tok-f">emit</span>(<span class="tok-k">this</span>, { kind: <span class="tok-s">&quot;insert&quot;</span> });
+    <span class="tok-k">return</span> row;
+  }
+  <span class="tok-k">async</span> <span class="tok-f">update</span>(row: <span class="tok-t">DataRow</span>, values: <span class="tok-t">Record</span>&lt;string, unknown&gt;): <span class="tok-t">Promise</span>&lt;<span class="tok-k">void</span>&gt; {
+    row.<span class="tok-f">setValues</span>(values);
+    <span class="tok-k">await</span> <span class="tok-k">this</span>.changed.<span class="tok-f">emit</span>(<span class="tok-k">this</span>, { kind: <span class="tok-s">&quot;update&quot;</span> });
+  }
+  <span class="tok-k">async</span> <span class="tok-f">remove</span>(row: <span class="tok-t">DataRow</span>): <span class="tok-t">Promise</span>&lt;<span class="tok-k">void</span>&gt; {
+    row.<span class="tok-k">delete</span>();
+    <span class="tok-k">await</span> <span class="tok-k">this</span>.changed.<span class="tok-f">emit</span>(<span class="tok-k">this</span>, { kind: <span class="tok-s">&quot;delete&quot;</span> });
+  }
+  <span class="tok-k">async</span> <span class="tok-f">acceptChanges</span>(): <span class="tok-t">Promise</span>&lt;<span class="tok-k">void</span>&gt; {
+    <span class="tok-k">this</span>.table.<span class="tok-f">acceptChanges</span>();
+    <span class="tok-k">await</span> <span class="tok-k">this</span>.changed.<span class="tok-f">emit</span>(<span class="tok-k">this</span>, { kind: <span class="tok-s">&quot;accept&quot;</span> });
+  }
+  <span class="tok-k">async</span> <span class="tok-f">rejectChanges</span>(): <span class="tok-t">Promise</span>&lt;<span class="tok-k">void</span>&gt; {
+    <span class="tok-k">this</span>.table.<span class="tok-f">rejectChanges</span>();
+    <span class="tok-k">await</span> <span class="tok-k">this</span>.changed.<span class="tok-f">emit</span>(<span class="tok-k">this</span>, { kind: <span class="tok-s">&quot;reject&quot;</span> });
+  }
+}
+
+<span class="tok-k">interface</span> <span class="tok-t">Product</span> { id: number; name: string; price: number; }
+
+<span class="tok-k">const</span> table = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;Products&quot;</span>);
+table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;name&quot;</span> }));
+table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;price&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+<span class="tok-k">const</span> products = <span class="tok-k">new</span> <span class="tok-t">ObservableTable</span>(table);
+
+<span class="tok-k">const</span> view = <span class="tok-k">new</span> <span class="tok-t">DataView</span>(table);
+<span class="tok-k">const</span> grid = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Product</span>&gt;({
+  id: <span class="tok-s">&quot;gv&quot;</span>,
+  dataKeyField: <span class="tok-s">&quot;id&quot;</span>,
+  columns: [{ <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;name&quot;</span>, dataField: <span class="tok-s">&quot;name&quot;</span>, headerText: <span class="tok-s">&quot;Name&quot;</span> }]
+});
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>(view);
+
+<span class="tok-c">// One subscription keeps the grid in sync with every change.</span>
+products.changed.<span class="tok-f">subscribe</span>(<span class="tok-k">async</span> (_s, e) =&gt; {
+  <span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>();                           <span class="tok-c">// re-reads the view, re-copies the rows</span>
+  console.<span class="tok-f">log</span>(<span class="tok-s">\`\${e.kind}: grid shows\`</span>, grid.dataSource.<span class="tok-f">map</span>((p) =&gt; p.name));
+});
+
+<span class="tok-k">const</span> hammer = <span class="tok-k">await</span> products.<span class="tok-f">insert</span>({ id: <span class="tok-n">1</span>, name: <span class="tok-s">&quot;Hammer&quot;</span>, price: <span class="tok-n">12.5</span> });
+<span class="tok-k">await</span> products.<span class="tok-f">insert</span>({ id: <span class="tok-n">2</span>, name: <span class="tok-s">&quot;Saw&quot;</span>, price: <span class="tok-n">20</span> });
+<span class="tok-k">await</span> products.<span class="tok-f">update</span>(hammer, { name: <span class="tok-s">&quot;Claw hammer&quot;</span> });
+<span class="tok-k">await</span> products.<span class="tok-f">remove</span>(hammer);
+<span class="tok-k">await</span> products.<span class="tok-f">rejectChanges</span>();
+<span class="tok-c">// -&gt; insert: grid shows [ 'Hammer' ]</span>
+<span class="tok-c">// -&gt; insert: grid shows [ 'Hammer', 'Saw' ]</span>
+<span class="tok-c">// -&gt; update: grid shows [ 'Claw hammer', 'Saw' ]</span>
+<span class="tok-c">// -&gt; delete: grid shows [ 'Saw' ]</span>
+<span class="tok-c">// -&gt; reject: grid shows []</span></code></pre></div>
+<p>The last line is a reminder of row-state semantics: both rows were still <code>Added</code> (never accepted), so <code>rejectChanges()</code> removed them. The same thing happens to <code>Added</code> rows on <code>delete()</code>: they are removed outright instead of being marked <code>Deleted</code> (see <a href="#/api/data-binding/crud-round-trip/row-states/5-crud-round-trip">section 5</a>).</p>
+<blockquote class=""><p><strong>Performance note:</strong> a view re-filters and re-sorts the whole table on every read. Read it once into a local (<code>const rows = view.toRows()</code>) rather than calling <code>view.count</code> and <code>view.get(i)</code> in a loop.</p></blockquote>
+<hr>
+`},"column-mapping":{"bound-and-template-columns-gridview":`<h3 id="bound-and-template-columns-gridview">Bound and template columns (GridView)<a class="anchor" href="#bound-and-template-columns-gridview" aria-label="Link to this section">#</a></h3>
+<p><code>GridViewController</code> columns come in two kinds:</p>
+<div class="table-scroll"><table><thead><tr><th>Column</th><th>Fields</th><th>Purpose</th></tr></thead><tbody><tr><td><code>{ type: &quot;bound&quot; }</code></td><td><code>key</code>, <code>dataField</code> (a key of <code>T</code>), <code>headerText</code>, <code>sortable?</code>, <code>visible?</code>, <code>format?(value, row)</code></td><td>Shows one property of the bound object.</td></tr><tr><td><code>{ type: &quot;template&quot; }</code></td><td><code>key</code>, <code>headerText</code>, <code>visible?</code></td><td>A placeholder cell; the adapter calls your template with <code>(key, row, index)</code>.</td></tr></tbody></table></div>
+<p><code>dataField</code> is simply the property name on the copied object, i.e. the <code>DataColumn.columnName</code> (case-sensitive here, even though <code>DataTable</code> column lookups are not).</p>
+<blockquote class=""><p><strong>Where <code>format</code>, <code>sortable</code> and <code>visible</code> are honoured:</strong> the headless controller stores these options but never reads them. The React and Angular adapters do read <code>format</code>, <code>sortable</code> (to render a sort button) and <code>visible</code> (to hide the column). If you render the grid yourself, call <code>column.format</code> in your own renderer. <code>sortable: false</code> does not stop <code>grid.sort()</code> from sorting.</p></blockquote>
+`,"computed-columns":`<h3 id="computed-columns">Computed columns<a class="anchor" href="#computed-columns" aria-label="Link to this section">#</a></h3>
+<p>There are no expression columns (<code>DataColumn.expression</code>) in the data library. Compute values in one of three places:</p>
+<ul><li>In <code>rowDataBound</code>, by adding a property to <code>e.dataItem</code> (it is the grid's own copy, so the table is not changed).</li><li>In a template / <code>format</code> callback, at render time.</li><li>In your own code, before binding (map the view's <code>toObjects()</code>).</li></ul>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span>, <span class="tok-t">DataView</span>, <span class="tok-t">GridViewController</span>, <span class="tok-t">DataGridController</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">interface</span> <span class="tok-t">Line</span> { id: number; item: string; qty: number; unitPrice: number; lineTotal?: number; }
+
+<span class="tok-k">const</span> lines = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;Lines&quot;</span>);
+lines.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+lines.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;item&quot;</span>, caption: <span class="tok-s">&quot;Item name&quot;</span> }));
+lines.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;qty&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+lines.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;unitPrice&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span>, caption: <span class="tok-s">&quot;Unit price&quot;</span> }));
+lines.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">1</span>, item: <span class="tok-s">&quot;Bolt&quot;</span>, qty: <span class="tok-n">100</span>, unitPrice: <span class="tok-n">0.25</span> }).<span class="tok-f">acceptChanges</span>();
+lines.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">2</span>, item: <span class="tok-s">&quot;Nut&quot;</span>, qty: <span class="tok-n">40</span>, unitPrice: <span class="tok-n">0.1</span> }).<span class="tok-f">acceptChanges</span>();
+
+<span class="tok-k">const</span> grid = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Line</span>&gt;({
+  id: <span class="tok-s">&quot;gv&quot;</span>,
+  dataKeyField: <span class="tok-s">&quot;id&quot;</span>,
+  columns: [
+    { <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;item&quot;</span>, dataField: <span class="tok-s">&quot;item&quot;</span>, headerText: <span class="tok-s">&quot;Item&quot;</span> },
+    { <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;unitPrice&quot;</span>, dataField: <span class="tok-s">&quot;unitPrice&quot;</span>, headerText: <span class="tok-s">&quot;Price&quot;</span>,
+      format: (v) =&gt; <span class="tok-s">\`$\${Number(v).toFixed(2)}\`</span> },
+    { <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;lineTotal&quot;</span>, dataField: <span class="tok-s">&quot;lineTotal&quot;</span>, headerText: <span class="tok-s">&quot;Total&quot;</span>,
+      format: (v) =&gt; <span class="tok-s">\`$\${Number(v).toFixed(2)}\`</span> },
+    { <span class="tok-k">type</span>: <span class="tok-s">&quot;template&quot;</span>, key: <span class="tok-s">&quot;actions&quot;</span>, headerText: <span class="tok-s">&quot;&quot;</span> }
+  ]
+});
+
+<span class="tok-c">// Computed column: runs once per row, after the copy was made.</span>
+grid.rowDataBound.<span class="tok-f">subscribe</span>((_s, e) =&gt; {
+  e.dataItem.lineTotal = e.dataItem.qty * e.dataItem.unitPrice;
+});
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>(<span class="tok-k">new</span> <span class="tok-t">DataView</span>(lines));
+console.<span class="tok-f">log</span>(grid.dataSource);
+<span class="tok-c">// -&gt; [</span>
+<span class="tok-c">// -&gt;   { id: 1, item: 'Bolt', qty: 100, unitPrice: 0.25, lineTotal: 25 },</span>
+<span class="tok-c">// -&gt;   { id: 2, item: 'Nut', qty: 40, unitPrice: 0.1, lineTotal: 4 }</span>
+<span class="tok-c">// -&gt; ]</span>
+console.<span class="tok-f">log</span>(lines.<span class="tok-f">toObjects</span>()[<span class="tok-n">0</span>]);
+<span class="tok-c">// -&gt; { id: 1, item: 'Bolt', qty: 100, unitPrice: 0.25 }      (table has no lineTotal)</span>
+
+<span class="tok-c">// The controller never calls \`format\`; a renderer does. This is what an adapter does per cell:</span>
+<span class="tok-k">const</span> cell = (row: <span class="tok-t">Line</span>, key: <span class="tok-k">keyof</span> <span class="tok-t">Line</span>) =&gt; {
+  <span class="tok-k">const</span> col = grid.options.columns.<span class="tok-f">find</span>((c) =&gt; c.<span class="tok-k">type</span> === <span class="tok-s">&quot;bound&quot;</span> &amp;&amp; c.dataField === key);
+  <span class="tok-k">return</span> col &amp;&amp; col.<span class="tok-k">type</span> === <span class="tok-s">&quot;bound&quot;</span> &amp;&amp; col.format ? col.<span class="tok-f">format</span>(row[key], row) : <span class="tok-t">String</span>(row[key]);
+};
+console.<span class="tok-f">log</span>(<span class="tok-f">cell</span>(grid.dataSource[<span class="tok-n">0</span>]!, <span class="tok-s">&quot;unitPrice&quot;</span>), <span class="tok-f">cell</span>(grid.dataSource[<span class="tok-n">0</span>]!, <span class="tok-s">&quot;lineTotal&quot;</span>));
+<span class="tok-c">// -&gt; $0.25 $25.00</span></code></pre></div>
+<p>A computed property that is also edited (the user changes <code>qty</code>) is recomputed on the next <code>dataBind()</code>; the grid's <code>updateRow</code> does not re-run <code>rowDataBound</code>.</p>
+`,"auto-generated-columns-datagrid":`<h3 id="auto-generated-columns-datagrid">Auto-generated columns (DataGrid)<a class="anchor" href="#auto-generated-columns-datagrid" aria-label="Link to this section">#</a></h3>
+<p><code>DataGridController</code> has <code>autoGenerateColumns</code> (default <code>true</code>). When <code>columns</code> is empty it builds them on the first bind:</p>
+<ul><li>From a <code>DataTable</code> (or a <code>DataView</code>, via <code>toTable()</code>): one bound column per <code>DataColumn</code>, with <code>headerText</code> = <code>caption</code> (which defaults to the column name) and <code>sortExpression</code> = the column name.</li><li>From an array: one bound column per key of the <strong>first</strong> object; <code>headerText</code> is the key split on capitals and title-cased (<code>unitPrice</code> becomes <code>Unit Price</code>).</li><li>Columns are generated once; later binds keep them. Set <code>autoGenerateColumns: false</code>, or list <code>columns</code>, to opt out.</li></ul>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span>, <span class="tok-t">DataGridController</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">interface</span> <span class="tok-t">Line</span> { id: number; item: string; qty: number; unitPrice: number; }
+
+<span class="tok-k">const</span> lines = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;Lines&quot;</span>);
+lines.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+lines.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;item&quot;</span>, caption: <span class="tok-s">&quot;Item name&quot;</span> }));
+lines.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;qty&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+lines.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;unitPrice&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span>, caption: <span class="tok-s">&quot;Unit price&quot;</span> }));
+lines.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">1</span>, item: <span class="tok-s">&quot;Bolt&quot;</span>, qty: <span class="tok-n">100</span>, unitPrice: <span class="tok-n">0.25</span> }).<span class="tok-f">acceptChanges</span>();
+
+<span class="tok-k">const</span> header = (c: { <span class="tok-k">type</span>: string; dataField?: unknown; headerText?: string | <span class="tok-k">undefined</span> }) =&gt;
+  c.<span class="tok-k">type</span> === <span class="tok-s">&quot;bound&quot;</span> ? <span class="tok-s">\`\${String(c.dataField)}=&gt;\${c.headerText}\`</span> : c.<span class="tok-k">type</span>;
+
+<span class="tok-k">const</span> fromTable = <span class="tok-k">new</span> <span class="tok-t">DataGridController</span>&lt;<span class="tok-t">Line</span>&gt;({ id: <span class="tok-s">&quot;dg&quot;</span> });
+<span class="tok-k">await</span> fromTable.<span class="tok-f">dataBind</span>(lines);
+console.<span class="tok-f">log</span>(fromTable.columns.<span class="tok-f">map</span>(header));
+<span class="tok-c">// -&gt; [ 'id=&gt;id', 'item=&gt;Item name', 'qty=&gt;qty', 'unitPrice=&gt;Unit price' ]</span>
+
+<span class="tok-k">const</span> fromArray = <span class="tok-k">new</span> <span class="tok-t">DataGridController</span>&lt;<span class="tok-t">Line</span>&gt;({ id: <span class="tok-s">&quot;dg2&quot;</span> });
+<span class="tok-k">await</span> fromArray.<span class="tok-f">dataBind</span>([{ id: <span class="tok-n">1</span>, item: <span class="tok-s">&quot;Bolt&quot;</span>, qty: <span class="tok-n">1</span>, unitPrice: <span class="tok-n">2</span> }]);
+console.<span class="tok-f">log</span>(fromArray.columns.<span class="tok-f">map</span>(header));
+<span class="tok-c">// -&gt; [ 'id=&gt;Id', 'item=&gt;Item', 'qty=&gt;Qty', 'unitPrice=&gt;Unit Price' ]</span>
+
+<span class="tok-k">const</span> manual = <span class="tok-k">new</span> <span class="tok-t">DataGridController</span>&lt;<span class="tok-t">Line</span>&gt;({ id: <span class="tok-s">&quot;dg3&quot;</span>, autoGenerateColumns: <span class="tok-k">false</span> });
+<span class="tok-k">await</span> manual.<span class="tok-f">dataBind</span>(lines);
+console.<span class="tok-f">log</span>(manual.columns.length);
+<span class="tok-c">// -&gt; 0</span></code></pre></div>
+<p>DataGrid also supports <code>button</code>, <code>hyperlink</code> and <code>template</code> column types; see the <a href="#/api/data-controls/asp-net-to-typescript-mapping">data controls API</a>. <code>DataListController</code> and <code>RepeaterController</code> have no columns: your item template picks the properties.</p>
+<hr>
+`},"crud-round-trip":{"row-states":`<h3 id="row-states">Row states<a class="anchor" href="#row-states" aria-label="Link to this section">#</a></h3>
+<p>A <code>DataRow</code> tracks what has happened to it since the last <code>acceptChanges()</code>:</p>
+<div class="table-scroll"><table><thead><tr><th>Action</th><th>From</th><th>To</th></tr></thead><tbody><tr><td><code>table.newRow()</code></td><td></td><td><code>Detached</code> (not in the table; auto-increment value already consumed)</td></tr><tr><td><code>table.rows.add(rowOrValues)</code></td><td><code>Detached</code></td><td><code>Added</code></td></tr><tr><td><code>row.setItem(col, value)</code> with a different value</td><td><code>Unchanged</code></td><td><code>Modified</code> (an <code>Added</code> row stays <code>Added</code>)</td></tr><tr><td><code>row.delete()</code></td><td><code>Unchanged</code> / <code>Modified</code></td><td><code>Deleted</code> (row stays in the table, hidden from <code>rows</code>)</td></tr><tr><td><code>row.delete()</code></td><td><code>Added</code></td><td>removed from the table outright, <code>Detached</code></td></tr><tr><td><code>row.acceptChanges()</code></td><td><code>Added</code> / <code>Modified</code></td><td><code>Unchanged</code> (original values replaced by current)</td></tr><tr><td><code>row.acceptChanges()</code></td><td><code>Deleted</code></td><td>removed from the table, <code>Detached</code></td></tr><tr><td><code>row.rejectChanges()</code></td><td><code>Modified</code> / <code>Deleted</code></td><td><code>Unchanged</code>, current values restored from the original</td></tr><tr><td><code>row.rejectChanges()</code></td><td><code>Added</code></td><td>removed from the table, <code>Detached</code></td></tr><tr><td><code>setItem</code> on a <code>Deleted</code> row</td><td><code>Deleted</code></td><td>throws <code>Cannot modify a deleted row.</code></td></tr></tbody></table></div>
+<p><code>table.acceptChanges()</code> and <code>table.rejectChanges()</code> apply the row operations to every row, deleted ones included. <code>beginEdit()</code> / <code>endEdit()</code> / <code>cancelEdit()</code> batch several <code>setItem</code> calls: values go to a proposed buffer and only reach the row on <code>endEdit()</code>.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">const</span> t = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;Tasks&quot;</span>);
+t.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span>, autoIncrement: <span class="tok-k">true</span>, readOnly: <span class="tok-k">true</span> }));
+t.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;title&quot;</span>, allowDBNull: <span class="tok-k">false</span> }));
+t.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;done&quot;</span>, dataType: <span class="tok-s">&quot;boolean&quot;</span>, defaultValue: <span class="tok-k">false</span> }));
+t.primaryKey = [t.columns.<span class="tok-k">get</span>(<span class="tok-s">&quot;id&quot;</span>)!];
+
+<span class="tok-k">const</span> a = t.<span class="tok-f">newRow</span>();
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;new row:&quot;</span>, a.rowState, a.<span class="tok-f">item</span>(<span class="tok-s">&quot;id&quot;</span>));
+<span class="tok-c">// -&gt; new row: Detached 1</span>
+a.<span class="tok-f">setItem</span>(<span class="tok-s">&quot;title&quot;</span>, <span class="tok-s">&quot;Write docs&quot;</span>);
+t.rows.<span class="tok-f">add</span>(a);
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;after add:&quot;</span>, a.rowState);
+<span class="tok-c">// -&gt; after add: Added</span>
+t.<span class="tok-f">acceptChanges</span>();
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;after accept:&quot;</span>, a.rowState);
+<span class="tok-c">// -&gt; after accept: Unchanged</span>
+
+a.<span class="tok-f">setItem</span>(<span class="tok-s">&quot;title&quot;</span>, <span class="tok-s">&quot;Write better docs&quot;</span>);
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;edited:&quot;</span>, a.rowState, <span class="tok-s">&quot;| current:&quot;</span>, a.<span class="tok-f">item</span>(<span class="tok-s">&quot;title&quot;</span>), <span class="tok-s">&quot;| original:&quot;</span>, a.<span class="tok-f">item</span>(<span class="tok-s">&quot;title&quot;</span>, <span class="tok-s">&quot;Original&quot;</span>));
+<span class="tok-c">// -&gt; edited: Modified | current: Write better docs | original: Write docs</span>
+a.<span class="tok-f">rejectChanges</span>();
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;rejected:&quot;</span>, a.rowState, a.<span class="tok-f">item</span>(<span class="tok-s">&quot;title&quot;</span>));
+<span class="tok-c">// -&gt; rejected: Unchanged Write docs</span>
+
+a.<span class="tok-k">delete</span>();
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;deleted:&quot;</span>, a.rowState, <span class="tok-s">&quot;| count:&quot;</span>, t.rows.count, <span class="tok-s">&quot;| totalCount:&quot;</span>, t.rows.totalCount);
+<span class="tok-c">// -&gt; deleted: Deleted | count: 0 | totalCount: 1</span>
+a.<span class="tok-f">rejectChanges</span>();
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;undeleted:&quot;</span>, a.rowState, t.rows.count);
+<span class="tok-c">// -&gt; undeleted: Unchanged 1</span>
+a.<span class="tok-k">delete</span>();
+t.<span class="tok-f">acceptChanges</span>();
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;after accept:&quot;</span>, a.rowState, t.rows.totalCount);
+<span class="tok-c">// -&gt; after accept: Detached 0</span>
+
+<span class="tok-k">const</span> b = t.rows.<span class="tok-f">add</span>({ title: <span class="tok-s">&quot;Temp&quot;</span> });
+b.<span class="tok-k">delete</span>();                                         <span class="tok-c">// Added row: removed, not marked Deleted</span>
+console.<span class="tok-f">log</span>(b.rowState, t.rows.totalCount);
+<span class="tok-c">// -&gt; Detached 0</span>
+
+<span class="tok-c">// beginEdit / cancelEdit / endEdit</span>
+<span class="tok-k">const</span> c = t.rows.<span class="tok-f">add</span>({ title: <span class="tok-s">&quot;Draft&quot;</span> });
+t.<span class="tok-f">acceptChanges</span>();
+c.<span class="tok-f">beginEdit</span>();
+c.<span class="tok-f">setItem</span>(<span class="tok-s">&quot;title&quot;</span>, <span class="tok-s">&quot;Final&quot;</span>);
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;in edit:&quot;</span>, c.<span class="tok-f">item</span>(<span class="tok-s">&quot;title&quot;</span>), c.rowState, c.<span class="tok-f">item</span>(<span class="tok-s">&quot;title&quot;</span>, <span class="tok-s">&quot;Current&quot;</span>));
+<span class="tok-c">// -&gt; in edit: Final Unchanged Draft</span>
+c.<span class="tok-f">cancelEdit</span>();
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;cancelled:&quot;</span>, c.<span class="tok-f">item</span>(<span class="tok-s">&quot;title&quot;</span>), c.rowState);
+<span class="tok-c">// -&gt; cancelled: Draft Unchanged</span>
+c.<span class="tok-f">beginEdit</span>(); c.<span class="tok-f">setItem</span>(<span class="tok-s">&quot;title&quot;</span>, <span class="tok-s">&quot;Final&quot;</span>); c.<span class="tok-f">endEdit</span>();
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;ended:&quot;</span>, c.<span class="tok-f">item</span>(<span class="tok-s">&quot;title&quot;</span>), c.rowState);
+<span class="tok-c">// -&gt; ended: Final Modified</span></code></pre></div>
+`,"persisting-through-grid-events":`<h3 id="persisting-through-grid-events">Persisting through grid events<a class="anchor" href="#persisting-through-grid-events" aria-label="Link to this section">#</a></h3>
+<p>The grid methods <code>updateRow</code> and <code>deleteRow</code> raise a cancellable event first (<code>rowUpdating</code>, <code>rowDeleting</code>; set <code>e.cancel = true</code> to veto), then apply the change <strong>to the grid's copy</strong> (<code>Object.assign</code> / <code>splice</code>). They never touch your table. So the table write belongs in the event handler:</p>
+<ul><li><strong>Update:</strong> find the row (<code>table.find(key)</code> needs <code>table.primaryKey</code>), call <code>setValues(e.values)</code>. If the table refuses (type, <code>maxLength</code>, <code>allowDBNull</code>), set <code>e.cancel = true</code> so the grid does not show a value the table rejected.</li><li><strong>Delete:</strong> call <code>row.delete()</code>. The row becomes <code>Deleted</code> and the grid drops its copy.</li><li><strong>Insert:</strong> grids have no insert command. Add the row to the table, then call <code>dataBind()</code>.</li></ul>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span>, <span class="tok-t">DataView</span>, <span class="tok-t">GridViewController</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">interface</span> <span class="tok-t">Task</span> { id: number; title: string; done: boolean; }
+
+<span class="tok-k">const</span> tasks = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;Tasks&quot;</span>);
+<span class="tok-k">const</span> id = <span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span>, autoIncrement: <span class="tok-k">true</span> });
+tasks.columns.<span class="tok-f">add</span>(id);
+tasks.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;title&quot;</span>, allowDBNull: <span class="tok-k">false</span>, maxLength: <span class="tok-n">20</span> }));
+tasks.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;done&quot;</span>, dataType: <span class="tok-s">&quot;boolean&quot;</span>, defaultValue: <span class="tok-k">false</span> }));
+tasks.primaryKey = [id];
+tasks.rows.<span class="tok-f">add</span>({ title: <span class="tok-s">&quot;Write docs&quot;</span> });
+tasks.rows.<span class="tok-f">add</span>({ title: <span class="tok-s">&quot;Ship&quot;</span> });
+tasks.<span class="tok-f">acceptChanges</span>();
+
+<span class="tok-k">const</span> view = <span class="tok-k">new</span> <span class="tok-t">DataView</span>(tasks);
+<span class="tok-k">const</span> grid = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Task</span>&gt;({
+  id: <span class="tok-s">&quot;gv&quot;</span>,
+  dataKeyField: <span class="tok-s">&quot;id&quot;</span>,
+  columns: [{ <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;title&quot;</span>, dataField: <span class="tok-s">&quot;title&quot;</span>, headerText: <span class="tok-s">&quot;Title&quot;</span> }]
+});
+
+<span class="tok-c">// UPDATE: write to the table first; veto the grid if the table refuses.</span>
+grid.rowUpdating.<span class="tok-f">subscribe</span>((_s, e) =&gt; {
+  <span class="tok-k">const</span> row = tasks.<span class="tok-f">find</span>(e.dataItem.id);
+  <span class="tok-k">if</span> (!row) { e.cancel = <span class="tok-k">true</span>; <span class="tok-k">return</span>; }
+  <span class="tok-k">try</span> {
+    row.<span class="tok-f">setValues</span>(e.values <span class="tok-k">as</span> <span class="tok-t">Record</span>&lt;string, unknown&gt;);
+  } <span class="tok-k">catch</span> (err) {
+    console.<span class="tok-f">log</span>(<span class="tok-s">&quot;rejected:&quot;</span>, (err <span class="tok-k">as</span> <span class="tok-t">Error</span>).message);
+    e.cancel = <span class="tok-k">true</span>;
+  }
+});
+
+<span class="tok-c">// DELETE: mark the row Deleted (soft delete) instead of removing it.</span>
+grid.rowDeleting.<span class="tok-f">subscribe</span>((_s, e) =&gt; {
+  tasks.<span class="tok-f">find</span>(e.dataItem.id)?.<span class="tok-k">delete</span>();
+});
+
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>(view);
+
+console.<span class="tok-f">log</span>(<span class="tok-k">await</span> grid.<span class="tok-f">updateRow</span>(<span class="tok-n">0</span>, { title: <span class="tok-s">&quot;Write the docs&quot;</span> }));
+<span class="tok-c">// -&gt; true</span>
+console.<span class="tok-f">log</span>(<span class="tok-k">await</span> grid.<span class="tok-f">updateRow</span>(<span class="tok-n">1</span>, { title: <span class="tok-s">&quot;A title that is far too long&quot;</span> }));
+<span class="tok-c">// -&gt; rejected: Value for column 'title' exceeds maxLength of 20.</span>
+<span class="tok-c">// -&gt; false</span>
+console.<span class="tok-f">log</span>(tasks.<span class="tok-f">toObjects</span>(), tasks.rows.<span class="tok-k">get</span>(<span class="tok-n">0</span>)!.rowState);
+<span class="tok-c">// -&gt; [</span>
+<span class="tok-c">// -&gt;   { id: 1, title: 'Write the docs', done: false },</span>
+<span class="tok-c">// -&gt;   { id: 2, title: 'Ship', done: false }</span>
+<span class="tok-c">// -&gt; ] Modified</span>
+
+<span class="tok-k">await</span> grid.<span class="tok-f">deleteRow</span>(<span class="tok-n">1</span>);
+console.<span class="tok-f">log</span>(grid.dataSource.length, tasks.rows.count, tasks.rows.totalCount);
+<span class="tok-c">// -&gt; 1 1 2                                         (grid 1, active rows 1, rows incl. Deleted 2)</span>
+
+<span class="tok-c">// INSERT: grids have no insert; write to the table and re-bind.</span>
+tasks.rows.<span class="tok-f">add</span>({ title: <span class="tok-s">&quot;Celebrate&quot;</span> });
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>();
+console.<span class="tok-f">log</span>(grid.dataSource.<span class="tok-f">map</span>((t) =&gt; <span class="tok-s">\`\${t.id}:\${t.title}\`</span>));
+<span class="tok-c">// -&gt; [ '1:Write the docs', '3:Celebrate' ]</span>
+
+<span class="tok-c">// Persist: send only what changed, then accept.</span>
+<span class="tok-k">const</span> rows = tasks.rows.<span class="tok-f">toArray</span>(<span class="tok-k">true</span>);              <span class="tok-c">// true = include Deleted rows</span>
+<span class="tok-k">const</span> changes = {
+  added: rows.<span class="tok-f">filter</span>((r) =&gt; r.rowState === <span class="tok-s">&quot;Added&quot;</span>).<span class="tok-f">map</span>((r) =&gt; r.<span class="tok-f">toObject</span>()),
+  modified: rows.<span class="tok-f">filter</span>((r) =&gt; r.rowState === <span class="tok-s">&quot;Modified&quot;</span>).<span class="tok-f">map</span>((r) =&gt; r.<span class="tok-f">toObject</span>()),
+  deleted: rows.<span class="tok-f">filter</span>((r) =&gt; r.rowState === <span class="tok-s">&quot;Deleted&quot;</span>).<span class="tok-f">map</span>((r) =&gt; r.<span class="tok-f">item</span>(<span class="tok-s">&quot;id&quot;</span>))
+};
+console.<span class="tok-f">log</span>(<span class="tok-t">JSON</span>.<span class="tok-f">stringify</span>(changes));
+<span class="tok-c">// -&gt; {&quot;added&quot;:[{&quot;id&quot;:3,&quot;title&quot;:&quot;Celebrate&quot;,&quot;done&quot;:false}],&quot;modified&quot;:[{&quot;id&quot;:1,&quot;title&quot;:&quot;Write the docs&quot;,&quot;done&quot;:false}],&quot;deleted&quot;:[2]}</span>
+tasks.<span class="tok-f">acceptChanges</span>();
+console.<span class="tok-f">log</span>(tasks.rows.totalCount, tasks.rows.<span class="tok-f">toArray</span>().<span class="tok-f">every</span>((r) =&gt; r.rowState === <span class="tok-s">&quot;Unchanged&quot;</span>));
+<span class="tok-c">// -&gt; 2 true</span></code></pre></div>
+<p>There is no <code>GetChanges()</code>; the three <code>filter</code> calls above are the equivalent. <code>row.item(&quot;id&quot;)</code> on a <code>Deleted</code> row returns the original value (the default version), so it is safe to read keys from deleted rows. Call <code>table.rejectChanges()</code> instead of <code>acceptChanges()</code> to throw everything away (the &quot;Discard&quot; button in <a href="#/api/data-binding/binding-in-react-and-angular/overview/10-binding-in-react-and-angular">section 10</a>).</p>
+`,"the-auto-increment-gotcha":`<h3 id="the-auto-increment-gotcha">The auto-increment gotcha<a class="anchor" href="#the-auto-increment-gotcha" aria-label="Link to this section">#</a></h3>
+<p>The auto-increment value is taken when a <code>DataRow</code> is <strong>constructed</strong>, not when it is added:</p>
+<ul><li>Every <code>newRow()</code> and every <code>rows.add({...})</code> consumes a number, even if the row is later thrown away.</li><li>Rows you add with an explicit id do not advance the counter, so after loading saved rows the next new row may reuse an id that already exists.</li><li><code>unique</code> and <code>primaryKey</code> are never enforced, so nothing warns you.</li></ul>
+<p>Fix it by re-seeding the column after loading:</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">const</span> u = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;U&quot;</span>);
+u.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span>, autoIncrement: <span class="tok-k">true</span> }));
+u.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>(<span class="tok-s">&quot;name&quot;</span>));
+console.<span class="tok-f">log</span>(u.<span class="tok-f">newRow</span>().<span class="tok-f">item</span>(<span class="tok-s">&quot;id&quot;</span>), u.<span class="tok-f">newRow</span>().<span class="tok-f">item</span>(<span class="tok-s">&quot;id&quot;</span>));
+<span class="tok-c">// -&gt; 1 2                                           (two discarded rows consumed 1 and 2)</span>
+console.<span class="tok-f">log</span>(u.rows.<span class="tok-f">add</span>({ name: <span class="tok-s">&quot;x&quot;</span> }).<span class="tok-f">item</span>(<span class="tok-s">&quot;id&quot;</span>));
+<span class="tok-c">// -&gt; 3</span>
+
+<span class="tok-k">const</span> s = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;S&quot;</span>);
+<span class="tok-k">const</span> idCol = <span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span>, autoIncrement: <span class="tok-k">true</span> });
+s.columns.<span class="tok-f">add</span>(idCol);
+s.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>(<span class="tok-s">&quot;name&quot;</span>));
+s.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">10</span>, name: <span class="tok-s">&quot;a&quot;</span> }).<span class="tok-f">acceptChanges</span>();   <span class="tok-c">// explicit ids from the server</span>
+s.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">11</span>, name: <span class="tok-s">&quot;b&quot;</span> }).<span class="tok-f">acceptChanges</span>();
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;next row gets&quot;</span>, s.rows.<span class="tok-f">add</span>({ name: <span class="tok-s">&quot;c&quot;</span> }).<span class="tok-f">item</span>(<span class="tok-s">&quot;id&quot;</span>));
+<span class="tok-c">// -&gt; next row gets 3                               (would collide once ids reach 3)</span>
+idCol.<span class="tok-f">resetAutoIncrement</span>(<span class="tok-n">12</span>);                        <span class="tok-c">// max existing id + 1</span>
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;after reset&quot;</span>, s.rows.<span class="tok-f">add</span>({ name: <span class="tok-s">&quot;d&quot;</span> }).<span class="tok-f">item</span>(<span class="tok-s">&quot;id&quot;</span>));
+<span class="tok-c">// -&gt; after reset 12</span></code></pre></div>
+<p>When the server assigns ids, skip <code>autoIncrement</code> altogether, give the new row a temporary negative id, and swap in the real id from the insert response.</p>
+<hr>
+`},"paging-and-sorting-with-bound-data":{"in-memory-paging-and-sorting":`<h3 id="in-memory-paging-and-sorting">In-memory paging and sorting<a class="anchor" href="#in-memory-paging-and-sorting" aria-label="Link to this section">#</a></h3>
+<p>For arrays, tables and views the controller holds <strong>all</strong> bound rows and pages them locally:</p>
+<ul><li><code>totalRecords</code> is the full count, <code>pageCount</code> is <code>ceil(total / pageSize)</code>, <code>visibleRows</code> is the current page.</li><li><code>options.pageIndex</code> is <strong>zero-based and page-relative</strong>. Row commands (<code>executeCommand</code>, <code>updateRow</code>, <code>deleteRow</code>, <code>selectRow</code>, <code>beginEdit</code>) take an <strong>absolute</strong> index into the whole result. Convert a visible-row position with <code>grid.getAbsoluteRowIndex(visibleIndex)</code>. The React and Angular adapters already pass absolute indexes to your templates.</li><li><code>sort(field)</code> sorts the <strong>whole</strong> result in place (not just the visible page) and toggles asc/desc when the same field is sorted twice. It fires <code>sorting</code> (cancellable) before and <code>sorted</code> after.</li><li><code>dataBind()</code> re-copies the source, so it <strong>forgets the sort order</strong>; <code>grid.currentSort</code> is kept but not re-applied.</li></ul>
+<p>The remedy is to treat the view as the owner of the order and mirror every grid sort into <code>view.sort</code> in the <code>sorted</code> event:</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span>, <span class="tok-t">DataView</span>, <span class="tok-t">GridViewController</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">interface</span> <span class="tok-t">Item</span> { id: number; name: string; price: number; }
+
+<span class="tok-k">const</span> t = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;Items&quot;</span>);
+t.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+t.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>(<span class="tok-s">&quot;name&quot;</span>));
+t.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;price&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+[<span class="tok-n">30</span>, <span class="tok-n">10</span>, <span class="tok-n">50</span>, <span class="tok-n">20</span>, <span class="tok-n">40</span>, <span class="tok-n">60</span>, <span class="tok-n">5</span>].<span class="tok-f">forEach</span>((p, i) =&gt; t.rows.<span class="tok-f">add</span>({ id: i + <span class="tok-n">1</span>, name: <span class="tok-s">\`Item\${i + 1}\`</span>, price: p }).<span class="tok-f">acceptChanges</span>());
+
+<span class="tok-k">const</span> view = <span class="tok-k">new</span> <span class="tok-t">DataView</span>(t);
+view.sort = <span class="tok-s">&quot;id&quot;</span>;
+<span class="tok-k">const</span> grid = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Item</span>&gt;({
+  id: <span class="tok-s">&quot;gv&quot;</span>, dataKeyField: <span class="tok-s">&quot;id&quot;</span>, allowPaging: <span class="tok-k">true</span>, pageSize: <span class="tok-n">3</span>, allowSorting: <span class="tok-k">true</span>,
+  columns: [{ <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;price&quot;</span>, dataField: <span class="tok-s">&quot;price&quot;</span>, headerText: <span class="tok-s">&quot;Price&quot;</span>, sortable: <span class="tok-k">true</span> }]
+});
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>(view);
+<span class="tok-k">const</span> page = () =&gt; grid.visibleRows.<span class="tok-f">map</span>((r) =&gt; r.price);
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;page 0&quot;</span>, <span class="tok-f">page</span>(), <span class="tok-s">&quot;pages&quot;</span>, grid.pageCount, <span class="tok-s">&quot;total&quot;</span>, grid.totalRecords);
+<span class="tok-c">// -&gt; page 0 [ 30, 10, 50 ] pages 3 total 7</span>
+<span class="tok-k">await</span> grid.<span class="tok-f">changePage</span>(<span class="tok-n">1</span>);
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;page 1&quot;</span>, <span class="tok-f">page</span>(), <span class="tok-s">&quot;abs index of 2nd row:&quot;</span>, grid.<span class="tok-f">getAbsoluteRowIndex</span>(<span class="tok-n">1</span>));
+<span class="tok-c">// -&gt; page 1 [ 20, 40, 60 ] abs index of 2nd row: 4</span>
+
+<span class="tok-c">// sort() sorts the WHOLE set, then shows the same page</span>
+<span class="tok-k">await</span> grid.<span class="tok-f">sort</span>(<span class="tok-s">&quot;price&quot;</span>, <span class="tok-s">&quot;asc&quot;</span>);
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;sorted p1&quot;</span>, <span class="tok-f">page</span>(), <span class="tok-s">&quot;currentSort&quot;</span>, grid.currentSort);
+<span class="tok-c">// -&gt; sorted p1 [ 30, 40, 50 ] currentSort { field: 'price', direction: 'asc' }</span>
+
+<span class="tok-c">// A re-bind forgets the order (currentSort is kept, but not re-applied)</span>
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>();
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;after rebind p1&quot;</span>, <span class="tok-f">page</span>(), grid.currentSort);
+<span class="tok-c">// -&gt; after rebind p1 [ 20, 40, 60 ] { field: 'price', direction: 'asc' }</span>
+
+<span class="tok-c">// Fix: mirror grid.sort into view.sort, then re-bind from the view</span>
+grid.sorted.<span class="tok-f">subscribe</span>(<span class="tok-k">async</span> (g, e) =&gt; {
+  view.sort = <span class="tok-s">\`\${e.sortExpression} \${e.direction.toUpperCase()}\`</span>;
+  <span class="tok-k">await</span> g.<span class="tok-f">dataBind</span>();
+});
+<span class="tok-k">await</span> grid.<span class="tok-f">sort</span>(<span class="tok-s">&quot;price&quot;</span>, <span class="tok-s">&quot;desc&quot;</span>);
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;synced desc p1&quot;</span>, <span class="tok-f">page</span>(), <span class="tok-s">&quot;|&quot;</span>, view.sort);
+<span class="tok-c">// -&gt; synced desc p1 [ 30, 20, 10 ] | price DESC</span>
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>();
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;rebind p1 still&quot;</span>, <span class="tok-f">page</span>());
+<span class="tok-c">// -&gt; rebind p1 still [ 30, 20, 10 ]</span>
+t.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">8</span>, name: <span class="tok-s">&quot;Item8&quot;</span>, price: <span class="tok-n">100</span> });
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>();
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;new row sorted in, page index&quot;</span>, grid.options.pageIndex, <span class="tok-f">page</span>());
+<span class="tok-c">// -&gt; new row sorted in, page index 1 [ 40, 30, 20 ]</span>
+
+<span class="tok-c">// Row commands take ABSOLUTE indexes</span>
+<span class="tok-k">await</span> grid.<span class="tok-f">changePage</span>(<span class="tok-n">1</span>);
+<span class="tok-k">const</span> abs = grid.<span class="tok-f">getAbsoluteRowIndex</span>(<span class="tok-n">0</span>);
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;deleting abs&quot;</span>, abs, grid.dataSource[abs]!.price);
+<span class="tok-c">// -&gt; deleting abs 3 40</span>
+<span class="tok-k">await</span> grid.<span class="tok-f">deleteRow</span>(abs);
+console.<span class="tok-f">log</span>(grid.totalRecords, grid.pageCount);
+<span class="tok-c">// -&gt; 7 3</span></code></pre></div>
+<p>Details worth knowing:</p>
+<ul><li><code>dataBind()</code> clamps <code>pageIndex</code> to the last page, so deleting the last row of the last page moves you back one page automatically.</li><li><code>changePage(n)</code> clamps <code>n</code> into <code>0..pageCount-1</code> and raises <code>pageIndexChanging</code> (cancellable) then <code>pageIndexChanged</code>.</li><li>The grid and the view sort differently (numeric-aware <code>localeCompare</code> vs. plain <code>localeCompare</code>), so for text columns with embedded numbers the two orders can differ slightly. Since the view wins after the re-bind above, the user sees the view's order.</li><li><code>DataGridController</code> is similar but uses <code>sort(sortExpression)</code>, <code>changePage(n)</code>, <code>currentPageIndex</code> and <code>deleteItem(absoluteIndex)</code>. Its <code>sortCommand</code> and <code>pageIndexChanged</code> events fire <strong>before</strong> the change and are cancellable.</li></ul>
+`,"paging-through-a-data-source-control":`<h3 id="paging-through-a-data-source-control">Paging through a data source control<a class="anchor" href="#paging-through-a-data-source-control" aria-label="Link to this section">#</a></h3>
+<p>When the source is a data source control, <code>sort()</code> and <code>changePage()</code> re-run <code>select()</code> and pass <code>{ startRowIndex, maximumRows, sortExpression }</code>, so the server (or your handler) can return a single page:</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">GridViewController</span>, <span class="tok-t">SqlDataSource</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">interface</span> <span class="tok-t">Item</span> { id: number; name: string; price: number; }
+
+<span class="tok-k">const</span> all: <span class="tok-t">Item</span>[] = [<span class="tok-n">30</span>, <span class="tok-n">10</span>, <span class="tok-n">50</span>, <span class="tok-n">20</span>, <span class="tok-n">40</span>, <span class="tok-n">60</span>, <span class="tok-n">5</span>].<span class="tok-f">map</span>((p, i) =&gt; ({ id: i + <span class="tok-n">1</span>, name: <span class="tok-s">\`Item\${i + 1}\`</span>, price: p }));
+<span class="tok-k">const</span> calls: unknown[] = [];
+<span class="tok-k">const</span> sql = <span class="tok-k">new</span> <span class="tok-t">SqlDataSource</span>({
+  id: <span class="tok-s">&quot;ds&quot;</span>,
+  selectCommand: <span class="tok-s">&quot;GET /items&quot;</span>,
+  handler: <span class="tok-k">async</span> (_cmd, _params, _op, args) =&gt; {
+    calls.<span class="tok-f">push</span>(args);
+    <span class="tok-k">const</span> start = args?.startRowIndex ?? <span class="tok-n">0</span>;
+    <span class="tok-k">return</span> all.<span class="tok-f">slice</span>(start, start + (args?.maximumRows ?? all.length));
+  }
+});
+<span class="tok-k">const</span> grid = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Item</span>&gt;({
+  id: <span class="tok-s">&quot;sg&quot;</span>, dataKeyField: <span class="tok-s">&quot;id&quot;</span>, allowPaging: <span class="tok-k">true</span>, pageSize: <span class="tok-n">3</span>, dataSource: sql,
+  columns: [{ <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;n&quot;</span>, dataField: <span class="tok-s">&quot;name&quot;</span>, headerText: <span class="tok-s">&quot;Name&quot;</span> }]
+});
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>();
+console.<span class="tok-f">log</span>(calls, grid.totalRecords, grid.pageCount);
+<span class="tok-c">// -&gt; [ { startRowIndex: 0, maximumRows: 3, sortExpression: undefined } ] 3 1</span>
+console.<span class="tok-f">log</span>(<span class="tok-k">await</span> grid.<span class="tok-f">changePage</span>(<span class="tok-n">1</span>), grid.options.pageIndex);
+<span class="tok-c">// -&gt; true 0</span></code></pre></div>
+<blockquote class=""><p><strong>Known bug:</strong> the grid only knows the page it was handed (<code>totalRecords</code> is 3, <code>pageCount</code> is 1), so <code>changePage(1)</code> clamps back to page 0 and never advances. The data source's <code>totalRowCount</code> is not used. Until this is fixed, either bind the full result and page in memory (arrays, views), or call <code>source.select({ startRowIndex, maximumRows })</code> yourself and bind the page to a grid with <code>allowPaging: false</code>, drawing your own pager.</p></blockquote>
+<hr>
+`},"master-detail-with-dataset-and-datarelation":{overview:`<p>A <code>DataSet</code> groups tables; a <code>DataRelation(name, parentTable, childTable, parentColumns, childColumns)</code> links them. <code>relation.getChildRows(parentRow)</code> returns the matching non-deleted child rows as <code>DataRow[]</code>, and <code>relation.getParentRow(childRow)</code> goes the other way. Relations live in <code>dataSet.relations</code> (a plain array, <code>push</code> to add).</p>
+<p>The usual pattern: a parent GridView raises <code>selectedIndexChanged</code>; the handler finds the parent row, asks the relation for its children and binds a second grid to them. The event's <code>dataItem</code> is the grid's copy, so look the real row up by key (<code>table.find(key)</code>, which needs <code>primaryKey</code>).</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataRow</span>, <span class="tok-t">DataSet</span>, <span class="tok-t">DataColumn</span>, <span class="tok-t">DataRelation</span>, <span class="tok-t">DataView</span>, <span class="tok-t">GridViewController</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">interface</span> <span class="tok-t">Customer</span> { id: number; name: string; }
+<span class="tok-k">interface</span> <span class="tok-t">Order</span> { id: number; customerId: number; product: string; total: number; }
+
+<span class="tok-k">const</span> ds = <span class="tok-k">new</span> <span class="tok-t">DataSet</span>(<span class="tok-s">&quot;Shop&quot;</span>);
+<span class="tok-k">const</span> customers = ds.tables.<span class="tok-f">add</span>(<span class="tok-s">&quot;Customers&quot;</span>);
+customers.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+customers.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>(<span class="tok-s">&quot;name&quot;</span>));
+customers.primaryKey = [customers.columns.<span class="tok-k">get</span>(<span class="tok-s">&quot;id&quot;</span>)!];
+
+<span class="tok-k">const</span> orders = ds.tables.<span class="tok-f">add</span>(<span class="tok-s">&quot;Orders&quot;</span>);
+orders.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+orders.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;customerId&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+orders.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>(<span class="tok-s">&quot;product&quot;</span>));
+orders.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;total&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+
+customers.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">1</span>, name: <span class="tok-s">&quot;Acme&quot;</span> });
+customers.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">2</span>, name: <span class="tok-s">&quot;Globex&quot;</span> });
+orders.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">10</span>, customerId: <span class="tok-n">1</span>, product: <span class="tok-s">&quot;Anvil&quot;</span>, total: <span class="tok-n">100</span> });
+orders.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">11</span>, customerId: <span class="tok-n">1</span>, product: <span class="tok-s">&quot;Rocket&quot;</span>, total: <span class="tok-n">450</span> });
+orders.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">12</span>, customerId: <span class="tok-n">2</span>, product: <span class="tok-s">&quot;Laser&quot;</span>, total: <span class="tok-n">999</span> });
+ds.<span class="tok-f">acceptChanges</span>();
+
+<span class="tok-k">const</span> rel = <span class="tok-k">new</span> <span class="tok-t">DataRelation</span>(<span class="tok-s">&quot;CustomerOrders&quot;</span>, customers, orders, <span class="tok-s">&quot;id&quot;</span>, <span class="tok-s">&quot;customerId&quot;</span>);
+ds.relations.<span class="tok-f">push</span>(rel);
+
+<span class="tok-k">const</span> toOrder = (r: <span class="tok-t">DataRow</span>): <span class="tok-t">Order</span> =&gt; r.<span class="tok-f">toObject</span>() <span class="tok-k">as</span> unknown <span class="tok-k">as</span> <span class="tok-t">Order</span>;
+
+<span class="tok-k">const</span> customerGrid = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Customer</span>&gt;({
+  id: <span class="tok-s">&quot;customers&quot;</span>,
+  dataKeyField: <span class="tok-s">&quot;id&quot;</span>,
+  columns: [{ <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;name&quot;</span>, dataField: <span class="tok-s">&quot;name&quot;</span>, headerText: <span class="tok-s">&quot;Customer&quot;</span> }]
+});
+<span class="tok-k">const</span> orderGrid = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Order</span>&gt;({
+  id: <span class="tok-s">&quot;orders&quot;</span>,
+  dataKeyField: <span class="tok-s">&quot;id&quot;</span>,
+  emptyDataText: <span class="tok-s">&quot;Select a customer.&quot;</span>,
+  columns: [
+    { <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;product&quot;</span>, dataField: <span class="tok-s">&quot;product&quot;</span>, headerText: <span class="tok-s">&quot;Product&quot;</span> },
+    { <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;total&quot;</span>, dataField: <span class="tok-s">&quot;total&quot;</span>, headerText: <span class="tok-s">&quot;Total&quot;</span> }
+  ]
+});
+
+customerGrid.selectedIndexChanged.<span class="tok-f">subscribe</span>(<span class="tok-k">async</span> (_s, e) =&gt; {
+  <span class="tok-k">const</span> parent = customers.<span class="tok-f">find</span>(e.dataItem.id);            <span class="tok-c">// needs primaryKey</span>
+  <span class="tok-k">if</span> (!parent) <span class="tok-k">return</span>;
+  <span class="tok-c">// Option A: child rows as an array of plain objects</span>
+  <span class="tok-k">await</span> orderGrid.<span class="tok-f">dataBind</span>(rel.<span class="tok-f">getChildRows</span>(parent).<span class="tok-f">map</span>(toOrder));
+});
+
+<span class="tok-k">await</span> customerGrid.<span class="tok-f">dataBind</span>(<span class="tok-k">new</span> <span class="tok-t">DataView</span>(customers));
+<span class="tok-k">await</span> orderGrid.<span class="tok-f">dataBind</span>([]);
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;before select:&quot;</span>, orderGrid.totalRecords, orderGrid.options.emptyDataText);
+<span class="tok-c">// -&gt; before select: 0 Select a customer.</span>
+
+<span class="tok-k">await</span> customerGrid.<span class="tok-f">executeCommand</span>(<span class="tok-n">0</span>, <span class="tok-s">&quot;Select&quot;</span>);
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;Acme:&quot;</span>, orderGrid.dataSource.<span class="tok-f">map</span>((o) =&gt; <span class="tok-s">\`\${o.product}=\${o.total}\`</span>));
+<span class="tok-c">// -&gt; Acme: [ 'Anvil=100', 'Rocket=450' ]</span>
+<span class="tok-k">await</span> customerGrid.<span class="tok-f">executeCommand</span>(<span class="tok-n">1</span>, <span class="tok-s">&quot;Select&quot;</span>);
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;Globex:&quot;</span>, orderGrid.dataSource.<span class="tok-f">map</span>((o) =&gt; <span class="tok-s">\`\${o.product}=\${o.total}\`</span>));
+<span class="tok-c">// -&gt; Globex: [ 'Laser=999' ]</span>
+
+<span class="tok-c">// Option B: a DataView over the child table, filtered with a predicate.</span>
+<span class="tok-c">// Unlike an array it also gives you sorting and row-state filtering on every re-bind.</span>
+<span class="tok-k">const</span> childView = <span class="tok-k">new</span> <span class="tok-t">DataView</span>(orders);
+<span class="tok-k">function</span> <span class="tok-f">showOrdersFor</span>(customerId: number): <span class="tok-t">Promise</span>&lt;<span class="tok-k">void</span>&gt; {
+  childView.rowFilter = (r) =&gt; r.<span class="tok-f">item</span>(<span class="tok-s">&quot;customerId&quot;</span>) === customerId;
+  childView.sort = <span class="tok-s">&quot;total DESC&quot;</span>;
+  <span class="tok-k">return</span> orderGrid.<span class="tok-f">dataBind</span>(childView);
+}
+<span class="tok-k">await</span> <span class="tok-f">showOrdersFor</span>(<span class="tok-n">1</span>);
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;view, Acme:&quot;</span>, orderGrid.dataSource.<span class="tok-f">map</span>((o) =&gt; o.product));
+<span class="tok-c">// -&gt; view, Acme: [ 'Rocket', 'Anvil' ]</span>
+
+<span class="tok-c">// Navigation in both directions; deleted children disappear from getChildRows.</span>
+<span class="tok-k">const</span> rocket = orders.rows.<span class="tok-k">get</span>(<span class="tok-n">1</span>)!;
+console.<span class="tok-f">log</span>(rel.<span class="tok-f">getParentRow</span>(rocket)!.<span class="tok-f">item</span>(<span class="tok-s">&quot;name&quot;</span>));
+<span class="tok-c">// -&gt; Acme</span>
+rocket.<span class="tok-k">delete</span>();
+console.<span class="tok-f">log</span>(rel.<span class="tok-f">getChildRows</span>(customers.<span class="tok-f">find</span>(<span class="tok-n">1</span>)!).length);
+<span class="tok-c">// -&gt; 1</span></code></pre></div>
+<p>Notes:</p>
+<ul><li>Prefer option B when the child grid is editable or must show pending changes, because the view re-evaluates on each <code>dataBind()</code>; option A is a snapshot of the rows at selection time.</li><li>Selecting a parent row with paging enabled: <code>executeCommand</code> takes an absolute index, and <code>e.dataItem</code> is already the right object, so use the key lookup above rather than <code>view.get(rowIndex)</code>, which breaks as soon as the view changes between bind and click.</li><li>A relation is not enforced: no cascading deletes, no check that a child's parent exists. <code>DataSet.acceptChanges()</code> / <code>rejectChanges()</code> simply apply to every table.</li><li><code>toJson()</code> / <code>toXml()</code> do not carry relations (<a href="#/api/data-binding/server-round-trips/objects-in-changed-objects-out/9-server-round-trips">section 9</a>); re-create them after loading.</li></ul>
+<hr>
+`},"binding-to-data-source-controls":{overview:`<p>A data source control (<code>SqlDataSource</code>, <code>ObjectDataSource</code>, <code>AccessDataSource</code>, <code>XmlDataSource</code>, <code>SiteMapDataSource</code>) implements <code>select()</code>, <code>insert()</code>, <code>update()</code> and <code>delete()</code> and raises <code>selecting</code> / <code>selected</code>, <code>inserting</code> / <code>inserted</code>, <code>updating</code> / <code>updated</code> and <code>deleting</code> / <code>deleted</code>. Parameters (<code>Parameter</code>, <code>ControlParameter</code>, <code>QueryStringParameter</code>, ...) are evaluated into the command on every call. When you hand one to a GridView:</p>
+<div class="table-scroll"><table><thead><tr><th>Grid action</th><th>What happens</th></tr></thead><tbody><tr><td><code>dataBind()</code></td><td>The grid calls <code>source.select(...)</code> and binds the result.</td></tr><tr><td><code>updateRow(i, values)</code></td><td><code>rowUpdating</code> (cancellable) &gt; <code>source.update({ [dataKeyField]: key }, values, oldItem)</code> &gt; the grid copy is updated &gt; <code>rowUpdated</code>.</td></tr><tr><td><code>deleteRow(i)</code></td><td><code>rowDeleting</code> (cancellable) &gt; <code>source.delete({ [dataKeyField]: key }, oldItem)</code> &gt; the grid copy is removed &gt; <code>rowDeleted</code>.</td></tr><tr><td>Insert</td><td>Not a grid operation: call <code>source.insert(values)</code> yourself, then <code>dataBind()</code>.</td></tr><tr><td><code>sort()</code> / <code>changePage()</code></td><td>Re-run <code>select()</code> with <code>{ startRowIndex, maximumRows, sortExpression }</code>.</td></tr></tbody></table></div>
+<p>If a source call throws (and the source's <code>exceptionHandled</code> is not set), the grid method rejects and the grid copy is <strong>not</strong> changed.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">GridViewController</span>, <span class="tok-t">SqlDataSource</span>, <span class="tok-t">ObjectDataSource</span>, <span class="tok-t">Parameter</span>, <span class="tok-t">DataTable</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">interface</span> <span class="tok-t">Emp</span> { id: number; name: string; dept: string; }
+
+<span class="tok-c">// A fake &quot;server&quot; the handler talks to.</span>
+<span class="tok-k">const</span> server: <span class="tok-t">Emp</span>[] = [
+  { id: <span class="tok-n">1</span>, name: <span class="tok-s">&quot;Ada&quot;</span>, dept: <span class="tok-s">&quot;Eng&quot;</span> },
+  { id: <span class="tok-n">2</span>, name: <span class="tok-s">&quot;Bob&quot;</span>, dept: <span class="tok-s">&quot;Ops&quot;</span> },
+  { id: <span class="tok-n">3</span>, name: <span class="tok-s">&quot;Cy&quot;</span>, dept: <span class="tok-s">&quot;Eng&quot;</span> }
+];
+
+<span class="tok-k">const</span> sql = <span class="tok-k">new</span> <span class="tok-t">SqlDataSource</span>({
+  id: <span class="tok-s">&quot;empSql&quot;</span>,
+  selectCommand: <span class="tok-s">&quot;GET /employees&quot;</span>,
+  insertCommand: <span class="tok-s">&quot;POST /employees&quot;</span>,
+  updateCommand: <span class="tok-s">&quot;PUT /employees/{id}&quot;</span>,
+  deleteCommand: <span class="tok-s">&quot;DELETE /employees/{id}&quot;</span>,
+  selectParameters: [<span class="tok-k">new</span> <span class="tok-t">Parameter</span>({ name: <span class="tok-s">&quot;dept&quot;</span>, defaultValue: <span class="tok-s">&quot;Eng&quot;</span> })],
+  handler: <span class="tok-k">async</span> (command, params, op) =&gt; {
+    console.<span class="tok-f">log</span>(<span class="tok-s">\`  handler \${op}: \${command}\`</span>, params);
+    <span class="tok-k">switch</span> (op) {
+      <span class="tok-k">case</span> <span class="tok-s">&quot;select&quot;</span>: <span class="tok-k">return</span> server.<span class="tok-f">filter</span>((e) =&gt; e.dept === params[<span class="tok-s">&quot;dept&quot;</span>]);
+      <span class="tok-k">case</span> <span class="tok-s">&quot;insert&quot;</span>: server.<span class="tok-f">push</span>({ id: server.length + <span class="tok-n">1</span>, ...(params <span class="tok-k">as</span> <span class="tok-t">Omit</span>&lt;<span class="tok-t">Emp</span>, <span class="tok-s">&quot;id&quot;</span>&gt;) }); <span class="tok-k">return</span> <span class="tok-n">1</span>;
+      <span class="tok-k">case</span> <span class="tok-s">&quot;update&quot;</span>: <span class="tok-t">Object</span>.<span class="tok-f">assign</span>(server.<span class="tok-f">find</span>((e) =&gt; e.id === params[<span class="tok-s">&quot;id&quot;</span>])!, params); <span class="tok-k">return</span> <span class="tok-n">1</span>;
+      <span class="tok-k">case</span> <span class="tok-s">&quot;delete&quot;</span>: server.<span class="tok-f">splice</span>(server.<span class="tok-f">findIndex</span>((e) =&gt; e.id === params[<span class="tok-s">&quot;id&quot;</span>]), <span class="tok-n">1</span>); <span class="tok-k">return</span> <span class="tok-n">1</span>;
+    }
+  }
+});
+
+<span class="tok-k">const</span> grid = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Emp</span>&gt;({
+  id: <span class="tok-s">&quot;gv&quot;</span>,
+  dataKeyField: <span class="tok-s">&quot;id&quot;</span>,
+  dataSource: sql,
+  columns: [{ <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;name&quot;</span>, dataField: <span class="tok-s">&quot;name&quot;</span>, headerText: <span class="tok-s">&quot;Name&quot;</span> }]
+});
+
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;bind&quot;</span>);
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>();
+console.<span class="tok-f">log</span>(grid.dataSource.<span class="tok-f">map</span>((e) =&gt; e.name));
+<span class="tok-c">// -&gt; bind</span>
+<span class="tok-c">// -&gt;   handler select: GET /employees { dept: 'Eng' }</span>
+<span class="tok-c">// -&gt; [ 'Ada', 'Cy' ]</span>
+
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;update&quot;</span>);
+<span class="tok-k">await</span> grid.<span class="tok-f">updateRow</span>(<span class="tok-n">0</span>, { name: <span class="tok-s">&quot;Ada L.&quot;</span> });
+<span class="tok-c">// -&gt; update</span>
+<span class="tok-c">// -&gt;   handler update: PUT /employees/{id} { id: 1, name: 'Ada L.', dept: 'Eng' }</span>
+
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;insert (no grid insert: call the source, then re-bind)&quot;</span>);
+<span class="tok-k">await</span> sql.<span class="tok-f">insert</span>({ name: <span class="tok-s">&quot;Di&quot;</span>, dept: <span class="tok-s">&quot;Eng&quot;</span> });
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>();
+console.<span class="tok-f">log</span>(grid.dataSource.<span class="tok-f">map</span>((e) =&gt; e.name));
+<span class="tok-c">// -&gt; insert (no grid insert: call the source, then re-bind)</span>
+<span class="tok-c">// -&gt;   handler insert: POST /employees { name: 'Di', dept: 'Eng' }</span>
+<span class="tok-c">// -&gt;   handler select: GET /employees { dept: 'Eng' }</span>
+<span class="tok-c">// -&gt; [ 'Ada L.', 'Cy', 'Di' ]</span>
+
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;delete&quot;</span>);
+<span class="tok-k">await</span> grid.<span class="tok-f">deleteRow</span>(<span class="tok-n">1</span>);
+console.<span class="tok-f">log</span>(grid.dataSource.<span class="tok-f">map</span>((e) =&gt; e.name));
+<span class="tok-c">// -&gt; delete</span>
+<span class="tok-c">// -&gt;   handler delete: DELETE /employees/{id} { id: 3, name: 'Cy', dept: 'Eng' }</span>
+<span class="tok-c">// -&gt; [ 'Ada L.', 'Di' ]</span>
+
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;change a select parameter&quot;</span>);
+sql.selectParameters.<span class="tok-k">get</span>(<span class="tok-s">&quot;dept&quot;</span>)!.value = <span class="tok-s">&quot;Ops&quot;</span>;
+<span class="tok-k">await</span> grid.<span class="tok-f">dataBind</span>();
+console.<span class="tok-f">log</span>(grid.dataSource.<span class="tok-f">map</span>((e) =&gt; e.name));
+<span class="tok-c">// -&gt; change a select parameter</span>
+<span class="tok-c">// -&gt;   handler select: GET /employees { dept: 'Ops' }</span>
+<span class="tok-c">// -&gt; [ 'Bob' ]</span>
+
+<span class="tok-c">// ObjectDataSource: call your own service object.</span>
+<span class="tok-k">const</span> people: <span class="tok-t">Emp</span>[] = [{ id: <span class="tok-n">1</span>, name: <span class="tok-s">&quot;Ada&quot;</span>, dept: <span class="tok-s">&quot;Eng&quot;</span> }, { id: <span class="tok-n">2</span>, name: <span class="tok-s">&quot;Bob&quot;</span>, dept: <span class="tok-s">&quot;Ops&quot;</span> }];
+<span class="tok-k">const</span> service = {
+  select: <span class="tok-k">async</span> (_p: <span class="tok-t">Record</span>&lt;string, unknown&gt;) =&gt; people,
+  update: <span class="tok-k">async</span> (values: <span class="tok-t">Record</span>&lt;string, unknown&gt;, keys: <span class="tok-t">Record</span>&lt;string, unknown&gt;) =&gt; {
+    <span class="tok-t">Object</span>.<span class="tok-f">assign</span>(people.<span class="tok-f">find</span>((p) =&gt; p.id === keys[<span class="tok-s">&quot;id&quot;</span>])!, values);
+    <span class="tok-k">return</span> <span class="tok-n">1</span>;
+  },
+  <span class="tok-k">delete</span>: <span class="tok-k">async</span> (keys: <span class="tok-t">Record</span>&lt;string, unknown&gt;) =&gt; {
+    people.<span class="tok-f">splice</span>(people.<span class="tok-f">findIndex</span>((p) =&gt; p.id === keys[<span class="tok-s">&quot;id&quot;</span>]), <span class="tok-n">1</span>);
+    <span class="tok-k">return</span> <span class="tok-n">1</span>;
+  }
+};
+<span class="tok-k">const</span> obj = <span class="tok-k">new</span> <span class="tok-t">ObjectDataSource</span>({
+  id: <span class="tok-s">&quot;empObj&quot;</span>, typeInstance: service,
+  selectMethod: <span class="tok-s">&quot;select&quot;</span>, updateMethod: <span class="tok-s">&quot;update&quot;</span>, deleteMethod: <span class="tok-s">&quot;delete&quot;</span>
+});
+<span class="tok-k">const</span> og = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Emp</span>&gt;({
+  id: <span class="tok-s">&quot;og&quot;</span>, dataKeyField: <span class="tok-s">&quot;id&quot;</span>, dataSource: obj,
+  columns: [{ <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;name&quot;</span>, dataField: <span class="tok-s">&quot;name&quot;</span>, headerText: <span class="tok-s">&quot;Name&quot;</span> }]
+});
+<span class="tok-k">await</span> og.<span class="tok-f">dataBind</span>();
+<span class="tok-k">await</span> og.<span class="tok-f">updateRow</span>(<span class="tok-n">1</span>, { name: <span class="tok-s">&quot;Bobby&quot;</span> });
+<span class="tok-k">await</span> og.<span class="tok-f">deleteRow</span>(<span class="tok-n">0</span>);
+console.<span class="tok-f">log</span>(people);
+<span class="tok-c">// -&gt; [ { id: 2, name: 'Bobby', dept: 'Ops' } ]</span>
+
+<span class="tok-c">// A select method may also return a DataTable (GridView and Repeater accept it).</span>
+<span class="tok-k">const</span> tableService = {
+  select: <span class="tok-k">async</span> () =&gt; <span class="tok-t">DataTable</span>.<span class="tok-f">fromObjects</span>(<span class="tok-s">&quot;T&quot;</span>, [{ id: <span class="tok-n">9</span>, name: <span class="tok-s">&quot;Zed&quot;</span>, dept: <span class="tok-s">&quot;Ops&quot;</span> }])
+};
+<span class="tok-k">const</span> tg = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Emp</span>&gt;({
+  id: <span class="tok-s">&quot;tg&quot;</span>, dataKeyField: <span class="tok-s">&quot;id&quot;</span>,
+  dataSource: <span class="tok-k">new</span> <span class="tok-t">ObjectDataSource</span>({ id: <span class="tok-s">&quot;t&quot;</span>, typeInstance: tableService, selectMethod: <span class="tok-s">&quot;select&quot;</span> }),
+  columns: [{ <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;name&quot;</span>, dataField: <span class="tok-s">&quot;name&quot;</span>, headerText: <span class="tok-s">&quot;Name&quot;</span> }]
+});
+<span class="tok-k">await</span> tg.<span class="tok-f">dataBind</span>();
+console.<span class="tok-f">log</span>(tg.dataSource);
+<span class="tok-c">// -&gt; [ { id: 9, name: 'Zed', dept: 'Ops' } ]</span></code></pre></div>
+<p>Points to remember:</p>
+<ul><li><code>SqlDataSource</code> has no database driver. With a <code>handler</code> it calls your function <code>(command, parameters, operation, selectArgs)</code>; without one it treats <code>&quot;GET /path/{id}&quot;</code>-style commands as REST calls through <code>fetch</code>. Plain SQL text needs a custom <code>handler</code>.</li><li><code>{id}</code> tokens in a command are filled from the parameters and removed from the body / query string.</li><li><code>ObjectDataSource</code> calls <code>select(parameters, selectArgs)</code>, <code>insert(values)</code>, <code>update(values, keys, oldValues)</code> and <code>delete(keys, oldValues)</code> on the object you provide as <code>typeInstance</code>.</li><li><code>DataGridController</code> and <code>DataListController</code> keep only <strong>array</strong> results from <code>select()</code>; if your service returns a <code>DataTable</code>, bind it to a GridView/Repeater or return <code>table.toObjects()</code>.</li><li>Each data control raises its own events (<code>rowUpdating</code>, ...) <strong>and</strong> the source raises <code>updating</code> / <code>updated</code>, so you can validate in either place.</li></ul>
+<p>Full parameter, event and handler details are in the <a href="#/api/data-sources/asp-net-to-typescript-mapping">data sources API</a>.</p>
+<hr>
+`},"server-round-trips":{"objects-in-changed-objects-out":`<h3 id="objects-in-changed-objects-out">Objects in, changed objects out<a class="anchor" href="#objects-in-changed-objects-out" aria-label="Link to this section">#</a></h3>
+<p><code>DataTable.fromObjects(name, data)</code> builds a table from JSON-like rows and calls <code>acceptChanges()</code> on each, so everything starts <code>Unchanged</code>. <code>toObjects()</code> goes back. Column types are inferred from the <strong>first</strong> object only, and keys that first appear in later objects are dropped. A <code>null</code> in the first object produces a <code>string</code> column, which then coerces later numbers to strings:</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataTable</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">const</span> fromServer = [
+  { id: <span class="tok-n">1</span>, name: <span class="tok-s">&quot;Ada&quot;</span>, manager: <span class="tok-k">null</span> },
+  { id: <span class="tok-n">2</span>, name: <span class="tok-s">&quot;Bob&quot;</span>, manager: <span class="tok-n">1</span> }
+];
+<span class="tok-k">const</span> staff = <span class="tok-t">DataTable</span>.<span class="tok-f">fromObjects</span>(<span class="tok-s">&quot;Staff&quot;</span>, fromServer);
+console.<span class="tok-f">log</span>(staff.columns.<span class="tok-f">toArray</span>().<span class="tok-f">map</span>((c) =&gt; <span class="tok-s">\`\${c.columnName}:\${c.dataType}\`</span>));
+<span class="tok-c">// -&gt; [ 'id:number', 'name:string', 'manager:string' ]</span>
+console.<span class="tok-f">log</span>(staff.rows.<span class="tok-f">toArray</span>().<span class="tok-f">map</span>((r) =&gt; r.rowState));
+<span class="tok-c">// -&gt; [ 'Unchanged', 'Unchanged' ]</span>
+staff.rows.<span class="tok-k">get</span>(<span class="tok-n">1</span>)!.<span class="tok-f">setItem</span>(<span class="tok-s">&quot;name&quot;</span>, <span class="tok-s">&quot;Bobby&quot;</span>);
+console.<span class="tok-f">log</span>(<span class="tok-t">JSON</span>.<span class="tok-f">stringify</span>(staff.<span class="tok-f">toObjects</span>()));
+<span class="tok-c">// -&gt; [{&quot;id&quot;:1,&quot;name&quot;:&quot;Ada&quot;,&quot;manager&quot;:null},{&quot;id&quot;:2,&quot;name&quot;:&quot;Bobby&quot;,&quot;manager&quot;:&quot;1&quot;}]</span>
+
+<span class="tok-c">// Send back only what changed</span>
+<span class="tok-k">const</span> changed = staff.rows.<span class="tok-f">toArray</span>(<span class="tok-k">true</span>)
+  .<span class="tok-f">filter</span>((r) =&gt; r.rowState !== <span class="tok-s">&quot;Unchanged&quot;</span>)
+  .<span class="tok-f">map</span>((r) =&gt; r.<span class="tok-f">toObject</span>());
+console.<span class="tok-f">log</span>(changed);
+<span class="tok-c">// -&gt; [ { id: 2, name: 'Bobby', manager: '1' } ]</span></code></pre></div>
+<p>Build the table yourself (<code>columns.add(new DataColumn({...}))</code>) when you need exact types, defaults, <code>allowDBNull</code> or auto-increment, then fill it with <code>rows.add(values)</code> + <code>acceptChanges()</code>.</p>
+`,"dataset-as-json-and-xml":`<h3 id="dataset-as-json-and-xml"><code>DataSet</code> as JSON and XML<a class="anchor" href="#dataset-as-json-and-xml" aria-label="Link to this section">#</a></h3>
+<div class="table-scroll"><table><thead><tr><th></th><th><code>toJson()</code> / <code>fromJson()</code></th><th><code>toXml()</code> / <code>fromXml()</code></th></tr></thead><tbody><tr><td>Table and column names</td><td>kept</td><td>kept as element names (names must be valid XML names)</td></tr><tr><td>Column type, <code>allowDBNull</code>, <code>defaultValue</code></td><td>kept</td><td><strong>lost</strong>: every column comes back <code>string</code></td></tr><tr><td><code>autoIncrement</code>, seed/step, <code>readOnly</code>, <code>maxLength</code>, <code>caption</code>, <code>unique</code>, <code>primaryKey</code></td><td><strong>lost</strong></td><td>lost</td></tr><tr><td>Relations</td><td><strong>lost</strong></td><td>lost</td></tr><tr><td>Row states</td><td><strong>lost</strong>: every loaded row is <code>Unchanged</code> (deleted rows are not written)</td><td>lost; <code>null</code> / <code>undefined</code> values are omitted</td></tr><tr><td>Dates</td><td>kept (ISO strings in JSON, <code>date</code> columns parse them back)</td><td>written with <code>String(date)</code> (locale dependent, not ISO)</td></tr><tr><td>Parser</td><td><code>JSON.parse</code></td><td>regular expressions: no attributes, no self-closing tags, no nesting beyond table &gt; row &gt; field</td></tr></tbody></table></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span>, <span class="tok-t">DataSet</span>, <span class="tok-t">DataRelation</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">const</span> ds = <span class="tok-k">new</span> <span class="tok-t">DataSet</span>(<span class="tok-s">&quot;Shop&quot;</span>);
+<span class="tok-k">const</span> customers = ds.tables.<span class="tok-f">add</span>(<span class="tok-s">&quot;Customers&quot;</span>);
+customers.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span>, autoIncrement: <span class="tok-k">true</span> }));
+customers.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;name&quot;</span>, allowDBNull: <span class="tok-k">false</span> }));
+customers.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;since&quot;</span>, dataType: <span class="tok-s">&quot;date&quot;</span> }));
+customers.primaryKey = [customers.columns.<span class="tok-k">get</span>(<span class="tok-s">&quot;id&quot;</span>)!];
+customers.rows.<span class="tok-f">add</span>({ name: <span class="tok-s">&quot;Acme&quot;</span>, since: <span class="tok-k">new</span> <span class="tok-t">Date</span>(<span class="tok-s">&quot;2020-02-03T00:00:00Z&quot;</span>) });
+<span class="tok-k">const</span> orders = ds.tables.<span class="tok-f">add</span>(<span class="tok-s">&quot;Orders&quot;</span>);
+orders.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+orders.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;customerId&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+orders.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">10</span>, customerId: <span class="tok-n">1</span> });
+ds.relations.<span class="tok-f">push</span>(<span class="tok-k">new</span> <span class="tok-t">DataRelation</span>(<span class="tok-s">&quot;CustomerOrders&quot;</span>, customers, orders, <span class="tok-s">&quot;id&quot;</span>, <span class="tok-s">&quot;customerId&quot;</span>));
+
+<span class="tok-k">const</span> copy = <span class="tok-t">DataSet</span>.<span class="tok-f">fromJson</span>(ds.<span class="tok-f">toJson</span>());
+<span class="tok-k">const</span> c2 = copy.tables.<span class="tok-k">get</span>(<span class="tok-s">&quot;Customers&quot;</span>)!;
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;relations:&quot;</span>, ds.relations.length, <span class="tok-s">&quot;-&gt;&quot;</span>, copy.relations.length);
+<span class="tok-c">// -&gt; relations: 1 -&gt; 0</span>
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;primaryKey:&quot;</span>, customers.primaryKey.length, <span class="tok-s">&quot;-&gt;&quot;</span>, c2.primaryKey.length);
+<span class="tok-c">// -&gt; primaryKey: 1 -&gt; 0</span>
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;autoIncrement:&quot;</span>, customers.columns.<span class="tok-k">get</span>(<span class="tok-s">&quot;id&quot;</span>)!.autoIncrement, <span class="tok-s">&quot;-&gt;&quot;</span>, c2.columns.<span class="tok-k">get</span>(<span class="tok-s">&quot;id&quot;</span>)!.autoIncrement);
+<span class="tok-c">// -&gt; autoIncrement: true -&gt; false</span>
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;rowState:&quot;</span>, customers.rows.<span class="tok-k">get</span>(<span class="tok-n">0</span>)!.rowState, <span class="tok-s">&quot;-&gt;&quot;</span>, c2.rows.<span class="tok-k">get</span>(<span class="tok-n">0</span>)!.rowState);
+<span class="tok-c">// -&gt; rowState: Added -&gt; Unchanged</span>
+console.<span class="tok-f">log</span>(<span class="tok-s">&quot;date survives:&quot;</span>, c2.rows.<span class="tok-k">get</span>(<span class="tok-n">0</span>)!.<span class="tok-f">item</span>(<span class="tok-s">&quot;since&quot;</span>) <span class="tok-k">instanceof</span> <span class="tok-t">Date</span>);
+<span class="tok-c">// -&gt; date survives: true</span>
+
+<span class="tok-c">// XML: simple shapes only, and every value comes back as a string.</span>
+<span class="tok-k">const</span> plain = <span class="tok-k">new</span> <span class="tok-t">DataSet</span>(<span class="tok-s">&quot;Shop&quot;</span>);
+<span class="tok-k">const</span> p = plain.tables.<span class="tok-f">add</span>(<span class="tok-s">&quot;Customers&quot;</span>);
+p.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span> }));
+p.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>(<span class="tok-s">&quot;name&quot;</span>));
+p.rows.<span class="tok-f">add</span>({ id: <span class="tok-n">1</span>, name: <span class="tok-s">&quot;Smith &amp; Sons&quot;</span> });
+<span class="tok-k">const</span> xml = plain.<span class="tok-f">toXml</span>();
+console.<span class="tok-f">log</span>(xml);
+<span class="tok-c">// -&gt; &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+<span class="tok-c">// -&gt; &lt;Shop&gt;</span>
+<span class="tok-c">// -&gt;   &lt;Customers&gt;</span>
+<span class="tok-c">// -&gt;     &lt;id&gt;1&lt;/id&gt;</span>
+<span class="tok-c">// -&gt;     &lt;name&gt;Smith &amp;amp; Sons&lt;/name&gt;</span>
+<span class="tok-c">// -&gt;   &lt;/Customers&gt;</span>
+<span class="tok-c">// -&gt; &lt;/Shop&gt;</span>
+<span class="tok-k">const</span> back = <span class="tok-t">DataSet</span>.<span class="tok-f">fromXml</span>(xml);
+<span class="tok-k">const</span> bt = back.tables.<span class="tok-k">get</span>(<span class="tok-s">&quot;Customers&quot;</span>)!;
+console.<span class="tok-f">log</span>(bt.columns.<span class="tok-f">toArray</span>().<span class="tok-f">map</span>((c) =&gt; <span class="tok-s">\`\${c.columnName}:\${c.dataType}\`</span>));
+<span class="tok-c">// -&gt; [ 'id:string', 'name:string' ]</span>
+console.<span class="tok-f">log</span>(bt.<span class="tok-f">toObjects</span>());
+<span class="tok-c">// -&gt; [ { id: '1', name: 'Smith &amp; Sons' } ]</span></code></pre></div>
+<p><strong>Recommended round trip:</strong> the server owns the schema. Load with <code>fromObjects</code> (or build columns explicitly), edit through the grid events as in <a href="#/api/data-binding/crud-round-trip/row-states/5-crud-round-trip">section 5</a>, POST the <code>added</code> / <code>modified</code> / <code>deleted</code> lists, then call <code>acceptChanges()</code> after the server confirms. Treat <code>toJson()</code> as a convenient cache format, not a lossless snapshot, and prefer your own serializer if you need keys, relations or row states.</p>
+<hr>
+`},"binding-in-react-and-angular":{overview:`<p>The adapters render a controller and re-render when its <code>stateChanged</code> event fires. They never bind data for you, so the component's job is: create the controller once, call <code>dataBind()</code> (on mount and whenever filters change), and subscribe to <code>stateChanged</code> for anything rendered <strong>outside</strong> the grid.</p>
+<div class="table-scroll"><table><thead><tr><th>Adapter</th><th>Component</th><th>Controller prop / input</th><th>Slots</th></tr></thead><tbody><tr><td>React <code>@wf-controls/react</code></td><td><code>&lt;WebFormsGridView&gt;</code></td><td><code>controller</code></td><td><code>template(key, row, index)</code> for template columns, <code>editTemplate(row, index, save, cancel)</code> for a whole-row editor, <code>editCellTemplate</code>, <code>className</code>, <code>style</code></td></tr><tr><td>React</td><td><code>&lt;WebFormsRepeater&gt;</code> / <code>&lt;WebFormsDataList&gt;</code></td><td><code>controller</code></td><td><code>itemTemplate(item, index, command)</code>, <code>alternatingItemTemplate</code>, <code>editItemTemplate</code>, <code>headerTemplate</code>, <code>footerTemplate</code>, <code>separatorTemplate</code>, <code>emptyTemplate</code></td></tr><tr><td>Angular <code>@wf-controls/angular</code></td><td><code>&lt;wf-grid-view&gt;</code> (<code>WebFormsGridViewComponent</code>)</td><td><code>[controller]</code> (required)</td><td><code>#editTemplate</code> (context: <code>$implicit</code> row, <code>index</code>, <code>save</code>, <code>cancel</code>)</td></tr><tr><td>Angular</td><td><code>&lt;wf-repeater&gt;</code> (<code>WebFormsRepeaterComponent</code>)</td><td><code>[controller]</code> (required), <code>[createItem]</code></td><td><code>#itemTemplate</code>, <code>#editItemTemplate</code></td></tr></tbody></table></div>
+<p>Both adapters call <code>stateChanged.subscribe</code> on mount and clean up on unmount. If you swap the <code>controller</code> object after mount, the Angular component does <strong>not</strong> re-subscribe; create one controller per component.</p>
+<p>To keep the two framework examples small and identical in behaviour, the table, view, controller and event wiring live in one framework-free module. It uses everything from the previous sections: <code>DataView</code> filtering with a predicate, <code>sorted</code> to keep <code>view.sort</code> in step, <code>rowUpdating</code> / <code>rowDeleting</code> writing to the <code>DataTable</code>, coercion hand-back, a view-based total, CSV export and a small undo stack.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-c">// employee-store.ts</span>
+<span class="tok-k">import</span> { <span class="tok-t">DataTable</span>, <span class="tok-t">DataColumn</span>, <span class="tok-t">DataView</span>, <span class="tok-t">DataRow</span>, <span class="tok-t">GridViewController</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/core&quot;</span>;
+
+<span class="tok-k">export</span> <span class="tok-k">interface</span> <span class="tok-t">Employee</span> {
+  id: number;
+  name: string;
+  dept: string;
+  salary: number;
+}
+
+<span class="tok-k">type</span> <span class="tok-t">UndoEntry</span> =
+  | { kind: <span class="tok-s">&quot;update&quot;</span>; row: <span class="tok-t">DataRow</span>; before: <span class="tok-t">Record</span>&lt;string, unknown&gt; }
+  | { kind: <span class="tok-s">&quot;delete&quot;</span>; row: <span class="tok-t">DataRow</span> }
+  | { kind: <span class="tok-s">&quot;add&quot;</span>; row: <span class="tok-t">DataRow</span> };
+
+<span class="tok-c">/** DataTable + DataView + GridViewController, wired together once. */</span>
+<span class="tok-k">export</span> <span class="tok-k">class</span> <span class="tok-t">EmployeeStore</span> {
+  <span class="tok-k">readonly</span> table = <span class="tok-k">new</span> <span class="tok-t">DataTable</span>(<span class="tok-s">&quot;Employees&quot;</span>);
+  <span class="tok-k">readonly</span> view: <span class="tok-t">DataView</span>;
+  <span class="tok-k">readonly</span> grid: <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Employee</span>&gt;;
+  search = <span class="tok-s">&quot;&quot;</span>;
+  dept = <span class="tok-s">&quot;&quot;</span>;
+  <span class="tok-k">private</span> <span class="tok-k">readonly</span> undoStack: <span class="tok-t">UndoEntry</span>[] = [];
+
+  <span class="tok-f">constructor</span>() {
+    <span class="tok-k">const</span> id = <span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;id&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span>, autoIncrement: <span class="tok-k">true</span> });
+    <span class="tok-k">this</span>.table.columns.<span class="tok-f">add</span>(id);
+    <span class="tok-k">this</span>.table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;name&quot;</span>, allowDBNull: <span class="tok-k">false</span> }));
+    <span class="tok-k">this</span>.table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>(<span class="tok-s">&quot;dept&quot;</span>));
+    <span class="tok-k">this</span>.table.columns.<span class="tok-f">add</span>(<span class="tok-k">new</span> <span class="tok-t">DataColumn</span>({ columnName: <span class="tok-s">&quot;salary&quot;</span>, dataType: <span class="tok-s">&quot;number&quot;</span>, defaultValue: <span class="tok-n">0</span> }));
+    <span class="tok-k">this</span>.table.primaryKey = [id];
+
+    <span class="tok-k">this</span>.table.rows.<span class="tok-f">add</span>({ name: <span class="tok-s">&quot;Ada Lovelace&quot;</span>, dept: <span class="tok-s">&quot;Engineering&quot;</span>, salary: <span class="tok-n">120000</span> });
+    <span class="tok-k">this</span>.table.rows.<span class="tok-f">add</span>({ name: <span class="tok-s">&quot;Bob Barker&quot;</span>, dept: <span class="tok-s">&quot;Operations&quot;</span>, salary: <span class="tok-n">80000</span> });
+    <span class="tok-k">this</span>.table.rows.<span class="tok-f">add</span>({ name: <span class="tok-s">&quot;Cy Young&quot;</span>, dept: <span class="tok-s">&quot;Engineering&quot;</span>, salary: <span class="tok-n">95000</span> });
+    <span class="tok-k">this</span>.table.rows.<span class="tok-f">add</span>({ name: <span class="tok-s">&quot;Di Prince&quot;</span>, dept: <span class="tok-s">&quot;HR&quot;</span>, salary: <span class="tok-n">70000</span> });
+    <span class="tok-k">this</span>.table.<span class="tok-f">acceptChanges</span>();
+
+    <span class="tok-k">this</span>.view = <span class="tok-k">new</span> <span class="tok-t">DataView</span>(<span class="tok-k">this</span>.table);
+    <span class="tok-k">this</span>.grid = <span class="tok-k">new</span> <span class="tok-t">GridViewController</span>&lt;<span class="tok-t">Employee</span>&gt;({
+      id: <span class="tok-s">&quot;employees&quot;</span>,
+      dataKeyField: <span class="tok-s">&quot;id&quot;</span>,
+      allowSorting: <span class="tok-k">true</span>,
+      allowPaging: <span class="tok-k">true</span>,
+      pageSize: <span class="tok-n">3</span>,
+      columns: [
+        { <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;name&quot;</span>, dataField: <span class="tok-s">&quot;name&quot;</span>, headerText: <span class="tok-s">&quot;Name&quot;</span>, sortable: <span class="tok-k">true</span> },
+        { <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;dept&quot;</span>, dataField: <span class="tok-s">&quot;dept&quot;</span>, headerText: <span class="tok-s">&quot;Department&quot;</span>, sortable: <span class="tok-k">true</span> },
+        { <span class="tok-k">type</span>: <span class="tok-s">&quot;bound&quot;</span>, key: <span class="tok-s">&quot;salary&quot;</span>, dataField: <span class="tok-s">&quot;salary&quot;</span>, headerText: <span class="tok-s">&quot;Salary&quot;</span>, sortable: <span class="tok-k">true</span>,
+          format: (v) =&gt; <span class="tok-t">Number</span>(v).<span class="tok-f">toLocaleString</span>(<span class="tok-s">&quot;en-US&quot;</span>) },
+        { <span class="tok-k">type</span>: <span class="tok-s">&quot;template&quot;</span>, key: <span class="tok-s">&quot;actions&quot;</span>, headerText: <span class="tok-s">&quot;&quot;</span> }
+      ]
+    });
+
+    <span class="tok-c">// UPDATE -&gt; write to the table first; veto the grid if the table refuses.</span>
+    <span class="tok-k">this</span>.grid.rowUpdating.<span class="tok-f">subscribe</span>((_s, e) =&gt; {
+      <span class="tok-k">const</span> row = <span class="tok-k">this</span>.table.<span class="tok-f">find</span>(e.dataItem.id);
+      <span class="tok-k">if</span> (!row) { e.cancel = <span class="tok-k">true</span>; <span class="tok-k">return</span>; }
+      <span class="tok-k">const</span> before = row.<span class="tok-f">toObject</span>();
+      <span class="tok-k">try</span> {
+        row.<span class="tok-f">setValues</span>(e.values <span class="tok-k">as</span> <span class="tok-t">Record</span>&lt;string, unknown&gt;);
+      } <span class="tok-k">catch</span> {
+        e.cancel = <span class="tok-k">true</span>;
+        <span class="tok-k">return</span>;
+      }
+      <span class="tok-c">// The default editors post strings; hand the grid the coerced values.</span>
+      <span class="tok-k">for</span> (<span class="tok-k">const</span> key <span class="tok-k">of</span> <span class="tok-t">Object</span>.<span class="tok-f">keys</span>(e.values)) {
+        (e.values <span class="tok-k">as</span> <span class="tok-t">Record</span>&lt;string, unknown&gt;)[key] = row.<span class="tok-f">item</span>(key);
+      }
+      <span class="tok-k">this</span>.undoStack.<span class="tok-f">push</span>({ kind: <span class="tok-s">&quot;update&quot;</span>, row, before });
+    });
+
+    <span class="tok-c">// DELETE -&gt; soft-delete in the table (state becomes Deleted).</span>
+    <span class="tok-k">this</span>.grid.rowDeleting.<span class="tok-f">subscribe</span>((_s, e) =&gt; {
+      <span class="tok-k">const</span> row = <span class="tok-k">this</span>.table.<span class="tok-f">find</span>(e.dataItem.id);
+      <span class="tok-k">if</span> (row) {
+        row.<span class="tok-k">delete</span>();
+        <span class="tok-k">this</span>.undoStack.<span class="tok-f">push</span>({ kind: <span class="tok-s">&quot;delete&quot;</span>, row });
+      }
+    });
+
+    <span class="tok-c">// SORT -&gt; keep the view in step so every re-bind keeps the order.</span>
+    <span class="tok-k">this</span>.grid.sorted.<span class="tok-f">subscribe</span>(<span class="tok-k">async</span> (g, e) =&gt; {
+      <span class="tok-k">this</span>.view.sort = <span class="tok-s">\`\${e.sortExpression} \${e.direction.toUpperCase()}\`</span>;
+      <span class="tok-k">await</span> g.<span class="tok-f">dataBind</span>();
+    });
+  }
+
+  <span class="tok-c">/** Re-apply the search box and department filter, then re-bind. */</span>
+  <span class="tok-k">async</span> <span class="tok-f">refresh</span>(): <span class="tok-t">Promise</span>&lt;<span class="tok-k">void</span>&gt; {
+    <span class="tok-k">const</span> q = <span class="tok-k">this</span>.search.<span class="tok-f">trim</span>().<span class="tok-f">toLowerCase</span>();
+    <span class="tok-k">this</span>.view.rowFilter = (row) =&gt;
+      (<span class="tok-k">this</span>.dept === <span class="tok-s">&quot;&quot;</span> || row.<span class="tok-f">item</span>(<span class="tok-s">&quot;dept&quot;</span>) === <span class="tok-k">this</span>.dept) &amp;&amp;
+      (q === <span class="tok-s">&quot;&quot;</span> || <span class="tok-t">String</span>(row.<span class="tok-f">item</span>(<span class="tok-s">&quot;name&quot;</span>)).<span class="tok-f">toLowerCase</span>().<span class="tok-f">includes</span>(q));
+    <span class="tok-k">await</span> <span class="tok-k">this</span>.grid.<span class="tok-f">dataBind</span>(<span class="tok-k">this</span>.view);
+  }
+
+  <span class="tok-k">get</span> <span class="tok-f">departments</span>(): string[] {
+    <span class="tok-k">return</span> [...<span class="tok-k">new</span> <span class="tok-t">Set</span>(<span class="tok-k">this</span>.table.rows.<span class="tok-f">toArray</span>().<span class="tok-f">map</span>((r) =&gt; <span class="tok-t">String</span>(r.<span class="tok-f">item</span>(<span class="tok-s">&quot;dept&quot;</span>))))].<span class="tok-f">sort</span>();
+  }
+
+  <span class="tok-c">/** Sum over everything the filter matches (all pages), not just the visible page. */</span>
+  <span class="tok-k">get</span> <span class="tok-f">totalSalary</span>(): number {
+    <span class="tok-k">return</span> <span class="tok-k">this</span>.view.<span class="tok-f">toRows</span>().<span class="tok-f">reduce</span>((sum, r) =&gt; sum + <span class="tok-t">Number</span>(r.<span class="tok-f">item</span>(<span class="tok-s">&quot;salary&quot;</span>)), <span class="tok-n">0</span>);
+  }
+
+  <span class="tok-k">get</span> <span class="tok-f">pendingChanges</span>(): number {
+    <span class="tok-k">return</span> <span class="tok-k">this</span>.table.rows.<span class="tok-f">toArray</span>(<span class="tok-k">true</span>).<span class="tok-f">filter</span>((r) =&gt; r.rowState !== <span class="tok-s">&quot;Unchanged&quot;</span>).length;
+  }
+
+  <span class="tok-k">async</span> <span class="tok-f">add</span>(name: string, dept: string, salary: number): <span class="tok-t">Promise</span>&lt;<span class="tok-k">void</span>&gt; {
+    <span class="tok-k">const</span> row = <span class="tok-k">this</span>.table.rows.<span class="tok-f">add</span>({ name, dept, salary });
+    <span class="tok-k">this</span>.undoStack.<span class="tok-f">push</span>({ kind: <span class="tok-s">&quot;add&quot;</span>, row });
+    <span class="tok-k">await</span> <span class="tok-k">this</span>.<span class="tok-f">refresh</span>();
+  }
+
+  <span class="tok-f">toCsv</span>(): string {
+    <span class="tok-k">const</span> cols = <span class="tok-k">this</span>.table.columns.<span class="tok-f">toArray</span>().<span class="tok-f">map</span>((c) =&gt; c.columnName);
+    <span class="tok-k">const</span> esc = (v: unknown) =&gt; {
+      <span class="tok-k">const</span> s = <span class="tok-t">String</span>(v ?? <span class="tok-s">&quot;&quot;</span>);
+      <span class="tok-k">return</span> /[<span class="tok-s">&quot;,\\n]/.test(s) ? \`&quot;</span>\${s.<span class="tok-f">replace</span>(/<span class="tok-s">&quot;/g, '&quot;</span><span class="tok-s">&quot;')}&quot;</span>\` : s;
+    };
+    <span class="tok-k">return</span> [
+      cols.<span class="tok-f">join</span>(<span class="tok-s">&quot;,&quot;</span>),
+      ...<span class="tok-k">this</span>.view.<span class="tok-f">toObjects</span>().<span class="tok-f">map</span>((o) =&gt; cols.<span class="tok-f">map</span>((c) =&gt; <span class="tok-f">esc</span>(o[c])).<span class="tok-f">join</span>(<span class="tok-s">&quot;,&quot;</span>))
+    ].<span class="tok-f">join</span>(<span class="tok-s">&quot;\\n&quot;</span>);
+  }
+
+  <span class="tok-k">async</span> <span class="tok-f">undo</span>(): <span class="tok-t">Promise</span>&lt;boolean&gt; {
+    <span class="tok-k">const</span> last = <span class="tok-k">this</span>.undoStack.<span class="tok-f">pop</span>();
+    <span class="tok-k">if</span> (!last) <span class="tok-k">return</span> <span class="tok-k">false</span>;
+    <span class="tok-k">if</span> (last.kind === <span class="tok-s">&quot;update&quot;</span>) last.row.<span class="tok-f">setValues</span>(last.before);
+    <span class="tok-k">else</span> <span class="tok-k">if</span> (last.kind === <span class="tok-s">&quot;delete&quot;</span>) last.row.<span class="tok-f">rejectChanges</span>(); <span class="tok-c">// also drops earlier edits to that row</span>
+    <span class="tok-k">else</span> last.row.<span class="tok-k">delete</span>();                                    <span class="tok-c">// Added row: removed outright</span>
+    <span class="tok-k">await</span> <span class="tok-k">this</span>.<span class="tok-f">refresh</span>();
+    <span class="tok-k">return</span> <span class="tok-k">true</span>;
+  }
+
+  <span class="tok-k">async</span> <span class="tok-f">discardAll</span>(): <span class="tok-t">Promise</span>&lt;<span class="tok-k">void</span>&gt; {
+    <span class="tok-k">this</span>.undoStack.length = <span class="tok-n">0</span>;
+    <span class="tok-k">this</span>.table.<span class="tok-f">rejectChanges</span>();
+    <span class="tok-k">await</span> <span class="tok-k">this</span>.<span class="tok-f">refresh</span>();
+  }
+}</code></pre></div>
+`,react:`<h3 id="react">React<a class="anchor" href="#react" aria-label="Link to this section">#</a></h3>
+<p><code>WebFormsGridView</code> subscribes to <code>stateChanged</code> itself, so the grid re-renders after every <code>dataBind()</code>, <code>updateRow()</code>, <code>deleteRow()</code>, <code>sort()</code> and <code>changePage()</code>. The surrounding component subscribes too, because the payroll total and the pending counter are rendered outside the grid. In the grid, <code>template</code> renders the action buttons (it receives the <strong>absolute</strong> row index, which is what <code>executeCommand</code> wants) and <code>editTemplate</code> replaces the row while it is in edit mode, handing you <code>save(values)</code> / <code>cancel()</code>.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">tsx</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-tsx"><span class="tok-c">// EmployeeBrowser.tsx</span>
+<span class="tok-k">import</span> { useEffect, useMemo, useReducer, useState } <span class="tok-k">from</span> <span class="tok-s">&quot;react&quot;</span>;
+<span class="tok-k">import</span> { <span class="tok-t">WebFormsGridView</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/react&quot;</span>;
+<span class="tok-k">import</span> { <span class="tok-t">EmployeeStore</span>, <span class="tok-k">type</span> <span class="tok-t">Employee</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;./employee-store&quot;</span>;
+
+<span class="tok-k">function</span> <span class="tok-t">EditRow</span>(props: {
+  row: <span class="tok-t">Employee</span>;
+  save: (values: <span class="tok-t">Partial</span>&lt;<span class="tok-t">Employee</span>&gt;) =&gt; <span class="tok-t">Promise</span>&lt;boolean&gt;;
+  cancel: () =&gt; <span class="tok-t">Promise</span>&lt;boolean&gt;;
+}) {
+  <span class="tok-k">const</span> [name, setName] = <span class="tok-f">useState</span>(props.row.name);
+  <span class="tok-k">const</span> [salary, setSalary] = <span class="tok-f">useState</span>(<span class="tok-t">String</span>(props.row.salary));
+  <span class="tok-k">return</span> (
+    &lt;&gt;
+      &lt;input value={name} onChange={(e) =&gt; <span class="tok-f">setName</span>(e.target.value)} /&gt;
+      &lt;input <span class="tok-k">type</span>=<span class="tok-s">&quot;number&quot;</span> value={salary} onChange={(e) =&gt; <span class="tok-f">setSalary</span>(e.target.value)} /&gt;
+      &lt;button onClick={() =&gt; <span class="tok-k">void</span> props.<span class="tok-f">save</span>({ name, salary: <span class="tok-t">Number</span>(salary) })}&gt;<span class="tok-t">Save</span>&lt;/button&gt;
+      &lt;button onClick={() =&gt; <span class="tok-k">void</span> props.<span class="tok-f">cancel</span>()}&gt;<span class="tok-t">Cancel</span>&lt;/button&gt;
+    &lt;/&gt;
+  );
+}
+
+<span class="tok-k">export</span> <span class="tok-k">function</span> <span class="tok-t">EmployeeBrowser</span>() {
+  <span class="tok-k">const</span> store = <span class="tok-f">useMemo</span>(() =&gt; <span class="tok-k">new</span> <span class="tok-t">EmployeeStore</span>(), []);
+  <span class="tok-k">const</span> [search, setSearch] = <span class="tok-f">useState</span>(<span class="tok-s">&quot;&quot;</span>);
+  <span class="tok-k">const</span> [dept, setDept] = <span class="tok-f">useState</span>(<span class="tok-s">&quot;&quot;</span>);
+  <span class="tok-k">const</span> [, rerender] = <span class="tok-f">useReducer</span>((n: number) =&gt; n + <span class="tok-n">1</span>, <span class="tok-n">0</span>);
+
+  <span class="tok-c">// WebFormsGridView re-renders itself on stateChanged. The page around it</span>
+  <span class="tok-c">// (payroll total, pending counter) needs the same nudge.</span>
+  <span class="tok-f">useEffect</span>(() =&gt; store.grid.stateChanged.<span class="tok-f">subscribe</span>(() =&gt; <span class="tok-f">rerender</span>()), [store]);
+
+  <span class="tok-c">// Re-bind whenever a filter input changes (this also performs the first bind).</span>
+  <span class="tok-f">useEffect</span>(() =&gt; {
+    store.search = search;
+    store.dept = dept;
+    <span class="tok-k">void</span> store.<span class="tok-f">refresh</span>();
+  }, [store, search, dept]);
+
+  <span class="tok-k">const</span> download = () =&gt; {
+    <span class="tok-k">const</span> url = <span class="tok-t">URL</span>.<span class="tok-f">createObjectURL</span>(<span class="tok-k">new</span> <span class="tok-t">Blob</span>([store.<span class="tok-f">toCsv</span>()], { <span class="tok-k">type</span>: <span class="tok-s">&quot;text/csv&quot;</span> }));
+    <span class="tok-k">const</span> a = document.<span class="tok-f">createElement</span>(<span class="tok-s">&quot;a&quot;</span>);
+    a.href = url;
+    a.download = <span class="tok-s">&quot;employees.csv&quot;</span>;
+    a.<span class="tok-f">click</span>();
+    <span class="tok-t">URL</span>.<span class="tok-f">revokeObjectURL</span>(url);
+  };
+
+  <span class="tok-k">return</span> (
+    &lt;section&gt;
+      &lt;input placeholder=<span class="tok-s">&quot;Search name...&quot;</span> value={search} onChange={(e) =&gt; <span class="tok-f">setSearch</span>(e.target.value)} /&gt;
+      &lt;select value={dept} onChange={(e) =&gt; <span class="tok-f">setDept</span>(e.target.value)}&gt;
+        &lt;option value=<span class="tok-s">&quot;&quot;</span>&gt;<span class="tok-t">All</span> departments&lt;/option&gt;
+        {store.departments.<span class="tok-f">map</span>((d) =&gt; &lt;option key={d} value={d}&gt;{d}&lt;/option&gt;)}
+      &lt;/select&gt;
+
+      &lt;<span class="tok-t">WebFormsGridView</span>
+        controller={store.grid}
+        className=<span class="tok-s">&quot;table table-striped&quot;</span>
+        template={(key, _row, index) =&gt;
+          key === <span class="tok-s">&quot;actions&quot;</span> ? (
+            &lt;&gt;
+              &lt;button onClick={() =&gt; <span class="tok-k">void</span> store.grid.<span class="tok-f">executeCommand</span>(index, <span class="tok-s">&quot;Edit&quot;</span>)}&gt;<span class="tok-t">Edit</span>&lt;/button&gt;
+              &lt;button onClick={() =&gt; <span class="tok-k">void</span> store.grid.<span class="tok-f">executeCommand</span>(index, <span class="tok-s">&quot;Delete&quot;</span>)}&gt;<span class="tok-t">Delete</span>&lt;/button&gt;
+            &lt;/&gt;
+          ) : <span class="tok-k">null</span>
+        }
+        editTemplate={(row, _index, save, cancel) =&gt; &lt;<span class="tok-t">EditRow</span> row={row} save={save} cancel={cancel} /&gt;}
+      /&gt;
+
+      &lt;p&gt;
+        {store.grid.totalRecords} <span class="tok-f">match</span>(es), payroll {store.totalSalary.<span class="tok-f">toLocaleString</span>(<span class="tok-s">&quot;en-US&quot;</span>)}{<span class="tok-s">&quot; &quot;</span>}
+        ({store.pendingChanges} unsaved <span class="tok-f">change</span>(s))
+      &lt;/p&gt;
+      &lt;button onClick={() =&gt; <span class="tok-k">void</span> store.<span class="tok-f">undo</span>()}&gt;<span class="tok-t">Undo</span>&lt;/button&gt;
+      &lt;button onClick={() =&gt; <span class="tok-k">void</span> store.<span class="tok-f">discardAll</span>()}&gt;<span class="tok-t">Discard</span> all&lt;/button&gt;
+      &lt;button onClick={download}&gt;<span class="tok-t">Export</span> <span class="tok-t">CSV</span>&lt;/button&gt;
+    &lt;/section&gt;
+  );
+}</code></pre></div>
+<p>Things the component relies on:</p>
+<ul><li><code>useMemo(() =&gt; new EmployeeStore(), [])</code> creates the controller exactly once; the adapter's <code>useEffect</code> subscribes to that instance.</li><li>The effect with <code>[store, search, dept]</code> is both the first <code>dataBind()</code> and the &quot;filter changed&quot; re-bind. Never call <code>dataBind()</code> during render.</li><li>Without <code>editTemplate</code> / <code>editCellTemplate</code>, the adapter's built-in editor shows plain text inputs but gives you nothing to press to save; supply a template with Save and Cancel as above.</li></ul>
+`,angular:`<h3 id="angular">Angular<a class="anchor" href="#angular" aria-label="Link to this section">#</a></h3>
+<p><code>&lt;wf-grid-view&gt;</code> marks itself dirty on <code>stateChanged</code> (it is <code>OnPush</code>). Your own component needs the same signal for bindings outside the grid. <code>wf-grid-view</code> has no user template-column slot: its action column is three fixed buttons (Select, Edit, Delete) that call <code>executeCommand</code>. It renders an edit row <strong>only</strong> if you provide an <code>#editTemplate</code>; without one, Edit puts the controller in edit mode but nothing visible changes.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-c">// employee-browser.component.ts</span>
+<span class="tok-k">import</span> { <span class="tok-t">ChangeDetectionStrategy</span>, <span class="tok-t">ChangeDetectorRef</span>, <span class="tok-t">Component</span>, <span class="tok-t">OnDestroy</span>, <span class="tok-t">OnInit</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@angular/core&quot;</span>;
+<span class="tok-k">import</span> { <span class="tok-t">WebFormsGridViewComponent</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;@wf-controls/angular&quot;</span>;
+<span class="tok-k">import</span> { <span class="tok-t">EmployeeStore</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;./employee-store&quot;</span>;
+
+@<span class="tok-t">Component</span>({
+  selector: <span class="tok-s">&quot;app-employee-browser&quot;</span>,
+  standalone: <span class="tok-k">true</span>,
+  imports: [<span class="tok-t">WebFormsGridViewComponent</span>],
+  changeDetection: <span class="tok-t">ChangeDetectionStrategy</span>.<span class="tok-t">OnPush</span>,
+  template: <span class="tok-s">\`
+    &lt;input placeholder=&quot;Search name...&quot; (input)=&quot;onSearch($any($event.target).value)&quot; /&gt;
+    &lt;select (change)=&quot;onDept($any($event.target).value)&quot;&gt;
+      &lt;option value=&quot;&quot;&gt;All departments&lt;/option&gt;
+      @for (d of store.departments; track d) { &lt;option [value]=&quot;d&quot;&gt;{{ d }}&lt;/option&gt; }
+    &lt;/select&gt;
+
+    &lt;wf-grid-view [controller]=&quot;store.grid&quot;&gt;
+      &lt;ng-template #editTemplate let-row let-save=&quot;save&quot; let-cancel=&quot;cancel&quot;&gt;
+        &lt;input #name [value]=&quot;row.name&quot; /&gt;
+        &lt;input #salary type=&quot;number&quot; [value]=&quot;row.salary&quot; /&gt;
+        &lt;button type=&quot;button&quot; (click)=&quot;save({ name: name.value, salary: salary.value })&quot;&gt;Save&lt;/button&gt;
+        &lt;button type=&quot;button&quot; (click)=&quot;cancel()&quot;&gt;Cancel&lt;/button&gt;
+      &lt;/ng-template&gt;
+    &lt;/wf-grid-view&gt;
+
+    &lt;p&gt;
+      {{ store.grid.totalRecords }} match(es), payroll {{ store.totalSalary }}
+      ({{ store.pendingChanges }} unsaved change(s))
+    &lt;/p&gt;
+    &lt;button type=&quot;button&quot; (click)=&quot;store.undo()&quot;&gt;Undo&lt;/button&gt;
+    &lt;button type=&quot;button&quot; (click)=&quot;store.discardAll()&quot;&gt;Discard all&lt;/button&gt;
+  \`</span>
+})
+<span class="tok-k">export</span> <span class="tok-k">class</span> <span class="tok-t">EmployeeBrowserComponent</span> <span class="tok-k">implements</span> <span class="tok-t">OnInit</span>, <span class="tok-t">OnDestroy</span> {
+  <span class="tok-k">readonly</span> store = <span class="tok-k">new</span> <span class="tok-t">EmployeeStore</span>();
+  <span class="tok-k">private</span> off?: () =&gt; <span class="tok-k">void</span>;
+
+  <span class="tok-f">constructor</span>(<span class="tok-k">private</span> <span class="tok-k">readonly</span> cdr: <span class="tok-t">ChangeDetectorRef</span>) {}
+
+  <span class="tok-k">async</span> <span class="tok-f">ngOnInit</span>(): <span class="tok-t">Promise</span>&lt;<span class="tok-k">void</span>&gt; {
+    <span class="tok-c">// wf-grid-view marks itself dirty; this component's own bindings</span>
+    <span class="tok-c">// (total, pending count) need the same signal.</span>
+    <span class="tok-k">this</span>.off = <span class="tok-k">this</span>.store.grid.stateChanged.<span class="tok-f">subscribe</span>(() =&gt; <span class="tok-k">this</span>.cdr.<span class="tok-f">markForCheck</span>());
+    <span class="tok-k">await</span> <span class="tok-k">this</span>.store.<span class="tok-f">refresh</span>();
+  }
+
+  <span class="tok-f">ngOnDestroy</span>(): <span class="tok-k">void</span> {
+    <span class="tok-k">this</span>.off?.();
+  }
+
+  <span class="tok-k">async</span> <span class="tok-f">onSearch</span>(value: string): <span class="tok-t">Promise</span>&lt;<span class="tok-k">void</span>&gt; {
+    <span class="tok-k">this</span>.store.search = value;
+    <span class="tok-k">await</span> <span class="tok-k">this</span>.store.<span class="tok-f">refresh</span>();
+  }
+
+  <span class="tok-k">async</span> <span class="tok-f">onDept</span>(value: string): <span class="tok-t">Promise</span>&lt;<span class="tok-k">void</span>&gt; {
+    <span class="tok-k">this</span>.store.dept = value;
+    <span class="tok-k">await</span> <span class="tok-k">this</span>.store.<span class="tok-f">refresh</span>();
+  }
+}</code></pre></div>
+<p>Notes:</p>
+<ul><li>The edit template posts <code>salary</code> as a string (<code>salary.value</code>). The store's <code>rowUpdating</code> handler writes through <code>row.setValues</code>, which coerces it to a number, and then copies the coerced values back into <code>e.values</code> so the grid shows a number, not <code>&quot;130000&quot;</code>.</li><li>The department list is read once per change-detection pass from <code>store.departments</code>; for a large table cache it (it scans every row).</li><li><code>packages/angular/dist</code> is plain <code>tsc</code> output without Ivy metadata. In an Angular application import from the package source (as the sample app does); see <a href="#/api/guides/issues-needs-your-attention-first">Known issues</a>, section 9.</li></ul>
+<hr>
+`},"patterns-and-recipes":{examples:`<p>All recipes below use the <code>EmployeeStore</code> from <a href="#/api/data-binding/binding-in-react-and-angular/overview/10-binding-in-react-and-angular">section 10</a>; the outputs come from running them against it (four employees, page size 3).</p>
+<ul class="aa-doc-index"><li><a href="#/api/data-binding/patterns-and-recipes/examples/search-box-and-department-dropdown">Search box and department dropdown</a></li><li><a href="#/api/data-binding/patterns-and-recipes/examples/totals-footer-from-the-view">Totals footer from the view</a></li><li><a href="#/api/data-binding/patterns-and-recipes/examples/export-to-csv">Export to CSV</a></li><li><a href="#/api/data-binding/patterns-and-recipes/examples/undo-last-edit">Undo last edit</a></li><li><a href="#/api/data-binding/patterns-and-recipes/examples/other-quick-recipes">Other quick recipes</a></li></ul><h3 id="search-box-and-department-dropdown">Search box and department dropdown<a class="anchor" href="#search-box-and-department-dropdown" aria-label="Link to this section">#</a></h3>
+<p>Both controls only set a field on the store; <code>refresh()</code> rebuilds the view's predicate from <strong>both</strong> inputs, so they combine, then re-binds. Combining them in one predicate (rather than two view filters) avoids one input silently replacing the other.</p>
+<h3 id="totals-footer-from-the-view">Totals footer from the view<a class="anchor" href="#totals-footer-from-the-view" aria-label="Link to this section">#</a></h3>
+<p><code>store.totalSalary</code> sums <code>view.toRows()</code>, so it covers every page and always reflects the current filter. Do not sum <code>grid.visibleRows</code> unless you want a per-page subtotal. Render it outside the grid (the adapters' <code>showFooter</code> draws empty cells only).</p>
+<h3 id="export-to-csv">Export to CSV<a class="anchor" href="#export-to-csv" aria-label="Link to this section">#</a></h3>
+<p><code>view.toObjects()</code> returns what the user is currently looking at (filtered, sorted, without deleted rows). Use <code>table.toObjects()</code> instead for &quot;everything&quot;, or a view with <code>rowStateFilter</code> for &quot;only my changes&quot;.</p>
+<h3 id="undo-last-edit">Undo last edit<a class="anchor" href="#undo-last-edit" aria-label="Link to this section">#</a></h3>
+<p>Updates keep a snapshot of the previous values, deletes use <code>row.rejectChanges()</code>, adds delete the new row. Reverting a value with <code>setValues</code> leaves the row <code>Modified</code> (the table cannot know the value is back to the original), so use <code>table.rejectChanges()</code> (&quot;Discard all&quot;) when you want states reset.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">ts</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="lang-ts"><span class="tok-k">import</span> { <span class="tok-t">EmployeeStore</span> } <span class="tok-k">from</span> <span class="tok-s">&quot;./employee-store&quot;</span>;
+
+<span class="tok-k">const</span> store = <span class="tok-k">new</span> <span class="tok-t">EmployeeStore</span>();
+<span class="tok-k">const</span> names = () =&gt; store.grid.visibleRows.<span class="tok-f">map</span>((e) =&gt; e.name);
+
+<span class="tok-c">// Search box + department dropdown: set the inputs, call refresh().</span>
+<span class="tok-k">await</span> store.<span class="tok-f">refresh</span>();
+console.<span class="tok-f">log</span>(<span class="tok-f">names</span>(), store.grid.totalRecords);
+<span class="tok-c">// -&gt; [ 'Ada Lovelace', 'Bob Barker', 'Cy Young' ] 4</span>
+store.search = <span class="tok-s">&quot;y&quot;</span>;
+<span class="tok-k">await</span> store.<span class="tok-f">refresh</span>();
+console.<span class="tok-f">log</span>(<span class="tok-f">names</span>(), store.grid.totalRecords);
+<span class="tok-c">// -&gt; [ 'Cy Young' ] 1</span>
+store.search = <span class="tok-s">&quot;&quot;</span>;
+store.dept = <span class="tok-s">&quot;Engineering&quot;</span>;
+<span class="tok-k">await</span> store.<span class="tok-f">refresh</span>();
+console.<span class="tok-f">log</span>(<span class="tok-f">names</span>(), store.grid.totalRecords);
+<span class="tok-c">// -&gt; [ 'Ada Lovelace', 'Cy Young' ] 2</span>
+
+<span class="tok-c">// Totals footer: computed from the view, so it covers every page.</span>
+console.<span class="tok-f">log</span>(store.totalSalary);
+<span class="tok-c">// -&gt; 215000</span>
+
+<span class="tok-c">// Export to CSV: what the view currently shows, not the whole table.</span>
+console.<span class="tok-f">log</span>(store.<span class="tok-f">toCsv</span>());
+<span class="tok-c">// -&gt; id,name,dept,salary</span>
+<span class="tok-c">// -&gt; 1,Ada Lovelace,Engineering,120000</span>
+<span class="tok-c">// -&gt; 3,Cy Young,Engineering,95000</span>
+
+<span class="tok-c">// Undo last edit.</span>
+<span class="tok-k">await</span> store.grid.<span class="tok-f">updateRow</span>(<span class="tok-n">0</span>, { salary: <span class="tok-n">150000</span> });
+console.<span class="tok-f">log</span>(store.grid.dataSource[<span class="tok-n">0</span>]!.salary, store.pendingChanges);
+<span class="tok-c">// -&gt; 150000 1</span>
+<span class="tok-k">await</span> store.<span class="tok-f">undo</span>();
+console.<span class="tok-f">log</span>(store.table.rows.<span class="tok-k">get</span>(<span class="tok-n">0</span>)!.<span class="tok-f">item</span>(<span class="tok-s">&quot;salary&quot;</span>), store.table.rows.<span class="tok-k">get</span>(<span class="tok-n">0</span>)!.rowState);
+<span class="tok-c">// -&gt; 120000 Modified</span>
+console.<span class="tok-f">log</span>(<span class="tok-k">await</span> store.<span class="tok-f">undo</span>());                    <span class="tok-c">// nothing left to undo</span>
+<span class="tok-c">// -&gt; false</span></code></pre></div>
+<h3 id="other-quick-recipes">Other quick recipes<a class="anchor" href="#other-quick-recipes" aria-label="Link to this section">#</a></h3>
+<div class="table-scroll"><table><thead><tr><th>Goal</th><th>Code</th></tr></thead><tbody><tr><td>Distinct values for a dropdown</td><td><code>[...new Set(table.rows.toArray().map((r) =&gt; r.item(&quot;dept&quot;)))]</code></td></tr><tr><td>Count per group</td><td><code>view.toRows().reduce((m, r) =&gt; m.set(r.item(&quot;dept&quot;), (m.get(r.item(&quot;dept&quot;)) ?? 0) + 1), new Map())</code></td></tr><tr><td>&quot;Pending changes&quot; grid</td><td><code>view.rowStateFilter = [&quot;Added&quot;, &quot;Modified&quot;, &quot;Deleted&quot;]; await grid.dataBind(view);</code></td></tr><tr><td>Unique-ish primary key lookup</td><td>set <code>table.primaryKey</code>, then <code>table.find(id)</code> (linear scan; <code>===</code> comparison)</td></tr><tr><td>Reset all filters</td><td><code>view.rowFilter = null; view.sort = null; await grid.dataBind(view);</code></td></tr></tbody></table></div>
+<hr>
+`},troubleshooting:{overview:`<div class="table-scroll"><table><thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead><tbody><tr><td>Grid does not show a row I just added to the table</td><td>Controllers hold a copy made at <code>dataBind()</code>; the data library has no change events</td><td>Call <code>grid.dataBind()</code> after the change, or wrap the table (see <code>ObservableTable</code> in section 3)</td></tr><tr><td>Edited a grid row but the <code>DataTable</code> is unchanged</td><td><code>updateRow</code> / <code>deleteRow</code> change only the grid's copy</td><td>Write to the table in <code>rowUpdating</code> / <code>rowDeleting</code> (section 5)</td></tr><tr><td><code>grid.sort()</code> returns <code>true</code> but nothing sorts; <code>updateRow</code> throws <code>dataSource.update is not a function</code></td><td>GridView bound to a <code>DataTable</code>: <code>table.select</code> makes it look like a data source control</td><td>Bind <code>new DataView(table)</code> or an array (section 2)</td></tr><tr><td>Deleted row still shows in the grid</td><td>You bound a <code>DataView</code> with <code>&quot;Deleted&quot;</code> in <code>rowStateFilter</code>, or never re-bound after <code>row.delete()</code></td><td>Remove <code>&quot;Deleted&quot;</code> from the filter (default hides it) and call <code>dataBind()</code></td></tr><tr><td>A deleted row vanished from the table entirely instead of staying <code>Deleted</code></td><td>The row was <code>Added</code> (never accepted); deleting an <code>Added</code> row removes it</td><td>Call <code>table.acceptChanges()</code> after loading, so loaded rows are <code>Unchanged</code></td></tr><tr><td><code>rows.count</code> and <code>rows.totalCount</code> differ</td><td><code>count</code> excludes <code>Deleted</code> rows</td><td>Use <code>rows.toArray(true)</code> to include them when building a change set</td></tr><tr><td>Sort order is lost after a re-bind</td><td><code>dataBind()</code> re-copies the source; <code>currentSort</code> is not re-applied</td><td>Mirror <code>grid.sort</code> into <code>view.sort</code> in the <code>sorted</code> event (section 6)</td></tr><tr><td>Grid paging next to a data source control never goes past page 1</td><td>Known bug: the grid only sees the returned page</td><td>Bind the full result and page in memory, or page manually (section 6)</td></tr><tr><td><code>Unsupported filter expression syntax: ...</code></td><td><code>rowFilter</code> strings support only <code>field op literal</code> with <code>AND</code> / <code>OR</code> (no <code>IN</code>, <code>NOT</code>, <code>IS NULL</code>, parentheses)</td><td>Use a predicate: <code>view.rowFilter = (r) =&gt; ...</code></td></tr><tr><td><code>Column 'x' does not belong to table 'T'.</code> thrown from <code>dataBind()</code></td><td>A <code>rowFilter</code> or <code>sort</code> names a column that does not exist</td><td>Fix the column name (lookups are case-insensitive)</td></tr><tr><td><code>salary = '100'</code> matches nothing</td><td>Quoted literals are strings; <code>100</code> is a number and comparison is <code>===</code></td><td>Write <code>salary = 100</code></td></tr><tr><td>Date filter matches nothing</td><td>A string expression compares a <code>Date</code> with a string literal using <code>===</code></td><td>Use a predicate comparing <code>Date</code> objects</td></tr><tr><td>Filter with a deleted-rows state returns no deleted rows</td><td>A <strong>string</strong> <code>rowFilter</code> drops <code>Deleted</code> rows</td><td>Use a predicate function</td></tr><tr><td><code>DataView.find()</code> throws <code>Cannot call DataView.find() without a sort expression specified.</code></td><td><code>find</code> / <code>findRows</code> match against the sort columns</td><td>Set <code>view.sort</code> first, or use <code>table.find(key)</code> with <code>primaryKey</code></td></tr><tr><td><code>DataGrid</code> / <code>DataList</code> becomes empty on the second <code>dataBind()</code></td><td>Their <code>dataBind(arg)</code> does not remember <code>arg</code></td><td>Pass the source in the constructor and call <code>dataBind()</code> without arguments</td></tr><tr><td><code>DataGrid</code> / <code>DataList</code> bound to a data source shows nothing</td><td>They accept only an <strong>array</strong> from <code>select()</code></td><td>Return an array (e.g. <code>table.toObjects()</code>), or use GridView / Repeater</td></tr><tr><td>New rows get ids that collide with loaded ones</td><td>Auto-increment values are consumed in the <code>DataRow</code> constructor; explicit ids do not advance the counter</td><td><code>idColumn.resetAutoIncrement(maxId + 1)</code> after loading (section 5)</td></tr><tr><td>Number column holds strings after <code>fromObjects</code></td><td>Types are inferred from the <strong>first</strong> object; a <code>null</code> there gives a <code>string</code> column</td><td>Build the columns explicitly, or make sure the first row has real values</td></tr><tr><td>Values edited in the React default editor become strings in the grid</td><td>The adapter's editor writes strings</td><td>Coerce in <code>rowUpdating</code> (write to the table, copy coerced values back into <code>e.values</code>) or use <code>editTemplate</code></td></tr><tr><td>React grid: Edit shows inputs but there is no Save</td><td>The default editor renders inputs only</td><td>Provide <code>editTemplate</code> / <code>editCellTemplate</code> with Save and Cancel (section 10)</td></tr><tr><td>Angular grid: Edit does nothing visible</td><td><code>wf-grid-view</code> renders an edit row only when an <code>#editTemplate</code> is supplied</td><td>Add <code>&lt;ng-template #editTemplate ...&gt;</code> inside <code>&lt;wf-grid-view&gt;</code></td></tr><tr><td>Footer / total outside the grid does not update</td><td>Only the grid component re-renders on <code>stateChanged</code></td><td>Subscribe to <code>controller.stateChanged</code> in your own component (section 10)</td></tr><tr><td><code>RangeError: Grid row N does not exist.</code></td><td>Row commands take an <strong>absolute</strong> index into the whole result; the index is out of range (for example a page-relative one)</td><td>Use <code>grid.getAbsoluteRowIndex(visibleIndex)</code></td></tr><tr><td><code>relation.getChildRows</code> throws <code>Row does not belong to parent table</code></td><td>The row came from a different table (for example a copy or a <code>DataView.toTable()</code> result)</td><td>Pass a row of the relation's <code>parentTable</code>, found with <code>table.find(key)</code></td></tr><tr><td>Relations / primary key / row states missing after <code>DataSet.fromJson</code></td><td><code>toJson</code> / <code>fromJson</code> do not carry them</td><td>Re-create relations and <code>primaryKey</code> after loading (section 9)</td></tr><tr><td>Numbers come back as strings from <code>DataSet.fromXml</code></td><td>XML carries no types; the parser makes every column <code>string</code></td><td>Use JSON, or convert after loading</td></tr></tbody></table></div>
+<hr>
+`},verification:{"what-was-checked":`<h3 id="what-was-checked">What was checked<a class="anchor" href="#what-was-checked" aria-label="Link to this section">#</a></h3>
+<ul><li>Sections 1 to 9 and 11: each snippet was saved as a TypeScript file and <strong>executed</strong> with Node 22 against <code>packages/core/dist</code> and <code>packages/data/dist</code> (resolved as <code>@wf-controls/core</code>); the <code>// -&gt;</code> lines are the real output. The same files were also <strong>type-checked</strong> with the repo's TypeScript 6.0.3 under <code>strict</code>, <code>noUncheckedIndexedAccess</code> and <code>exactOptionalPropertyTypes</code>.</li><li>Section 10: <code>employee-store.ts</code> was executed (the section 11 output) and type-checked; <code>EmployeeBrowser.tsx</code> was <strong>type-checked</strong> against <code>packages/*/dist/*.d.ts</code> and <code>@types/react</code> (<code>jsx: react-jsx</code>); <code>employee-browser.component.ts</code> was <strong>compiled</strong> with Angular <code>ngc</code> and <code>strictTemplates</code>, resolving <code>@wf-controls/angular</code> to <code>packages/angular/src</code> (a negative test, <code>[controller]=&quot;3&quot;</code>, confirmed the template checker was active). The React and Angular components were <strong>not run in a browser</strong>.</li><li>Troubleshooting entries that quote error messages (<code>Unsupported filter expression syntax</code>, <code>Column 'x' does not belong...</code>, <code>Cannot call DataView.find()...</code>, <code>Grid row N does not exist.</code>) were produced by running the failing call.</li></ul>
+<hr>
+`},"next-steps":{overview:'<ul><li><a href="#/api/data-controls/asp-net-to-typescript-mapping">Data controls API</a>: every option, event and method of GridView, Repeater, DataGrid and DataList.</li><li><a href="#/api/data-library/ado-net-to-typescript-mapping">Data library API</a>: <code>DataTable</code>, <code>DataColumn</code>, <code>DataRow</code>, <code>DataView</code>, <code>DataSet</code>, <code>DataRelation</code> in detail.</li><li><a href="#/api/data-sources/asp-net-to-typescript-mapping">Data sources API</a>: <code>SqlDataSource</code>, <code>ObjectDataSource</code>, parameters, events and handlers.</li><li><a href="https://github.com/ahsan-wolf/webforms-ts-controls/blob/main/docs/v1.0.0/TUTORIAL-employee-app.md" target="_blank" rel="noopener">Employee Manager tutorial</a>: the whole pattern (login, role-based grid, validated form, CRUD) in one application.</li><li><a href="#/api/guides/issues-needs-your-attention-first">Known issues</a>: every behavior that differs from what the names suggest.</li></ul>'}};export{s as default};
