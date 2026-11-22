@@ -13,7 +13,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@wf-controls/data": ["./packages/data/dist/index.d.ts"],
+      "@wf-controls/core": ["./packages/core/dist/index.d.ts"],
+      "@wf-controls/react": ["./packages/react/dist/index.d.ts"]
+    }
   },
   "include": ["src", "vite.config.ts"]
 }

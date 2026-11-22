@@ -1,0 +1,26 @@
+/* gv-dark: dark-mode grid with accent header */
+table.gv-dark{width:100%;border-collapse:collapse;background:#111827;color:#e5e7eb;font:14px "Segoe UI",system-ui,sans-serif;border:1px solid #374151!important}
+table.gv-dark th{background:#1f2937;color:#f9fafb;text-align:left;padding:12px 14px;border:1px solid #374151!important;border-bottom:2px solid #6366f1!important}
+table.gv-dark th a{color:#a5b4fc;text-decoration:none}
+table.gv-dark td{padding:10px 14px;border:1px solid #1f2937!important}
+table.gv-dark tr:nth-child(even) td{background:#161e2e}
+table.gv-dark tr:hover td{background:#243049}
+table.gv-dark a.btn-link{color:#818cf8;text-decoration:none;margin-right:10px}
+table.gv-dark a.btn-link:hover{color:#c7d2fe}
+table.gv-dark a.text-danger{color:#f87171}
+table.gv-dark .pager td,table.gv-dark tr.pager>td{background:#1f2937;padding:8px 14px}
+table.gv-dark .pager table{margin:0 auto}
+table.gv-dark .pager a{color:#a5b4fc;padding:3px 8px;text-decoration:none}
+table.gv-dark .pager span{background:#6366f1;color:#fff;padding:3px 8px;border-radius:4px}
+table.gv-dark tr.selected td{background:#312e81}
+table.gv-dark tr.edit td{background:#3b2f10}
+table.gv-dark .empty,table.gv-dark .empty td{padding:28px;text-align:center;color:#6b7280}
+
+/* ---- nested pager table reset (GridView renders pager as a table inside a td) ---- */
+table.gv-dark tr.pager table td{padding:0!important;border:0!important;background:transparent!important}
+/* ---- INLINE EDIT / INSERT (EditRowStyle-CssClass="edit", FooterStyle-CssClass="footer") ---- */
+table.gv-dark tr.edit input[type=text],table.gv-dark tr.edit input[type=date],table.gv-dark tr.footer input[type=text],table.gv-dark tr.footer input[type=date]{width:100%;box-sizing:border-box;min-width:110px;padding:6px 10px;border:1px solid #374151;border-radius:4px;font:inherit;font-size:14px;background:#0b1220;color:#e5e7eb}
+table.gv-dark tr.edit input:focus,table.gv-dark tr.footer input:focus{outline:0;border-color:#6366f1;box-shadow:0 0 0 3px #6366f133}
+table.gv-dark input.invalid{border-color:#dc2626!important}
+table.gv-dark tr.footer td{background:#1f2937!important}
+table.gv-dark tr.edit a.btn-link{font-weight:600}

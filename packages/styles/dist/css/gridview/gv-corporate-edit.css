@@ -1,0 +1,23 @@
+/* gv-corporate-edit : GridView inline edit / insert rows (adds to gv-corporate; the kit's gv-corporate.css is untouched). Added family, same palette.
+   <table class="gv-corporate"> tr.edit (editTemplate / in-place edit) and tr.footer (insert row): inputs, select, textarea, checkbox, label, button */
+table.gv-corporate tr.edit input[type=text],table.gv-corporate tr.edit input[type=password],table.gv-corporate tr.edit input[type=email],table.gv-corporate tr.edit input[type=number],table.gv-corporate tr.edit input[type=date],table.gv-corporate tr.edit input:not([type]),table.gv-corporate tr.edit select,table.gv-corporate tr.edit textarea{box-sizing:border-box;width:100%;min-width:110px;padding:6px 10px;border:1px solid #b0bec5;border-radius:2px;background:#ffffff;color:#263238;font:inherit;margin:2px 0}
+table.gv-corporate tr.edit textarea{min-height:72px;resize:vertical}
+table.gv-corporate tr.edit input[type=text]:focus,table.gv-corporate tr.edit input[type=password]:focus,table.gv-corporate tr.edit input[type=email]:focus,table.gv-corporate tr.edit input[type=number]:focus,table.gv-corporate tr.edit input[type=date]:focus,table.gv-corporate tr.edit input:not([type]):focus,table.gv-corporate tr.edit select:focus,table.gv-corporate tr.edit textarea:focus{outline:0;border-color:#00796b;box-shadow:0 0 0 3px #00796b33}
+table.gv-corporate tr.edit input[type=checkbox],table.gv-corporate tr.edit input[type=radio]{accent-color:#00796b;margin-right:6px;vertical-align:middle}
+table.gv-corporate tr.edit label{color:#607d8b;font-weight:600;font-size:12px}
+table.gv-corporate tr.edit input.invalid,table.gv-corporate tr.edit input.is-invalid{border-color:#c62828!important}
+table.gv-corporate tr.footer input[type=text],table.gv-corporate tr.footer input[type=password],table.gv-corporate tr.footer input[type=email],table.gv-corporate tr.footer input[type=number],table.gv-corporate tr.footer input[type=date],table.gv-corporate tr.footer input:not([type]),table.gv-corporate tr.footer select,table.gv-corporate tr.footer textarea{box-sizing:border-box;width:100%;min-width:110px;padding:6px 10px;border:1px solid #b0bec5;border-radius:2px;background:#ffffff;color:#263238;font:inherit;margin:2px 0}
+table.gv-corporate tr.footer textarea{min-height:72px;resize:vertical}
+table.gv-corporate tr.footer input[type=text]:focus,table.gv-corporate tr.footer input[type=password]:focus,table.gv-corporate tr.footer input[type=email]:focus,table.gv-corporate tr.footer input[type=number]:focus,table.gv-corporate tr.footer input[type=date]:focus,table.gv-corporate tr.footer input:not([type]):focus,table.gv-corporate tr.footer select:focus,table.gv-corporate tr.footer textarea:focus{outline:0;border-color:#00796b;box-shadow:0 0 0 3px #00796b33}
+table.gv-corporate tr.footer input[type=checkbox],table.gv-corporate tr.footer input[type=radio]{accent-color:#00796b;margin-right:6px;vertical-align:middle}
+table.gv-corporate tr.footer label{color:#607d8b;font-weight:600;font-size:12px}
+table.gv-corporate tr.footer input.invalid,table.gv-corporate tr.footer input.is-invalid{border-color:#c62828!important}
+table.gv-corporate tr.edit td[colspan] label{display:block;margin:0 0 10px}
+table.gv-corporate tr.edit td[colspan]{padding:14px 16px}
+table.gv-corporate tr.edit button,table.gv-corporate tr.footer button{border-radius:2px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#eceff1;color:#263238;border:1px solid #b0bec5}
+table.gv-corporate tr.edit button:hover,table.gv-corporate tr.footer button:hover{filter:brightness(1.08)}
+table.gv-corporate tr.edit button:focus-visible,table.gv-corporate tr.footer button:focus-visible{outline:0;box-shadow:0 0 0 3px #00796b33}
+table.gv-corporate tr.edit button:disabled,table.gv-corporate tr.footer button:disabled{opacity:.55;cursor:not-allowed;filter:none}
+table.gv-corporate tr.edit button.save,table.gv-corporate tr.edit button.primary,table.gv-corporate tr.edit button[type=submit],table.gv-corporate tr.edit button[data-command=Update],table.gv-corporate tr.footer button.add,table.gv-corporate tr.footer button.primary,table.gv-corporate tr.footer button[type=submit],table.gv-corporate tr.footer button[data-command=Insert],table.gv-corporate tr.edit td>button:first-of-type,table.gv-corporate tr.edit td>*:not(label) button:first-of-type{border-radius:2px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#00796b;color:#ffffff;border:1px solid #00796b}
+table.gv-corporate tr.edit button+button{margin-left:6px}
+table.gv-corporate tr.edit button.delete,table.gv-corporate tr.edit button[data-command=Delete]{color:#c62828}

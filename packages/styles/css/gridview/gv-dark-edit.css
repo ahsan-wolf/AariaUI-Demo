@@ -1,0 +1,23 @@
+/* gv-dark-edit : GridView inline edit / insert rows (adds to gv-dark; the kit's gv-dark.css is untouched). Added family, same palette.
+   <table class="gv-dark"> tr.edit (editTemplate / in-place edit) and tr.footer (insert row): inputs, select, textarea, checkbox, label, button */
+table.gv-dark tr.edit input[type=text],table.gv-dark tr.edit input[type=password],table.gv-dark tr.edit input[type=email],table.gv-dark tr.edit input[type=number],table.gv-dark tr.edit input[type=date],table.gv-dark tr.edit input:not([type]),table.gv-dark tr.edit select,table.gv-dark tr.edit textarea{box-sizing:border-box;width:100%;min-width:110px;padding:6px 10px;border:1px solid #374151;border-radius:4px;background:#0b1220;color:#e5e7eb;font:inherit;margin:2px 0}
+table.gv-dark tr.edit textarea{min-height:72px;resize:vertical}
+table.gv-dark tr.edit input[type=text]:focus,table.gv-dark tr.edit input[type=password]:focus,table.gv-dark tr.edit input[type=email]:focus,table.gv-dark tr.edit input[type=number]:focus,table.gv-dark tr.edit input[type=date]:focus,table.gv-dark tr.edit input:not([type]):focus,table.gv-dark tr.edit select:focus,table.gv-dark tr.edit textarea:focus{outline:0;border-color:#6366f1;box-shadow:0 0 0 3px #6366f133}
+table.gv-dark tr.edit input[type=checkbox],table.gv-dark tr.edit input[type=radio]{accent-color:#6366f1;margin-right:6px;vertical-align:middle}
+table.gv-dark tr.edit label{color:#9ca3af;font-weight:600;font-size:12px}
+table.gv-dark tr.edit input.invalid,table.gv-dark tr.edit input.is-invalid{border-color:#f87171!important}
+table.gv-dark tr.footer input[type=text],table.gv-dark tr.footer input[type=password],table.gv-dark tr.footer input[type=email],table.gv-dark tr.footer input[type=number],table.gv-dark tr.footer input[type=date],table.gv-dark tr.footer input:not([type]),table.gv-dark tr.footer select,table.gv-dark tr.footer textarea{box-sizing:border-box;width:100%;min-width:110px;padding:6px 10px;border:1px solid #374151;border-radius:4px;background:#0b1220;color:#e5e7eb;font:inherit;margin:2px 0}
+table.gv-dark tr.footer textarea{min-height:72px;resize:vertical}
+table.gv-dark tr.footer input[type=text]:focus,table.gv-dark tr.footer input[type=password]:focus,table.gv-dark tr.footer input[type=email]:focus,table.gv-dark tr.footer input[type=number]:focus,table.gv-dark tr.footer input[type=date]:focus,table.gv-dark tr.footer input:not([type]):focus,table.gv-dark tr.footer select:focus,table.gv-dark tr.footer textarea:focus{outline:0;border-color:#6366f1;box-shadow:0 0 0 3px #6366f133}
+table.gv-dark tr.footer input[type=checkbox],table.gv-dark tr.footer input[type=radio]{accent-color:#6366f1;margin-right:6px;vertical-align:middle}
+table.gv-dark tr.footer label{color:#9ca3af;font-weight:600;font-size:12px}
+table.gv-dark tr.footer input.invalid,table.gv-dark tr.footer input.is-invalid{border-color:#f87171!important}
+table.gv-dark tr.edit td[colspan] label{display:block;margin:0 0 10px}
+table.gv-dark tr.edit td[colspan]{padding:14px 16px}
+table.gv-dark tr.edit button,table.gv-dark tr.footer button{border-radius:6px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#1f2937;color:#e5e7eb;border:1px solid #374151}
+table.gv-dark tr.edit button:hover,table.gv-dark tr.footer button:hover{filter:brightness(1.08)}
+table.gv-dark tr.edit button:focus-visible,table.gv-dark tr.footer button:focus-visible{outline:0;box-shadow:0 0 0 3px #6366f133}
+table.gv-dark tr.edit button:disabled,table.gv-dark tr.footer button:disabled{opacity:.55;cursor:not-allowed;filter:none}
+table.gv-dark tr.edit button.save,table.gv-dark tr.edit button.primary,table.gv-dark tr.edit button[type=submit],table.gv-dark tr.edit button[data-command=Update],table.gv-dark tr.footer button.add,table.gv-dark tr.footer button.primary,table.gv-dark tr.footer button[type=submit],table.gv-dark tr.footer button[data-command=Insert],table.gv-dark tr.edit td>button:first-of-type,table.gv-dark tr.edit td>*:not(label) button:first-of-type{border-radius:6px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#6366f1;color:#ffffff;border:1px solid #6366f1}
+table.gv-dark tr.edit button+button{margin-left:6px}
+table.gv-dark tr.edit button.delete,table.gv-dark tr.edit button[data-command=Delete]{color:#f87171}

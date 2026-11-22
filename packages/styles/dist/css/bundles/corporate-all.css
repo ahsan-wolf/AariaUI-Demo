@@ -1,0 +1,134 @@
+/* corporate: GridView/table + login, menu, treeview, tabs, navigation, validation */
+/* gv-corporate: dense, data-heavy grid with sticky header and zebra rows */
+.gv-corporate-wrap{max-height:480px;overflow:auto;border:1px solid #cfd8dc}
+table.gv-corporate{width:100%;border-collapse:collapse;font:12px "Segoe UI",Tahoma,sans-serif;color:#263238}
+table.gv-corporate th{position:sticky;top:0;z-index:1;background:#263238;color:#eceff1;text-align:left;padding:8px 10px;border:0!important;white-space:nowrap}
+table.gv-corporate th a{color:#80cbc4;text-decoration:none}
+table.gv-corporate td{padding:6px 10px;border:0!important;border-bottom:1px solid #eceff1!important}
+table.gv-corporate tr:nth-child(even) td{background:#f5f7f8}
+table.gv-corporate tr:hover td{background:#e0f2f1}
+table.gv-corporate td:first-child{font-variant-numeric:tabular-nums;color:#607d8b}
+table.gv-corporate a.btn-link{color:#00796b;text-decoration:none;font-weight:600;margin-right:8px}
+table.gv-corporate a.text-danger{color:#c62828}
+table.gv-corporate .pager td,table.gv-corporate tr.pager>td{background:#eceff1;padding:6px 10px}
+table.gv-corporate .pager a{color:#00796b;padding:2px 6px;text-decoration:none}
+table.gv-corporate .pager span{background:#00796b;color:#fff;padding:2px 6px;border-radius:2px}
+table.gv-corporate tr.selected td{background:#b2dfdb}
+table.gv-corporate tr.edit td{background:#fff8e1}
+table.gv-corporate .empty,table.gv-corporate .empty td{padding:24px;text-align:center;color:#90a4ae}
+
+/* ---- nested pager table reset (GridView renders pager as a table inside a td) ---- */
+table.gv-corporate tr.pager table td{padding:0!important;border:0!important;background:transparent!important}
+/* ---- INLINE EDIT / INSERT (EditRowStyle-CssClass="edit", FooterStyle-CssClass="footer") ---- */
+table.gv-corporate tr.edit input[type=text],table.gv-corporate tr.edit input[type=date],table.gv-corporate tr.footer input[type=text],table.gv-corporate tr.footer input[type=date]{width:100%;box-sizing:border-box;min-width:110px;padding:6px 10px;border:1px solid #b0bec5;border-radius:2px;font:inherit;font-size:12px;background:#fff;color:#263238}
+table.gv-corporate tr.edit input:focus,table.gv-corporate tr.footer input:focus{outline:0;border-color:#00796b;box-shadow:0 0 0 3px #00796b33}
+table.gv-corporate input.invalid{border-color:#dc2626!important}
+table.gv-corporate tr.footer td{background:#eceff1!important}
+table.gv-corporate tr.edit a.btn-link{font-weight:600}
+
+/* lg-corporate : ASP.NET Login, CreateUserWizard, ChangePassword, PasswordRecovery, LoginStatus, LoginName
+   <asp:Login CssClass="lg-corporate" TitleTextStyle-CssClass="title" FailureTextStyle-CssClass="failure" />
+   <asp:LoginStatus CssClass="lg-corporate" />   <asp:LoginName CssClass="lg-corporate" />            */
+table.lg-corporate{border-collapse:separate!important;border-spacing:0;background:#ffffff;color:#263238;font:12px/1.45 "Segoe UI",Tahoma,sans-serif;border:1px solid #cfd8dc;border-radius:2px;box-shadow:none;overflow:hidden;min-width:300px}
+table.lg-corporate>tbody>tr>td{padding:20px 22px}
+table.lg-corporate table{border-collapse:separate;border-spacing:0 8px;width:100%}
+table.lg-corporate td{color:inherit}
+table.lg-corporate table tr:first-child>td[colspan],table.lg-corporate .title{font-size:18px;font-weight:700;text-align:left!important;padding-bottom:6px;background:#263238;color:#eceff1;padding:8px 10px!important;}
+table.lg-corporate td[align="right"]:not([colspan]){text-align:left}
+table.lg-corporate label{color:#607d8b;font-weight:600;font-size:12px}
+table.lg-corporate input[type="text"],table.lg-corporate input[type="password"],table.lg-corporate input[type="email"]{box-sizing:border-box;width:calc(100% - 16px);min-width:180px;padding:8px 10px;border:1px solid #b0bec5;border-radius:2px;background:#ffffff;color:#263238;font:inherit}
+table.lg-corporate input[type="text"]:focus,table.lg-corporate input[type="password"]:focus,table.lg-corporate input[type="email"]:focus{outline:0;border-color:#00796b;box-shadow:0 0 0 3px #00796b33}
+table.lg-corporate input[type="checkbox"]{accent-color:#00796b;margin-right:6px;vertical-align:middle}
+table.lg-corporate input[type="submit"],table.lg-corporate input[type="button"],table.lg-corporate button{background:#00796b;color:#ffffff;border:1px solid #00796b;border-radius:2px;padding:8px 20px;font:inherit;font-weight:600;cursor:pointer}
+table.lg-corporate input[type="submit"]:hover,table.lg-corporate input[type="button"]:hover,table.lg-corporate button:hover{filter:brightness(1.12)}
+table.lg-corporate a{color:#00796b;text-decoration:none}
+table.lg-corporate a:hover{text-decoration:underline}
+table.lg-corporate span[id$="Required"]{color:#c62828!important;font-weight:700;margin-left:4px}
+table.lg-corporate .failure,table.lg-corporate td[style*="color:Red"]{color:#c62828!important}
+table.lg-corporate span[id$="FailureText"]:not(:empty){display:block;background:#ffebee;border:1px solid #c62828;border-radius:2px;padding:8px 10px;text-align:left}
+table.lg-corporate .help,table.lg-corporate .instruction{color:#607d8b;font-size:12px}
+a.lg-corporate{display:inline-block;color:#00796b;border:1px solid #00796b;border-radius:2px;padding:5px 14px;font:600 12px "Segoe UI",Tahoma,sans-serif;text-decoration:none}
+a.lg-corporate:hover{background:#00796b;color:#ffffff}
+span.lg-corporate{font:600 12px "Segoe UI",Tahoma,sans-serif;color:#263238}
+
+/* mn-corporate : asp:Menu (RenderingMode="List", the default from .NET 4.0). Horizontal by default.
+   <asp:Menu CssClass="mn-corporate" Orientation="Horizontal" />      Vertical: CssClass="mn-corporate mn-vertical" Orientation="Vertical"
+   ASP.NET positions/shows dynamic sub-menus with inline styles + script, so this sheet only sets appearance. */
+div.mn-corporate{display:block;font:12px "Segoe UI",Tahoma,sans-serif;background:#263238;color:#eceff1;border-radius:2px;box-shadow:none}
+div.mn-corporate ul{list-style:none;margin:0;padding:0}
+div.mn-corporate ul.static{display:flex;flex-wrap:wrap}
+div.mn-corporate.mn-vertical{display:inline-block;min-width:200px}
+div.mn-corporate.mn-vertical ul.static{flex-direction:column}
+div.mn-corporate a{display:block;padding:10px 16px;color:#eceff1;text-decoration:none;white-space:nowrap}
+div.mn-corporate a:hover{background:#37474f}
+div.mn-corporate a.selected,div.mn-corporate a.active{background:#00796b;color:#ffffff}
+div.mn-corporate a.has-popup::after{content:"\25BE";margin-left:8px;font-size:.8em;opacity:.7}
+div.mn-corporate ul.dynamic{background:#ffffff;border:1px solid #cfd8dc;border-radius:2px;box-shadow:0 6px 18px rgba(0,0,0,.18);min-width:170px;padding:4px 0}
+div.mn-corporate ul.dynamic a{color:#263238;padding:8px 16px}
+div.mn-corporate ul.dynamic a:hover{background:#e0f2f1}
+div.mn-corporate ul.dynamic a.selected{background:#b2dfdb;color:#004d40}
+
+/* tv-corporate : asp:TreeView
+   <asp:TreeView CssClass="tv-corporate" RootNodeStyle-CssClass="root" ParentNodeStyle-CssClass="parent" LeafNodeStyle-CssClass="leaf" SelectedNodeStyle-CssClass="selected" />
+   TreeView draws the +/- glyphs as images; set ExpandImageUrl / CollapseImageUrl for custom icons. */
+div.tv-corporate{display:inline-block;min-width:240px;font:12px "Segoe UI",Tahoma,sans-serif;color:#263238;background:#ffffff;border:1px solid #cfd8dc;border-radius:2px;padding:8px}
+div.tv-corporate table{border-collapse:collapse;border-spacing:0}
+div.tv-corporate td{padding:1px 0;vertical-align:middle;white-space:nowrap}
+div.tv-corporate a{color:#263238;text-decoration:none;border-radius:2px}
+div.tv-corporate a:not(:has(>img)){display:inline-block;padding:3px 8px}
+div.tv-corporate a:not(:has(>img)):hover{background:#e0f2f1}
+div.tv-corporate a.root{font-weight:700}
+div.tv-corporate a.parent{font-weight:600}
+div.tv-corporate a.leaf{color:#607d8b}
+div.tv-corporate a.selected{background:#b2dfdb;color:#004d40;font-weight:600}
+div.tv-corporate img{border:0;vertical-align:middle;}
+div.tv-corporate div[id$="Nodes"]{border-left:1px dotted #cfd8dc;margin-left:9px}
+div.tv-corporate input[type="checkbox"]{accent-color:#00796b;vertical-align:middle}
+
+/* tb-corporate : tab strips
+   (a) AjaxControlToolkit TabContainer:  <ajaxToolkit:TabContainer CssClass="tb-corporate" />   (replaces the default ajax__tab_xp skin)
+   (b) asp:Menu + asp:MultiView:          <asp:Menu CssClass="tb-corporate" Orientation="Horizontal" />  and  <asp:Panel CssClass="tb-corporate-panel"> around the MultiView */
+.tb-corporate{font:12px "Segoe UI",Tahoma,sans-serif;color:#263238}
+.tb-corporate .ajax__tab_header{display:flex;flex-wrap:wrap;border-bottom:2px solid #cfd8dc}
+.tb-corporate .ajax__tab_outer,.tb-corporate .ajax__tab_inner{display:inline-block}
+.tb-corporate .ajax__tab_tab{display:inline-block;padding:9px 18px;margin-bottom:-2px;cursor:pointer;color:#607d8b;font-weight:600;border-bottom:2px solid transparent;border-radius:2px 2px 0 0}
+.tb-corporate .ajax__tab_hover .ajax__tab_tab,.tb-corporate .ajax__tab_tab:hover{color:#263238;background:#e0f2f1}
+.tb-corporate .ajax__tab_active .ajax__tab_tab{color:#eceff1;background:#263238;border-bottom-color:#00796b}
+.tb-corporate .ajax__tab_body{border:1px solid #cfd8dc;border-top:0;padding:16px;background:#ffffff;border-radius:0 0 2px 2px}
+div.tb-corporate ul{list-style:none;margin:0;padding:0}
+div.tb-corporate ul.static{display:flex;flex-wrap:wrap;border-bottom:2px solid #cfd8dc}
+div.tb-corporate a.static{display:block;padding:9px 18px;margin-bottom:-2px;color:#607d8b;font-weight:600;text-decoration:none;border-bottom:2px solid transparent;border-radius:2px 2px 0 0}
+div.tb-corporate a.static:hover{color:#263238;background:#e0f2f1}
+div.tb-corporate a.static.selected,div.tb-corporate a.static.active{color:#eceff1;background:#263238;border-bottom-color:#00796b}
+.tb-corporate-panel{border:1px solid #cfd8dc;border-top:0;padding:16px;background:#ffffff;color:#263238;font:12px "Segoe UI",Tahoma,sans-serif;border-radius:0 0 2px 2px}
+
+/* nv-corporate : navigation controls
+   SiteMapPath: <asp:SiteMapPath CssClass="nv-corporate" PathSeparatorStyle-CssClass="sep" CurrentNodeStyle-CssClass="current" PathSeparator=" " />
+   DataPager:   <asp:DataPager CssClass="nv-corporate-pager" ... CurrentPageLabelCssClass="current" />
+   Link list:   <ul class="nv-corporate-list"><li><a class="active">...</a></li></ul>  (Repeater / hand-written side navigation) */
+span.nv-corporate{display:inline-flex;flex-wrap:wrap;align-items:center;font:12px "Segoe UI",Tahoma,sans-serif;color:#607d8b;background:#eceff1;padding:8px 14px;border-radius:2px}
+span.nv-corporate a{color:#00796b;text-decoration:none}
+span.nv-corporate a:hover{text-decoration:underline}
+span.nv-corporate .sep{font-size:0;color:#607d8b}
+span.nv-corporate .sep::before{content:"\00BB";font-size:12px;margin:0 8px}
+span.nv-corporate .current{color:#263238;font-weight:600}
+span.nv-corporate-pager{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;font:12px "Segoe UI",Tahoma,sans-serif}
+span.nv-corporate-pager a,span.nv-corporate-pager span.current,span.nv-corporate-pager input[type="submit"],span.nv-corporate-pager .aspNetDisabled{display:inline-block;min-width:30px;padding:5px 10px;border:1px solid #cfd8dc;border-radius:2px;background:#ffffff;color:#263238;text-align:center;text-decoration:none;font:inherit;cursor:pointer}
+span.nv-corporate-pager a:hover,span.nv-corporate-pager input[type="submit"]:hover{background:#e0f2f1}
+span.nv-corporate-pager span.current{background:#00796b;border-color:#00796b;color:#ffffff;font-weight:600;cursor:default}
+span.nv-corporate-pager .aspNetDisabled{opacity:.4;cursor:default}
+ul.nv-corporate-list{list-style:none;margin:0;padding:6px;width:220px;background:#ffffff;border:1px solid #cfd8dc;border-radius:2px;font:12px "Segoe UI",Tahoma,sans-serif}
+ul.nv-corporate-list a{display:block;padding:9px 12px;color:#263238;text-decoration:none;border-radius:2px}
+ul.nv-corporate-list a:hover{background:#e0f2f1}
+ul.nv-corporate-list a.active,ul.nv-corporate-list a[aria-current]{background:#b2dfdb;color:#004d40;font-weight:600}
+
+/* vl-corporate : RequiredFieldValidator, CompareValidator, RangeValidator, RegularExpressionValidator, CustomValidator, ValidationSummary
+   <asp:RequiredFieldValidator CssClass="vl-corporate" Display="Dynamic" ... />   <asp:ValidationSummary CssClass="vl-corporate" />
+   Input highlighting: add validation-input-highlight.js (adds .is-invalid to the failing control). */
+span.vl-corporate{color:#c62828!important;font:600 12px/1.4 "Segoe UI",Tahoma,sans-serif;margin-left:6px}
+span.vl-corporate::before{content:"\25B2 ";font-size:.8em;}
+div.vl-corporate{color:#c62828!important;background:#ffebee;border:1px solid #c62828;border-left-width:4px;border-radius:2px;padding:10px 14px;font:12px/1.4 "Segoe UI",Tahoma,sans-serif;margin:8px 0}
+div.vl-corporate ul{margin:4px 0 0;padding-left:18px}
+div.vl-corporate li{margin:2px 0}
+input.is-invalid,select.is-invalid,textarea.is-invalid{border-color:#c62828!important;background-color:#ffebee!important;outline:0;box-shadow:0 0 0 2px #c6282833}
+

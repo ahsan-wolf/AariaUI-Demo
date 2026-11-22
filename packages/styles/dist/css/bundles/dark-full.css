@@ -1,0 +1,253 @@
+/* dark: GridView/table + login, menu, treeview, tabs, navigation, validation */
+/* gv-dark: dark-mode grid with accent header */
+table.gv-dark{width:100%;border-collapse:collapse;background:#111827;color:#e5e7eb;font:14px "Segoe UI",system-ui,sans-serif;border:1px solid #374151!important}
+table.gv-dark th{background:#1f2937;color:#f9fafb;text-align:left;padding:12px 14px;border:1px solid #374151!important;border-bottom:2px solid #6366f1!important}
+table.gv-dark th a{color:#a5b4fc;text-decoration:none}
+table.gv-dark td{padding:10px 14px;border:1px solid #1f2937!important}
+table.gv-dark tr:nth-child(even) td{background:#161e2e}
+table.gv-dark tr:hover td{background:#243049}
+table.gv-dark a.btn-link{color:#818cf8;text-decoration:none;margin-right:10px}
+table.gv-dark a.btn-link:hover{color:#c7d2fe}
+table.gv-dark a.text-danger{color:#f87171}
+table.gv-dark .pager td,table.gv-dark tr.pager>td{background:#1f2937;padding:8px 14px}
+table.gv-dark .pager table{margin:0 auto}
+table.gv-dark .pager a{color:#a5b4fc;padding:3px 8px;text-decoration:none}
+table.gv-dark .pager span{background:#6366f1;color:#fff;padding:3px 8px;border-radius:4px}
+table.gv-dark tr.selected td{background:#312e81}
+table.gv-dark tr.edit td{background:#3b2f10}
+table.gv-dark .empty,table.gv-dark .empty td{padding:28px;text-align:center;color:#6b7280}
+
+/* ---- nested pager table reset (GridView renders pager as a table inside a td) ---- */
+table.gv-dark tr.pager table td{padding:0!important;border:0!important;background:transparent!important}
+/* ---- INLINE EDIT / INSERT (EditRowStyle-CssClass="edit", FooterStyle-CssClass="footer") ---- */
+table.gv-dark tr.edit input[type=text],table.gv-dark tr.edit input[type=date],table.gv-dark tr.footer input[type=text],table.gv-dark tr.footer input[type=date]{width:100%;box-sizing:border-box;min-width:110px;padding:6px 10px;border:1px solid #374151;border-radius:4px;font:inherit;font-size:14px;background:#0b1220;color:#e5e7eb}
+table.gv-dark tr.edit input:focus,table.gv-dark tr.footer input:focus{outline:0;border-color:#6366f1;box-shadow:0 0 0 3px #6366f133}
+table.gv-dark input.invalid{border-color:#dc2626!important}
+table.gv-dark tr.footer td{background:#1f2937!important}
+table.gv-dark tr.edit a.btn-link{font-weight:600}
+
+/* lg-dark : ASP.NET Login, CreateUserWizard, ChangePassword, PasswordRecovery, LoginStatus, LoginName
+   <asp:Login CssClass="lg-dark" TitleTextStyle-CssClass="title" FailureTextStyle-CssClass="failure" />
+   <asp:LoginStatus CssClass="lg-dark" />   <asp:LoginName CssClass="lg-dark" />            */
+table.lg-dark{border-collapse:separate!important;border-spacing:0;background:#111827;color:#e5e7eb;font:14px/1.45 "Segoe UI",system-ui,sans-serif;border:1px solid #374151;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.5);overflow:hidden;min-width:300px}
+table.lg-dark>tbody>tr>td{padding:20px 22px}
+table.lg-dark table{border-collapse:separate;border-spacing:0 8px;width:100%}
+table.lg-dark td{color:inherit}
+table.lg-dark table tr:first-child>td[colspan],table.lg-dark .title{font-size:18px;font-weight:700;text-align:left!important;padding-bottom:6px;}
+table.lg-dark td[align="right"]:not([colspan]){text-align:left}
+table.lg-dark label{color:#9ca3af;font-weight:600;font-size:12px}
+table.lg-dark input[type="text"],table.lg-dark input[type="password"],table.lg-dark input[type="email"]{box-sizing:border-box;width:calc(100% - 16px);min-width:180px;padding:8px 10px;border:1px solid #374151;border-radius:6px;background:#0b1220;color:#e5e7eb;font:inherit}
+table.lg-dark input[type="text"]:focus,table.lg-dark input[type="password"]:focus,table.lg-dark input[type="email"]:focus{outline:0;border-color:#6366f1;box-shadow:0 0 0 3px #6366f133}
+table.lg-dark input[type="checkbox"]{accent-color:#6366f1;margin-right:6px;vertical-align:middle}
+table.lg-dark input[type="submit"],table.lg-dark input[type="button"],table.lg-dark button{background:#6366f1;color:#ffffff;border:1px solid #6366f1;border-radius:6px;padding:8px 20px;font:inherit;font-weight:600;cursor:pointer}
+table.lg-dark input[type="submit"]:hover,table.lg-dark input[type="button"]:hover,table.lg-dark button:hover{filter:brightness(1.12)}
+table.lg-dark a{color:#6366f1;text-decoration:none}
+table.lg-dark a:hover{text-decoration:underline}
+table.lg-dark span[id$="Required"]{color:#f87171!important;font-weight:700;margin-left:4px}
+table.lg-dark .failure,table.lg-dark td[style*="color:Red"]{color:#f87171!important}
+table.lg-dark span[id$="FailureText"]:not(:empty){display:block;background:#3b1c1c;border:1px solid #f87171;border-radius:6px;padding:8px 10px;text-align:left}
+table.lg-dark .help,table.lg-dark .instruction{color:#9ca3af;font-size:12px}
+a.lg-dark{display:inline-block;color:#6366f1;border:1px solid #6366f1;border-radius:6px;padding:5px 14px;font:600 14px "Segoe UI",system-ui,sans-serif;text-decoration:none}
+a.lg-dark:hover{background:#6366f1;color:#ffffff}
+span.lg-dark{font:600 14px "Segoe UI",system-ui,sans-serif;color:#e5e7eb}
+
+/* mn-dark : asp:Menu (RenderingMode="List", the default from .NET 4.0). Horizontal by default.
+   <asp:Menu CssClass="mn-dark" Orientation="Horizontal" />      Vertical: CssClass="mn-dark mn-vertical" Orientation="Vertical"
+   ASP.NET positions/shows dynamic sub-menus with inline styles + script, so this sheet only sets appearance. */
+div.mn-dark{display:block;font:14px "Segoe UI",system-ui,sans-serif;background:#1f2937;color:#e5e7eb;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+div.mn-dark ul{list-style:none;margin:0;padding:0}
+div.mn-dark ul.static{display:flex;flex-wrap:wrap}
+div.mn-dark.mn-vertical{display:inline-block;min-width:200px}
+div.mn-dark.mn-vertical ul.static{flex-direction:column}
+div.mn-dark a{display:block;padding:10px 16px;color:#e5e7eb;text-decoration:none;white-space:nowrap}
+div.mn-dark a:hover{background:#374151}
+div.mn-dark a.selected,div.mn-dark a.active{background:#6366f1;color:#ffffff}
+div.mn-dark a.has-popup::after{content:"\25BE";margin-left:8px;font-size:.8em;opacity:.7}
+div.mn-dark ul.dynamic{background:#1f2937;border:1px solid #374151;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.18);min-width:170px;padding:4px 0}
+div.mn-dark ul.dynamic a{color:#e5e7eb;padding:8px 16px}
+div.mn-dark ul.dynamic a:hover{background:#243049}
+div.mn-dark ul.dynamic a.selected{background:#312e81;color:#c7d2fe}
+
+/* tv-dark : asp:TreeView
+   <asp:TreeView CssClass="tv-dark" RootNodeStyle-CssClass="root" ParentNodeStyle-CssClass="parent" LeafNodeStyle-CssClass="leaf" SelectedNodeStyle-CssClass="selected" />
+   TreeView draws the +/- glyphs as images; set ExpandImageUrl / CollapseImageUrl for custom icons. */
+div.tv-dark{display:inline-block;min-width:240px;font:14px "Segoe UI",system-ui,sans-serif;color:#e5e7eb;background:#111827;border:1px solid #374151;border-radius:6px;padding:8px}
+div.tv-dark table{border-collapse:collapse;border-spacing:0}
+div.tv-dark td{padding:1px 0;vertical-align:middle;white-space:nowrap}
+div.tv-dark a{color:#e5e7eb;text-decoration:none;border-radius:6px}
+div.tv-dark a:not(:has(>img)){display:inline-block;padding:3px 8px}
+div.tv-dark a:not(:has(>img)):hover{background:#243049}
+div.tv-dark a.root{font-weight:700}
+div.tv-dark a.parent{font-weight:600}
+div.tv-dark a.leaf{color:#9ca3af}
+div.tv-dark a.selected{background:#312e81;color:#c7d2fe;font-weight:600}
+div.tv-dark img{border:0;vertical-align:middle;filter:invert(1);}
+div.tv-dark div[id$="Nodes"]{border-left:1px dotted #374151;margin-left:9px}
+div.tv-dark input[type="checkbox"]{accent-color:#6366f1;vertical-align:middle}
+
+/* tb-dark : tab strips
+   (a) AjaxControlToolkit TabContainer:  <ajaxToolkit:TabContainer CssClass="tb-dark" />   (replaces the default ajax__tab_xp skin)
+   (b) asp:Menu + asp:MultiView:          <asp:Menu CssClass="tb-dark" Orientation="Horizontal" />  and  <asp:Panel CssClass="tb-dark-panel"> around the MultiView */
+.tb-dark{font:14px "Segoe UI",system-ui,sans-serif;color:#e5e7eb}
+.tb-dark .ajax__tab_header{display:flex;flex-wrap:wrap;border-bottom:2px solid #374151}
+.tb-dark .ajax__tab_outer,.tb-dark .ajax__tab_inner{display:inline-block}
+.tb-dark .ajax__tab_tab{display:inline-block;padding:9px 18px;margin-bottom:-2px;cursor:pointer;color:#9ca3af;font-weight:600;border-bottom:2px solid transparent;border-radius:6px 6px 0 0}
+.tb-dark .ajax__tab_hover .ajax__tab_tab,.tb-dark .ajax__tab_tab:hover{color:#e5e7eb;background:#243049}
+.tb-dark .ajax__tab_active .ajax__tab_tab{color:#a5b4fc;background:#1f2937;border-bottom-color:#6366f1}
+.tb-dark .ajax__tab_body{border:1px solid #374151;border-top:0;padding:16px;background:#111827;border-radius:0 0 6px 6px}
+div.tb-dark ul{list-style:none;margin:0;padding:0}
+div.tb-dark ul.static{display:flex;flex-wrap:wrap;border-bottom:2px solid #374151}
+div.tb-dark a.static{display:block;padding:9px 18px;margin-bottom:-2px;color:#9ca3af;font-weight:600;text-decoration:none;border-bottom:2px solid transparent;border-radius:6px 6px 0 0}
+div.tb-dark a.static:hover{color:#e5e7eb;background:#243049}
+div.tb-dark a.static.selected,div.tb-dark a.static.active{color:#a5b4fc;background:#1f2937;border-bottom-color:#6366f1}
+.tb-dark-panel{border:1px solid #374151;border-top:0;padding:16px;background:#111827;color:#e5e7eb;font:14px "Segoe UI",system-ui,sans-serif;border-radius:0 0 6px 6px}
+
+/* nv-dark : navigation controls
+   SiteMapPath: <asp:SiteMapPath CssClass="nv-dark" PathSeparatorStyle-CssClass="sep" CurrentNodeStyle-CssClass="current" PathSeparator=" " />
+   DataPager:   <asp:DataPager CssClass="nv-dark-pager" ... CurrentPageLabelCssClass="current" />
+   Link list:   <ul class="nv-dark-list"><li><a class="active">...</a></li></ul>  (Repeater / hand-written side navigation) */
+span.nv-dark{display:inline-flex;flex-wrap:wrap;align-items:center;font:14px "Segoe UI",system-ui,sans-serif;color:#9ca3af;background:#1f2937;padding:8px 14px;border-radius:6px}
+span.nv-dark a{color:#6366f1;text-decoration:none}
+span.nv-dark a:hover{text-decoration:underline}
+span.nv-dark .sep{font-size:0;color:#9ca3af}
+span.nv-dark .sep::before{content:"\203A";font-size:14px;margin:0 8px}
+span.nv-dark .current{color:#e5e7eb;font-weight:600}
+span.nv-dark-pager{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;font:14px "Segoe UI",system-ui,sans-serif}
+span.nv-dark-pager a,span.nv-dark-pager span.current,span.nv-dark-pager input[type="submit"],span.nv-dark-pager .aspNetDisabled{display:inline-block;min-width:30px;padding:5px 10px;border:1px solid #374151;border-radius:6px;background:#111827;color:#e5e7eb;text-align:center;text-decoration:none;font:inherit;cursor:pointer}
+span.nv-dark-pager a:hover,span.nv-dark-pager input[type="submit"]:hover{background:#243049}
+span.nv-dark-pager span.current{background:#6366f1;border-color:#6366f1;color:#ffffff;font-weight:600;cursor:default}
+span.nv-dark-pager .aspNetDisabled{opacity:.4;cursor:default}
+ul.nv-dark-list{list-style:none;margin:0;padding:6px;width:220px;background:#111827;border:1px solid #374151;border-radius:6px;font:14px "Segoe UI",system-ui,sans-serif}
+ul.nv-dark-list a{display:block;padding:9px 12px;color:#e5e7eb;text-decoration:none;border-radius:6px}
+ul.nv-dark-list a:hover{background:#243049}
+ul.nv-dark-list a.active,ul.nv-dark-list a[aria-current]{background:#312e81;color:#c7d2fe;font-weight:600}
+
+/* vl-dark : RequiredFieldValidator, CompareValidator, RangeValidator, RegularExpressionValidator, CustomValidator, ValidationSummary
+   <asp:RequiredFieldValidator CssClass="vl-dark" Display="Dynamic" ... />   <asp:ValidationSummary CssClass="vl-dark" />
+   Input highlighting: add validation-input-highlight.js (adds .is-invalid to the failing control). */
+span.vl-dark{color:#f87171!important;font:600 12px/1.4 "Segoe UI",system-ui,sans-serif;margin-left:6px}
+span.vl-dark::before{content:"\26A0\FE0E ";}
+div.vl-dark{color:#f87171!important;background:#3b1c1c;border:1px solid #f87171;border-left-width:4px;border-radius:6px;padding:10px 14px;font:14px/1.4 "Segoe UI",system-ui,sans-serif;margin:8px 0}
+div.vl-dark ul{margin:4px 0 0;padding-left:18px}
+div.vl-dark li{margin:2px 0}
+input.is-invalid,select.is-invalid,textarea.is-invalid{border-color:#f87171!important;background-color:#3b1c1c!important;outline:0;box-shadow:0 0 0 2px #f8717133}
+
+/* gv-dark-edit : GridView inline edit / insert rows (adds to gv-dark; the kit's gv-dark.css is untouched). Added family, same palette.
+   <table class="gv-dark"> tr.edit (editTemplate / in-place edit) and tr.footer (insert row): inputs, select, textarea, checkbox, label, button */
+table.gv-dark tr.edit input[type=text],table.gv-dark tr.edit input[type=password],table.gv-dark tr.edit input[type=email],table.gv-dark tr.edit input[type=number],table.gv-dark tr.edit input[type=date],table.gv-dark tr.edit input:not([type]),table.gv-dark tr.edit select,table.gv-dark tr.edit textarea{box-sizing:border-box;width:100%;min-width:110px;padding:6px 10px;border:1px solid #374151;border-radius:4px;background:#0b1220;color:#e5e7eb;font:inherit;margin:2px 0}
+table.gv-dark tr.edit textarea{min-height:72px;resize:vertical}
+table.gv-dark tr.edit input[type=text]:focus,table.gv-dark tr.edit input[type=password]:focus,table.gv-dark tr.edit input[type=email]:focus,table.gv-dark tr.edit input[type=number]:focus,table.gv-dark tr.edit input[type=date]:focus,table.gv-dark tr.edit input:not([type]):focus,table.gv-dark tr.edit select:focus,table.gv-dark tr.edit textarea:focus{outline:0;border-color:#6366f1;box-shadow:0 0 0 3px #6366f133}
+table.gv-dark tr.edit input[type=checkbox],table.gv-dark tr.edit input[type=radio]{accent-color:#6366f1;margin-right:6px;vertical-align:middle}
+table.gv-dark tr.edit label{color:#9ca3af;font-weight:600;font-size:12px}
+table.gv-dark tr.edit input.invalid,table.gv-dark tr.edit input.is-invalid{border-color:#f87171!important}
+table.gv-dark tr.footer input[type=text],table.gv-dark tr.footer input[type=password],table.gv-dark tr.footer input[type=email],table.gv-dark tr.footer input[type=number],table.gv-dark tr.footer input[type=date],table.gv-dark tr.footer input:not([type]),table.gv-dark tr.footer select,table.gv-dark tr.footer textarea{box-sizing:border-box;width:100%;min-width:110px;padding:6px 10px;border:1px solid #374151;border-radius:4px;background:#0b1220;color:#e5e7eb;font:inherit;margin:2px 0}
+table.gv-dark tr.footer textarea{min-height:72px;resize:vertical}
+table.gv-dark tr.footer input[type=text]:focus,table.gv-dark tr.footer input[type=password]:focus,table.gv-dark tr.footer input[type=email]:focus,table.gv-dark tr.footer input[type=number]:focus,table.gv-dark tr.footer input[type=date]:focus,table.gv-dark tr.footer input:not([type]):focus,table.gv-dark tr.footer select:focus,table.gv-dark tr.footer textarea:focus{outline:0;border-color:#6366f1;box-shadow:0 0 0 3px #6366f133}
+table.gv-dark tr.footer input[type=checkbox],table.gv-dark tr.footer input[type=radio]{accent-color:#6366f1;margin-right:6px;vertical-align:middle}
+table.gv-dark tr.footer label{color:#9ca3af;font-weight:600;font-size:12px}
+table.gv-dark tr.footer input.invalid,table.gv-dark tr.footer input.is-invalid{border-color:#f87171!important}
+table.gv-dark tr.edit td[colspan] label{display:block;margin:0 0 10px}
+table.gv-dark tr.edit td[colspan]{padding:14px 16px}
+table.gv-dark tr.edit button,table.gv-dark tr.footer button{border-radius:6px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#1f2937;color:#e5e7eb;border:1px solid #374151}
+table.gv-dark tr.edit button:hover,table.gv-dark tr.footer button:hover{filter:brightness(1.08)}
+table.gv-dark tr.edit button:focus-visible,table.gv-dark tr.footer button:focus-visible{outline:0;box-shadow:0 0 0 3px #6366f133}
+table.gv-dark tr.edit button:disabled,table.gv-dark tr.footer button:disabled{opacity:.55;cursor:not-allowed;filter:none}
+table.gv-dark tr.edit button.save,table.gv-dark tr.edit button.primary,table.gv-dark tr.edit button[type=submit],table.gv-dark tr.edit button[data-command=Update],table.gv-dark tr.footer button.add,table.gv-dark tr.footer button.primary,table.gv-dark tr.footer button[type=submit],table.gv-dark tr.footer button[data-command=Insert],table.gv-dark tr.edit td>button:first-of-type,table.gv-dark tr.edit td>*:not(label) button:first-of-type{border-radius:6px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#6366f1;color:#ffffff;border:1px solid #6366f1}
+table.gv-dark tr.edit button+button{margin-left:6px}
+table.gv-dark tr.edit button.delete,table.gv-dark tr.edit button[data-command=Delete]{color:#f87171}
+
+/* md-dark : popup dialog (WebFormsModal / ModalBehavior). Added family, same palette as lg-dark/gv-dark.
+   <div class="modal fade show d-block md-dark" role="dialog" aria-modal="true"> > .modal-dialog > .modal-content
+   > .modal-header (h5.modal-title, button.btn-close) + .modal-body + .modal-footer (button.btn.btn-secondary, button.btn.btn-primary)
+   Backdrop colour: override --wf-backdrop on the adapter (the adapter sets it inline) or use background-color:...!important here. */
+.md-dark{position:fixed;inset:0;z-index:1050;display:flex!important;align-items:center;justify-content:center;box-sizing:border-box;padding:16px;overflow:auto;background-color:var(--wf-backdrop,rgba(0,0,0,.5));font:14px/1.45 "Segoe UI",system-ui,sans-serif;color:#e5e7eb;animation:md-dark-fade .15s ease-out}
+.md-dark .modal-dialog{box-sizing:border-box;width:100%;max-width:500px;margin:0;animation:md-dark-in .18s ease-out}
+.md-dark .modal-content{display:flex;flex-direction:column;max-height:calc(100vh - 32px);background:#111827;color:#e5e7eb;border:1px solid #374151;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.6);overflow:hidden}
+.md-dark .modal-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;background:#1f2937;color:#f9fafb;border-bottom:2px solid #6366f1}
+.md-dark .modal-title{margin:0;font-size:18px;font-weight:700;line-height:1.3;color:inherit}
+.md-dark .btn-close{position:relative;width:28px;height:28px;padding:0;border:0;border-radius:6px;background:transparent;color:#9ca3af;font:inherit;font-size:0;cursor:pointer;flex:none}
+.md-dark .btn-close::before{content:"\00d7";font-size:24px;line-height:28px;display:block;text-align:center}
+.md-dark .btn-close:hover,.md-dark .btn-close:focus-visible{color:#f9fafb;outline:0}
+.md-dark .btn-close:focus-visible{box-shadow:0 0 0 3px #6366f133}
+.md-dark .modal-body{padding:20px;overflow:auto;font-size:14px;color:#e5e7eb}
+.md-dark .modal-body p{margin:0 0 10px}
+.md-dark .modal-body p:last-child{margin-bottom:0}
+.md-dark .modal-body input[type=text],.md-dark .modal-body input[type=password],.md-dark .modal-body input[type=email],.md-dark .modal-body input[type=number],.md-dark .modal-body input[type=date],.md-dark .modal-body input:not([type]),.md-dark .modal-body select,.md-dark .modal-body textarea{box-sizing:border-box;width:100%;min-width:110px;padding:8px 10px;border:1px solid #374151;border-radius:4px;background:#0b1220;color:#e5e7eb;font:inherit}
+.md-dark .modal-body textarea{min-height:72px;resize:vertical}
+.md-dark .modal-body input[type=text]:focus,.md-dark .modal-body input[type=password]:focus,.md-dark .modal-body input[type=email]:focus,.md-dark .modal-body input[type=number]:focus,.md-dark .modal-body input[type=date]:focus,.md-dark .modal-body input:not([type]):focus,.md-dark .modal-body select:focus,.md-dark .modal-body textarea:focus{outline:0;border-color:#6366f1;box-shadow:0 0 0 3px #6366f133}
+.md-dark .modal-body input[type=checkbox],.md-dark .modal-body input[type=radio]{accent-color:#6366f1;margin-right:6px;vertical-align:middle}
+.md-dark .modal-body label{color:#9ca3af;font-weight:600;font-size:12px}
+.md-dark .modal-body input.invalid,.md-dark .modal-body input.is-invalid{border-color:#f87171!important}
+.md-dark .modal-body a{color:#6366f1;text-decoration:none}
+.md-dark .modal-body a:hover{text-decoration:underline}
+.md-dark .modal-footer{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:12px 20px;background:#1f2937;border-top:1px solid #374151}
+.md-dark .btn{border-radius:6px;padding:8px 20px;font:inherit;font-weight:600;cursor:pointer;background:#1f2937;color:#e5e7eb;border:1px solid #374151}
+.md-dark .btn-primary{border-radius:6px;padding:8px 20px;font:inherit;font-weight:600;cursor:pointer;background:#6366f1;color:#ffffff;border:1px solid #6366f1}
+.md-dark .btn:hover{filter:brightness(1.08)}
+.md-dark .btn:focus-visible{outline:0;box-shadow:0 0 0 3px #6366f133}
+.md-dark .btn:disabled{opacity:.55;cursor:not-allowed;filter:none}
+@keyframes md-dark-fade{from{opacity:0}to{opacity:1}}
+@keyframes md-dark-in{from{opacity:0;transform:translateY(-12px) scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.md-dark,.md-dark .modal-dialog{animation:none}}
+
+/* rp-dark : Repeater (WebFormsRepeater). Added family, same palette as gv-dark/lg-dark.
+   <div class="wf-repeater rp-dark"> button.add, .wf-item (.alt odd, .active current, .edit edit template) > header.wf-item-header, .empty */
+div.rp-dark{box-sizing:border-box;display:flex;flex-direction:column;gap:8px;font:14px/1.45 "Segoe UI",system-ui,sans-serif;color:#e5e7eb}
+.rp-dark .wf-item{box-sizing:border-box;padding:12px 16px;background:#111827;color:#e5e7eb;border:1px solid #374151;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.5);font-size:14px}
+.rp-dark .wf-item.alt{background:#161e2e}
+.rp-dark .wf-item:hover{background:#243049}
+.rp-dark .wf-item.active{background:#312e81;border-color:#6366f1}
+.rp-dark .wf-item.edit{background:#3b2f10}
+.rp-dark .wf-item-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #1f2937;font-weight:700;color:#e5e7eb}
+.rp-dark .add{align-self:flex-start}
+.rp-dark .empty{padding:28px;text-align:center;color:#9ca3af}
+.rp-dark a{color:#6366f1;text-decoration:none}
+.rp-dark a:hover{text-decoration:underline}
+.rp-dark .wf-item.edit input[type=text],.rp-dark .wf-item.edit input[type=password],.rp-dark .wf-item.edit input[type=email],.rp-dark .wf-item.edit input[type=number],.rp-dark .wf-item.edit input[type=date],.rp-dark .wf-item.edit input:not([type]),.rp-dark .wf-item.edit select,.rp-dark .wf-item.edit textarea{box-sizing:border-box;width:100%;min-width:110px;padding:6px 10px;border:1px solid #374151;border-radius:4px;background:#0b1220;color:#e5e7eb;font:inherit;margin:2px 0 8px}
+.rp-dark .wf-item.edit textarea{min-height:72px;resize:vertical}
+.rp-dark .wf-item.edit input[type=text]:focus,.rp-dark .wf-item.edit input[type=password]:focus,.rp-dark .wf-item.edit input[type=email]:focus,.rp-dark .wf-item.edit input[type=number]:focus,.rp-dark .wf-item.edit input[type=date]:focus,.rp-dark .wf-item.edit input:not([type]):focus,.rp-dark .wf-item.edit select:focus,.rp-dark .wf-item.edit textarea:focus{outline:0;border-color:#6366f1;box-shadow:0 0 0 3px #6366f133}
+.rp-dark .wf-item.edit input[type=checkbox],.rp-dark .wf-item.edit input[type=radio]{accent-color:#6366f1;margin-right:6px;vertical-align:middle}
+.rp-dark .wf-item.edit label{color:#9ca3af;font-weight:600;font-size:12px}
+.rp-dark .wf-item.edit input.invalid,.rp-dark .wf-item.edit input.is-invalid{border-color:#f87171!important}
+.rp-dark button{border-radius:6px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#1f2937;color:#e5e7eb;border:1px solid #374151}
+.rp-dark button:hover{filter:brightness(1.08)}
+.rp-dark button:focus-visible{outline:0;box-shadow:0 0 0 3px #6366f133}
+.rp-dark button:disabled{opacity:.55;cursor:not-allowed;filter:none}
+.rp-dark button.add,.rp-dark button.save,.rp-dark button.primary,.rp-dark button[type=submit],.rp-dark button[data-command=Update],.rp-dark button[data-command=Save],.rp-dark button[data-command=Insert],.rp-dark .wf-item.edit>button:first-of-type,.rp-dark .wf-item.edit>*:not(.rp-dark .wf-item-header) button:first-of-type{border-radius:6px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#6366f1;color:#ffffff;border:1px solid #6366f1}
+.rp-dark button.delete,.rp-dark button[data-command=Delete]{color:#f87171}
+
+/* dl-dark : DataList (WebFormsDataList). Added family, same palette as gv-dark/lg-dark.
+   Flow:  <div class="wf-datalist dl-dark"> div.datalist-item (+ .alt .selected .edit, header/footer/separator)
+   Table: <table class="datalist-table wf-datalist dl-dark"> td.datalist-cell (+ same classes), td.datalist-cell-empty;  empty: p.empty */
+div.dl-dark{box-sizing:border-box;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;font:14px/1.45 "Segoe UI",system-ui,sans-serif;color:#e5e7eb}
+div.dl-dark .datalist-item{box-sizing:border-box;padding:12px 16px;background:#111827;color:#e5e7eb;border:1px solid #374151;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.5);font-size:14px}
+div.dl-dark .datalist-item.alt,div.dl-dark .datalist-alternatingItem{background:#161e2e}
+div.dl-dark .datalist-item:hover{background:#243049}
+div.dl-dark .datalist-item.selected,div.dl-dark .datalist-selectedItem{background:#312e81;border-color:#6366f1}
+div.dl-dark .datalist-item.edit,div.dl-dark .datalist-editItem{background:#3b2f10}
+div.dl-dark .datalist-item.header,div.dl-dark .datalist-item.footer{grid-column:1/-1;background:#1f2937;color:#f9fafb;border:1px solid #374151;border-bottom:2px solid #6366f1;font-weight:700}
+div.dl-dark .datalist-item.separator{grid-column:1/-1;padding:0;height:0;border:0;border-top:1px solid #1f2937;background:transparent;box-shadow:none}
+table.dl-dark{width:100%;border-collapse:separate;border-spacing:0;font:14px/1.45 "Segoe UI",system-ui,sans-serif;color:#e5e7eb;font-size:14px;border:1px solid #374151;border-radius:6px;background:#111827}
+.dl-dark .datalist-cell{padding:12px 16px;vertical-align:top;border:0;border-bottom:1px solid #1f2937;background:#111827;color:#e5e7eb}
+.dl-dark .datalist-cell.alt,.dl-dark .datalist-cell.datalist-alternatingItem{background:#161e2e}
+.dl-dark .datalist-cell:hover{background:#243049}
+.dl-dark .datalist-cell.selected,.dl-dark .datalist-cell.datalist-selectedItem{background:#312e81}
+.dl-dark .datalist-cell.edit,.dl-dark .datalist-cell.datalist-editItem{background:#3b2f10}
+.dl-dark .datalist-cell.header,.dl-dark .datalist-cell.datalist-header,.dl-dark .datalist-cell.footer,.dl-dark .datalist-cell.datalist-footer{background:#1f2937;color:#f9fafb;font-weight:700;border-bottom:2px solid #6366f1}
+.dl-dark .datalist-cell.separator,.dl-dark .datalist-cell.datalist-separator{padding:0;height:0;border-bottom:1px solid #1f2937}
+.dl-dark .datalist-cell-empty{padding:28px;text-align:center;color:#9ca3af}
+.dl-dark .empty{padding:28px;text-align:center;color:#9ca3af}
+.dl-dark a{color:#6366f1;text-decoration:none}
+.dl-dark a:hover{text-decoration:underline}
+.dl-dark.wf-datalist .edit input[type=text],.dl-dark.wf-datalist .edit input[type=password],.dl-dark.wf-datalist .edit input[type=email],.dl-dark.wf-datalist .edit input[type=number],.dl-dark.wf-datalist .edit input[type=date],.dl-dark.wf-datalist .edit input:not([type]),.dl-dark.wf-datalist .edit select,.dl-dark.wf-datalist .edit textarea{box-sizing:border-box;width:100%;min-width:110px;padding:6px 10px;border:1px solid #374151;border-radius:4px;background:#0b1220;color:#e5e7eb;font:inherit;margin:2px 0 8px}
+.dl-dark.wf-datalist .edit textarea{min-height:72px;resize:vertical}
+.dl-dark.wf-datalist .edit input[type=text]:focus,.dl-dark.wf-datalist .edit input[type=password]:focus,.dl-dark.wf-datalist .edit input[type=email]:focus,.dl-dark.wf-datalist .edit input[type=number]:focus,.dl-dark.wf-datalist .edit input[type=date]:focus,.dl-dark.wf-datalist .edit input:not([type]):focus,.dl-dark.wf-datalist .edit select:focus,.dl-dark.wf-datalist .edit textarea:focus{outline:0;border-color:#6366f1;box-shadow:0 0 0 3px #6366f133}
+.dl-dark.wf-datalist .edit input[type=checkbox],.dl-dark.wf-datalist .edit input[type=radio]{accent-color:#6366f1;margin-right:6px;vertical-align:middle}
+.dl-dark.wf-datalist .edit label{color:#9ca3af;font-weight:600;font-size:12px}
+.dl-dark.wf-datalist .edit input.invalid,.dl-dark.wf-datalist .edit input.is-invalid{border-color:#f87171!important}
+.dl-dark button{border-radius:6px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#1f2937;color:#e5e7eb;border:1px solid #374151}
+.dl-dark button:hover{filter:brightness(1.08)}
+.dl-dark button:focus-visible{outline:0;box-shadow:0 0 0 3px #6366f133}
+.dl-dark button:disabled{opacity:.55;cursor:not-allowed;filter:none}
+.dl-dark button.add,.dl-dark button.save,.dl-dark button.primary,.dl-dark button[type=submit],.dl-dark button[data-command=Update],.dl-dark button[data-command=Save],.dl-dark button[data-command=Insert],.dl-dark.wf-datalist .edit>button:first-of-type,.dl-dark.wf-datalist .edit>*:not(.dl-dark .header) button:first-of-type{border-radius:6px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#6366f1;color:#ffffff;border:1px solid #6366f1}
+.dl-dark button.delete,.dl-dark button[data-command=Delete]{color:#f87171}

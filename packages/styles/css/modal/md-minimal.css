@@ -1,0 +1,33 @@
+/* md-minimal : popup dialog (WebFormsModal / ModalBehavior). Added family, same palette as lg-minimal/gv-minimal.
+   <div class="modal fade show d-block md-minimal" role="dialog" aria-modal="true"> > .modal-dialog > .modal-content
+   > .modal-header (h5.modal-title, button.btn-close) + .modal-body + .modal-footer (button.btn.btn-secondary, button.btn.btn-primary)
+   Backdrop colour: override --wf-backdrop on the adapter (the adapter sets it inline) or use background-color:...!important here. */
+.md-minimal{position:fixed;inset:0;z-index:1050;display:flex!important;align-items:center;justify-content:center;box-sizing:border-box;padding:16px;overflow:auto;background-color:var(--wf-backdrop,rgba(0,0,0,.5));font:14px/1.45 "Helvetica Neue",Arial,sans-serif;color:#222222;animation:md-minimal-fade .15s ease-out}
+.md-minimal .modal-dialog{box-sizing:border-box;width:100%;max-width:500px;margin:0;animation:md-minimal-in .18s ease-out}
+.md-minimal .modal-content{display:flex;flex-direction:column;max-height:calc(100vh - 32px);background:#ffffff;color:#222222;border:1px solid #dddddd;border-radius:0;box-shadow:0 8px 24px rgba(0,0,0,.16);overflow:hidden}
+.md-minimal .modal-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;background:transparent;color:#222222;border-bottom:2px solid #222222}
+.md-minimal .modal-title{margin:0;font-size:18px;font-weight:700;line-height:1.3;color:inherit}
+.md-minimal .btn-close{position:relative;width:28px;height:28px;padding:0;border:0;border-radius:0;background:transparent;color:#888888;font:inherit;font-size:0;cursor:pointer;flex:none}
+.md-minimal .btn-close::before{content:"\00d7";font-size:24px;line-height:28px;display:block;text-align:center}
+.md-minimal .btn-close:hover,.md-minimal .btn-close:focus-visible{color:#111111;outline:0}
+.md-minimal .btn-close:focus-visible{box-shadow:0 0 0 3px #11111133}
+.md-minimal .modal-body{padding:20px;overflow:auto;font-size:14px;color:#222222}
+.md-minimal .modal-body p{margin:0 0 10px}
+.md-minimal .modal-body p:last-child{margin-bottom:0}
+.md-minimal .modal-body input[type=text],.md-minimal .modal-body input[type=password],.md-minimal .modal-body input[type=email],.md-minimal .modal-body input[type=number],.md-minimal .modal-body input[type=date],.md-minimal .modal-body input:not([type]),.md-minimal .modal-body select,.md-minimal .modal-body textarea{box-sizing:border-box;width:100%;min-width:110px;padding:8px 10px;border:1px solid #bbbbbb;border-radius:0;background:#ffffff;color:#222222;font:inherit}
+.md-minimal .modal-body textarea{min-height:72px;resize:vertical}
+.md-minimal .modal-body input[type=text]:focus,.md-minimal .modal-body input[type=password]:focus,.md-minimal .modal-body input[type=email]:focus,.md-minimal .modal-body input[type=number]:focus,.md-minimal .modal-body input[type=date]:focus,.md-minimal .modal-body input:not([type]):focus,.md-minimal .modal-body select:focus,.md-minimal .modal-body textarea:focus{outline:0;border-color:#111111;box-shadow:0 0 0 3px #11111133}
+.md-minimal .modal-body input[type=checkbox],.md-minimal .modal-body input[type=radio]{accent-color:#111111;margin-right:6px;vertical-align:middle}
+.md-minimal .modal-body label{color:#888888;font-weight:600;font-size:12px}
+.md-minimal .modal-body input.invalid,.md-minimal .modal-body input.is-invalid{border-color:#c62828!important}
+.md-minimal .modal-body a{color:#111111;text-decoration:none}
+.md-minimal .modal-body a:hover{text-decoration:underline}
+.md-minimal .modal-footer{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:12px 20px;background:#ffffff;border-top:1px solid #dddddd}
+.md-minimal .btn{border-radius:0;padding:8px 20px;font:inherit;font-weight:600;cursor:pointer;background:#ffffff;color:#222222;border:1px solid #bbbbbb}
+.md-minimal .btn-primary{border-radius:0;padding:8px 20px;font:inherit;font-weight:600;cursor:pointer;background:#111111;color:#ffffff;border:1px solid #111111}
+.md-minimal .btn:hover{filter:brightness(1.08)}
+.md-minimal .btn:focus-visible{outline:0;box-shadow:0 0 0 3px #11111133}
+.md-minimal .btn:disabled{opacity:.55;cursor:not-allowed;filter:none}
+@keyframes md-minimal-fade{from{opacity:0}to{opacity:1}}
+@keyframes md-minimal-in{from{opacity:0;transform:translateY(-12px) scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.md-minimal,.md-minimal .modal-dialog{animation:none}}
