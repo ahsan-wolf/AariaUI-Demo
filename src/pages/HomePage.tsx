@@ -13,6 +13,7 @@ import {
   IconX,
 } from '../components/Icons';
 import { CodeSnippetViewer } from '../components/CodeSnippetViewer';
+import aairaDemoGif from '../../images/aaira-demo-720px.gif';
 
 interface HomePageProps {
   onNavigate: (page: 'home' | 'controls' | 'migration' | 'docs', controlId?: string) => void;
@@ -32,6 +33,49 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [selectedRowId, setSelectedRowId] = useState<number | null>(102);
   const [contactOpen, setContactOpen] = useState(false);
   const [contactSubmitted, setContactSubmitted] = useState(false);
+  const [contactSending, setContactSending] = useState(false);
+  const [contactName, setContactName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactCompany, setContactCompany] = useState('');
+  const [contactDetails, setContactDetails] = useState('');
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setContactSending(true);
+    try {
+      const response = await fetch('https://formsubmit.co/ajax/ahsanalnasar@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          _subject: `Aaira Controls Demo Request from ${contactName}`,
+          name: contactName,
+          email: contactEmail,
+          company: contactCompany || 'N/A',
+          message: contactDetails || 'Demo request submitted from Aaira Controls main page.',
+        }),
+      });
+      if (!response.ok) {
+        throw new Error('FormSubmit failed');
+      }
+      setContactSubmitted(true);
+      setContactName('');
+      setContactEmail('');
+      setContactCompany('');
+      setContactDetails('');
+    } catch {
+      const subject = encodeURIComponent(`Aaira Controls Demo Request - ${contactName}`);
+      const body = encodeURIComponent(
+        `Name: ${contactName}\nEmail: ${contactEmail}\nCompany: ${contactCompany}\n\nProject Details:\n${contactDetails}`
+      );
+      window.location.href = `mailto:ahsanalnasar@gmail.com?subject=${subject}&body=${body}`;
+      setContactSubmitted(true);
+    } finally {
+      setContactSending(false);
+    }
+  };
 
   const pageSize = 4;
 
@@ -117,6 +161,24 @@ $("#employeesGrid").wfGridView({
           Use familiar controls like GridView, Repeater, Login, Menu, and validators directly in React, Angular, 
           or plain JavaScript—retaining consistent properties, events, and data models with zero ViewState or page postbacks.
         </p>
+
+        <div
+          style={{
+            width: '100%',
+            maxWidth: '720px',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            border: '1px solid var(--aa-border-subtle)',
+            boxShadow: 'var(--aa-shadow-lg)',
+          }}
+        >
+          <img
+            src={aairaDemoGif}
+            alt="Aaira Enterprise UI Framework Demo"
+            width={720}
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
+        </div>
 
         <div className="hero-actions">
           <button className="btn-primary" onClick={() => onNavigate('controls', 'grid-view')}>
@@ -397,7 +459,7 @@ $("#employeesGrid").wfGridView({
           </p>
         </div>
         <a
-          href="mailto:demo@aairacontrols.com?subject=Aaira%20Controls%20Demo%20Request"
+          href="mailto:ahsanalnasar@gmail.com?subject=Aaira%20Controls%20Demo%20Request"
           className="btn-primary"
           style={{ textDecoration: 'none' }}
           onClick={(e) => {
@@ -434,12 +496,12 @@ $("#employeesGrid").wfGridView({
             {contactSubmitted ? (
               <div style={{ padding: '16px 0', textAlign: 'center' }}>
                 <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--aa-text-primary)', marginBottom: '8px' }}>
-                  Thank you! Your demo request has been prepared.
+                  Thank you! Your demo request has been sent.
                 </p>
                 <p style={{ fontSize: '13px', color: 'var(--aa-text-secondary)', marginBottom: '20px' }}>
                   You can also reach us directly at{' '}
-                  <a href="mailto:demo@aairacontrols.com?subject=Aaira%20Controls%20Demo%20Request" style={{ color: 'var(--aa-brand-primary)' }}>
-                    demo@aairacontrols.com
+                  <a href="mailto:ahsanalnasar@gmail.com?subject=Aaira%20Controls%20Demo%20Request" style={{ color: 'var(--aa-brand-primary)' }}>
+                    ahsanalnasar@gmail.com
                   </a>
                   .
                 </p>
@@ -449,54 +511,68 @@ $("#employeesGrid").wfGridView({
               </div>
             ) : (
               <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setContactSubmitted(true);
-                }}
+                onSubmit={handleContactSubmit}
                 style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
               >
                 <p style={{ color: 'var(--aa-text-secondary)', fontSize: '13px', lineHeight: 1.5 }}>
                   Tell us about your project or email us directly at{' '}
                   <a
-                    href="mailto:demo@aairacontrols.com?subject=Aaira%20Controls%20Demo%20Request"
+                    href="mailto:ahsanalnasar@gmail.com?subject=Aaira%20Controls%20Demo%20Request"
                     style={{ color: 'var(--aa-brand-primary)', fontWeight: 600 }}
                   >
-                    demo@aairacontrols.com
+                    ahsanalnasar@gmail.com
                   </a>
                   .
                 </p>
                 <input
                   type="text"
+                  name="name"
                   required
                   placeholder="Your Name"
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
                   className="sidebar-search-input"
                   style={{ paddingLeft: '12px' }}
                 />
                 <input
                   type="email"
+                  name="email"
                   required
                   placeholder="Work Email"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
                   className="sidebar-search-input"
                   style={{ paddingLeft: '12px' }}
                 />
                 <input
                   type="text"
+                  name="company"
                   placeholder="Company / Organization"
+                  value={contactCompany}
+                  onChange={(e) => setContactCompany(e.target.value)}
                   className="sidebar-search-input"
                   style={{ paddingLeft: '12px' }}
                 />
                 <textarea
+                  name="message"
                   rows={3}
                   placeholder="Project details (e.g., WebForms migration, React/Angular evaluation)"
+                  value={contactDetails}
+                  onChange={(e) => setContactDetails(e.target.value)}
                   className="sidebar-search-input"
                   style={{ paddingLeft: '12px', resize: 'vertical', fontFamily: 'inherit' }}
                 />
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '6px' }}>
-                  <button type="button" className="btn-secondary" onClick={() => setContactOpen(false)}>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    disabled={contactSending}
+                    onClick={() => setContactOpen(false)}
+                  >
                     Cancel
                   </button>
-                  <button type="submit" className="btn-primary">
-                    Request Demo
+                  <button type="submit" className="btn-primary" disabled={contactSending}>
+                    {contactSending ? 'Sending...' : 'Request Demo'}
                   </button>
                 </div>
               </form>
