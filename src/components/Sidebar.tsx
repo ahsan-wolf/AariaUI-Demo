@@ -9,7 +9,6 @@ import {
   IconZap,
   IconShield,
   IconCalendar,
-  IconSparkles,
   IconDatabase,
   IconChevronDown,
   IconChevronRight,
@@ -33,7 +32,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ selectedControlId, onSelectCon
     { name: 'AJAX & Behaviors', icon: <IconZap size={15} /> },
     { name: 'Login & Security', icon: <IconShield size={15} /> },
     { name: 'Specialized', icon: <IconCalendar size={15} /> },
-    { name: 'AI Controls', icon: <IconSparkles size={15} /> },
   ];
 
   const toggleCategory = (catName: string) => {

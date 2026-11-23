@@ -1,10 +1,10 @@
 import React from 'react';
 import { Framework, Theme } from '../types/gallery';
-import { IconSearch, IconSun, IconMoon, IconSparkles } from './Icons';
+import { IconSearch, IconSun, IconMoon } from './Icons';
 
 interface HeaderProps {
   activePage: string;
-  onNavigate: (page: 'home' | 'controls' | 'migration' | 'ai' | 'docs' | 'api' | 'styles') => void;
+  onNavigate: (page: 'home' | 'controls' | 'migration' | 'docs' | 'api' | 'styles') => void;
   framework: Framework;
   onFrameworkChange: (fw: Framework) => void;
   theme: Theme;
@@ -49,13 +49,6 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={() => onNavigate('migration')}
         >
           Migration Center
-        </button>
-        <button
-          className={`nav-link-btn ${activePage === 'ai' ? 'active' : ''}`}
-          onClick={() => onNavigate('ai')}
-        >
-          <IconSparkles size={14} style={{ color: '#a855f7' }} />
-          AI Controls
         </button>
         <button
           className={`nav-link-btn ${activePage === 'api' ? 'active' : ''}`}
