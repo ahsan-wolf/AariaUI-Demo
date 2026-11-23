@@ -9,11 +9,13 @@ import {
   IconCheck,
   IconZap,
   IconCode,
+  IconExternalLink,
+  IconX,
 } from '../components/Icons';
 import { CodeSnippetViewer } from '../components/CodeSnippetViewer';
 
 interface HomePageProps {
-  onNavigate: (page: 'home' | 'controls' | 'migration' | 'ai' | 'docs', controlId?: string) => void;
+  onNavigate: (page: 'home' | 'controls' | 'migration' | 'docs', controlId?: string) => void;
   framework: Framework;
   onFrameworkChange: (fw: Framework) => void;
 }
@@ -28,6 +30,8 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [sortField, setSortField] = useState<string>('name');
   const [sortAsc, setSortAsc] = useState<boolean>(true);
   const [selectedRowId, setSelectedRowId] = useState<number | null>(102);
+  const [contactOpen, setContactOpen] = useState(false);
+  const [contactSubmitted, setContactSubmitted] = useState(false);
 
   const pageSize = 4;
 
@@ -109,8 +113,9 @@ $("#employeesGrid").wfGridView({
         </h1>
 
         <p className="hero-subtitle">
-          Telerik, DevExpress, and Syncfusion quality controls with 100% zero-DOM headless core architecture.
-          Replicate classic ASP.NET Web Forms APIs or build state-of-the-art modern SaaS applications with AI assistance.
+          Aaira is an enterprise UI framework that bridges legacy ASP.NET Web Forms and modern front-end development. 
+          Use familiar controls like GridView, Repeater, Login, Menu, and validators directly in React, Angular, 
+          or plain JavaScript—retaining consistent properties, events, and data models with zero ViewState or page postbacks.
         </p>
 
         <div className="hero-actions">
@@ -121,10 +126,19 @@ $("#employeesGrid").wfGridView({
           <button className="btn-secondary" onClick={() => onNavigate('migration')}>
             <span>WebForms Migration Center</span>
           </button>
-          <button className="btn-secondary" onClick={() => onNavigate('ai')}>
-            <IconSparkles size={16} style={{ color: '#a855f7' }} />
-            <span>AI Demo Center</span>
-          </button>
+          <a
+            href="#contact-demo"
+            className="btn-secondary"
+            style={{ textDecoration: 'none' }}
+            onClick={(e) => {
+              e.preventDefault();
+              setContactSubmitted(false);
+              setContactOpen(true);
+            }}
+          >
+            <span>Contact us for demo</span>
+            <IconExternalLink size={15} />
+          </a>
         </div>
       </section>
 
@@ -345,17 +359,6 @@ $("#employeesGrid").wfGridView({
             </div>
           </div>
 
-          <div className="feature-card" onClick={() => onNavigate('ai')}>
-            <div className="card-icon-box" style={{ background: 'rgba(168, 85, 247, 0.15)', color: '#a855f7' }}>
-              <IconSparkles size={22} />
-            </div>
-            <div className="card-title">AI Grid (NL Filter)</div>
-            <div className="card-tag">Next-Gen AI Extension</div>
-            <div className="card-desc">
-              Natural language prompt parsing that filters and analyzes grid data on the fly.
-            </div>
-          </div>
-
           <div className="feature-card" onClick={() => onNavigate('migration')}>
             <div className="card-icon-box" style={{ background: 'rgba(6, 182, 212, 0.12)', color: '#06b6d4' }}>
               <IconCode size={22} />
@@ -368,6 +371,139 @@ $("#employeesGrid").wfGridView({
           </div>
         </div>
       </section>
+
+      {/* Contact Us for Demo CTA Section */}
+      <section
+        id="contact-demo"
+        style={{
+          background: 'var(--aa-bg-surface)',
+          border: '1px solid var(--aa-border-subtle)',
+          borderRadius: '16px',
+          padding: '32px 36px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '20px',
+          boxShadow: 'var(--aa-shadow-sm)',
+        }}
+      >
+        <div>
+          <h3 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--aa-text-primary)' }}>
+            Ready to modernize your ASP.NET WebForms or enterprise UI?
+          </h3>
+          <p style={{ color: 'var(--aa-text-secondary)', fontSize: '14px', marginTop: '6px' }}>
+            Schedule a live technical walkthrough and custom architecture demo with our engineering team.
+          </p>
+        </div>
+        <a
+          href="mailto:demo@aairacontrols.com?subject=Aaira%20Controls%20Demo%20Request"
+          className="btn-primary"
+          style={{ textDecoration: 'none' }}
+          onClick={(e) => {
+            e.preventDefault();
+            setContactSubmitted(false);
+            setContactOpen(true);
+          }}
+        >
+          <span>Contact us for demo</span>
+          <IconArrowRight size={16} />
+        </a>
+      </section>
+
+      {contactOpen && (
+        <div className="modal-overlay" onClick={() => setContactOpen(false)}>
+          <div
+            className="search-modal"
+            style={{ width: '480px', maxWidth: '92vw', padding: '24px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--aa-text-primary)' }}>
+                Contact Us for a Live Demo
+              </h3>
+              <button
+                onClick={() => setContactOpen(false)}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--aa-text-muted)' }}
+                aria-label="Close modal"
+              >
+                <IconX size={18} />
+              </button>
+            </div>
+
+            {contactSubmitted ? (
+              <div style={{ padding: '16px 0', textAlign: 'center' }}>
+                <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--aa-text-primary)', marginBottom: '8px' }}>
+                  Thank you! Your demo request has been prepared.
+                </p>
+                <p style={{ fontSize: '13px', color: 'var(--aa-text-secondary)', marginBottom: '20px' }}>
+                  You can also reach us directly at{' '}
+                  <a href="mailto:demo@aairacontrols.com?subject=Aaira%20Controls%20Demo%20Request" style={{ color: 'var(--aa-brand-primary)' }}>
+                    demo@aairacontrols.com
+                  </a>
+                  .
+                </p>
+                <button className="btn-primary" onClick={() => setContactOpen(false)}>
+                  Close
+                </button>
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setContactSubmitted(true);
+                }}
+                style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
+              >
+                <p style={{ color: 'var(--aa-text-secondary)', fontSize: '13px', lineHeight: 1.5 }}>
+                  Tell us about your project or email us directly at{' '}
+                  <a
+                    href="mailto:demo@aairacontrols.com?subject=Aaira%20Controls%20Demo%20Request"
+                    style={{ color: 'var(--aa-brand-primary)', fontWeight: 600 }}
+                  >
+                    demo@aairacontrols.com
+                  </a>
+                  .
+                </p>
+                <input
+                  type="text"
+                  required
+                  placeholder="Your Name"
+                  className="sidebar-search-input"
+                  style={{ paddingLeft: '12px' }}
+                />
+                <input
+                  type="email"
+                  required
+                  placeholder="Work Email"
+                  className="sidebar-search-input"
+                  style={{ paddingLeft: '12px' }}
+                />
+                <input
+                  type="text"
+                  placeholder="Company / Organization"
+                  className="sidebar-search-input"
+                  style={{ paddingLeft: '12px' }}
+                />
+                <textarea
+                  rows={3}
+                  placeholder="Project details (e.g., WebForms migration, React/Angular evaluation)"
+                  className="sidebar-search-input"
+                  style={{ paddingLeft: '12px', resize: 'vertical', fontFamily: 'inherit' }}
+                />
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '6px' }}>
+                  <button type="button" className="btn-secondary" onClick={() => setContactOpen(false)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn-primary">
+                    Request Demo
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

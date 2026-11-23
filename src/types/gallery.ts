@@ -10,8 +10,7 @@ export type ControlCategory =
   | 'Navigation'
   | 'AJAX & Behaviors'
   | 'Login & Security'
-  | 'Specialized'
-  | 'AI Controls';
+  | 'Specialized';
 
 export interface PropItem {
   name: string;
@@ -58,6 +57,6 @@ export interface ControlDefinition {
 }
 
 export interface NavRoute {
-  page: 'home' | 'controls' | 'migration' | 'ai' | 'docs' | 'api' | 'styles';
+  page: 'home' | 'controls' | 'migration' | 'docs' | 'api' | 'styles';
   controlId?: string;
 }

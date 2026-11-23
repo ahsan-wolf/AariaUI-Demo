@@ -7,7 +7,6 @@ import { GlobalSearchModal } from './components/GlobalSearchModal';
 import { HomePage } from './pages/HomePage';
 import { ControlDetailPage } from './pages/ControlDetailPage';
 import { MigrationCenterPage } from './pages/MigrationCenterPage';
-import { AiDemoCenterPage } from './pages/AiDemoCenterPage';
 import { DocsViewerPage } from './pages/DocsViewerPage';
 import { ApiDocsPage } from './pages/ApiDocsPage';
 import { StyleSheetsPage } from './pages/StyleSheetsPage';
@@ -15,7 +14,7 @@ import { ApiRoute, DEFAULT_API_ROUTE, formatApiHash, parseApiHash } from './lib/
 import './styles/theme.css';
 import './styles/docs.css';
 
-type Page = 'home' | 'controls' | 'migration' | 'ai' | 'docs' | 'api' | 'styles';
+type Page = 'home' | 'controls' | 'migration' | 'docs' | 'api' | 'styles';
 
 export const App: React.FC = () => {
   const initialApiRoute = parseApiHash(window.location.hash);
@@ -128,8 +127,6 @@ export const App: React.FC = () => {
           )}
 
           {activePage === 'migration' && <MigrationCenterPage />}
-
-          {activePage === 'ai' && <AiDemoCenterPage />}
 
           {activePage === 'docs' && <DocsViewerPage onOpenApi={handleOpenApi} />}
 
