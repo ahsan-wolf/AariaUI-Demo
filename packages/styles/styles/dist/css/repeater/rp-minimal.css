@@ -1,0 +1,25 @@
+/* rp-minimal : Repeater (WebFormsRepeater). Added family, same palette as gv-minimal/lg-minimal.
+   <div class="wf-repeater rp-minimal"> button.add, .wf-item (.alt odd, .active current, .edit edit template) > header.wf-item-header, .empty */
+div.rp-minimal{box-sizing:border-box;display:flex;flex-direction:column;gap:8px;font:14px/1.45 "Helvetica Neue",Arial,sans-serif;color:#222222}
+.rp-minimal .wf-item{box-sizing:border-box;padding:12px 16px;background:#ffffff;color:#222222;border:1px solid #dddddd;border-radius:0;box-shadow:none;font-size:14px}
+.rp-minimal .wf-item.alt{background:#fafafa}
+.rp-minimal .wf-item:hover{background:#fafafa}
+.rp-minimal .wf-item.active{background:#f3f3f3;border-color:#111111}
+.rp-minimal .wf-item.edit{background:#f7f7f2}
+.rp-minimal .wf-item-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #eeeeee;font-weight:700;color:#222222}
+.rp-minimal .add{align-self:flex-start}
+.rp-minimal .empty{padding:28px;text-align:center;color:#888888}
+.rp-minimal a{color:#111111;text-decoration:none}
+.rp-minimal a:hover{text-decoration:underline}
+.rp-minimal .wf-item.edit input[type=text],.rp-minimal .wf-item.edit input[type=password],.rp-minimal .wf-item.edit input[type=email],.rp-minimal .wf-item.edit input[type=number],.rp-minimal .wf-item.edit input[type=date],.rp-minimal .wf-item.edit input:not([type]),.rp-minimal .wf-item.edit select,.rp-minimal .wf-item.edit textarea{box-sizing:border-box;width:100%;min-width:110px;padding:6px 10px;border:1px solid #bbbbbb;border-radius:0;background:#ffffff;color:#222222;font:inherit;margin:2px 0 8px}
+.rp-minimal .wf-item.edit textarea{min-height:72px;resize:vertical}
+.rp-minimal .wf-item.edit input[type=text]:focus,.rp-minimal .wf-item.edit input[type=password]:focus,.rp-minimal .wf-item.edit input[type=email]:focus,.rp-minimal .wf-item.edit input[type=number]:focus,.rp-minimal .wf-item.edit input[type=date]:focus,.rp-minimal .wf-item.edit input:not([type]):focus,.rp-minimal .wf-item.edit select:focus,.rp-minimal .wf-item.edit textarea:focus{outline:0;border-color:#111111;box-shadow:0 0 0 3px #11111133}
+.rp-minimal .wf-item.edit input[type=checkbox],.rp-minimal .wf-item.edit input[type=radio]{accent-color:#111111;margin-right:6px;vertical-align:middle}
+.rp-minimal .wf-item.edit label{color:#888888;font-weight:600;font-size:12px}
+.rp-minimal .wf-item.edit input.invalid,.rp-minimal .wf-item.edit input.is-invalid{border-color:#c62828!important}
+.rp-minimal button{border-radius:0;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#ffffff;color:#222222;border:1px solid #bbbbbb}
+.rp-minimal button:hover{filter:brightness(1.08)}
+.rp-minimal button:focus-visible{outline:0;box-shadow:0 0 0 3px #11111133}
+.rp-minimal button:disabled{opacity:.55;cursor:not-allowed;filter:none}
+.rp-minimal button.add,.rp-minimal button.save,.rp-minimal button.primary,.rp-minimal button[type=submit],.rp-minimal button[data-command=Update],.rp-minimal button[data-command=Save],.rp-minimal button[data-command=Insert],.rp-minimal .wf-item.edit>button:first-of-type,.rp-minimal .wf-item.edit>*:not(.rp-minimal .wf-item-header) button:first-of-type{border-radius:0;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#111111;color:#ffffff;border:1px solid #111111}
+.rp-minimal button.delete,.rp-minimal button[data-command=Delete]{color:#c62828}

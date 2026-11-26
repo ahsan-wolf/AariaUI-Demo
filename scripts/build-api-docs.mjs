@@ -66,6 +66,9 @@ const AREAS = [
   {
     id: "guides", title: "Guides & Notes", icon: "book",
     files: [
+      { file: "EDITIONS.md", prefix: "editions-", titlePrefix: "Editions · " },
+      { file: "v1.0.0/authentication-authorization.md", prefix: "authguide-", titlePrefix: "Auth guide · " },
+      { file: "v1.0.0/licensing-and-trial-protection.md", prefix: "licensing-", titlePrefix: "Licensing · " },
       { file: "v1.0.0/USER-GUIDE.md", prefix: "guide-" },
       { file: "v1.0.0/rest-and-server-paging.md", prefix: "rest-", titlePrefix: "REST & paging · " },
       { file: "v1.0.0/angular-guide.md", prefix: "ngguide-", titlePrefix: "Angular guide · " },

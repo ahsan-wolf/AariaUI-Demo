@@ -1,0 +1,32 @@
+{
+  "name": "@wf-controls/pro-data",
+  "version": "1.0.0",
+  "description": "Pro data controls: GridView, DataList, Repeater, Object/Access/Xml data sources",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahsan-wolf/webforms-ts-controls.git",
+    "directory": "packages/pro-data"
+  },
+  "type": "module",
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@wf-controls/core": "2.0.0",
+    "@wf-controls/license": "^1.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.2"
+  }
+}

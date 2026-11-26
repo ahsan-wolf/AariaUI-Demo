@@ -1,0 +1,23 @@
+/* gv-minimal-edit : GridView inline edit / insert rows (adds to gv-minimal; the kit's gv-minimal.css is untouched). Added family, same palette.
+   <table class="gv-minimal"> tr.edit (editTemplate / in-place edit) and tr.footer (insert row): inputs, select, textarea, checkbox, label, button */
+table.gv-minimal tr.edit input[type=text],table.gv-minimal tr.edit input[type=password],table.gv-minimal tr.edit input[type=email],table.gv-minimal tr.edit input[type=number],table.gv-minimal tr.edit input[type=date],table.gv-minimal tr.edit input:not([type]),table.gv-minimal tr.edit select,table.gv-minimal tr.edit textarea{box-sizing:border-box;width:100%;min-width:110px;padding:6px 10px;border:1px solid #bbbbbb;border-radius:0;background:#ffffff;color:#222222;font:inherit;margin:2px 0}
+table.gv-minimal tr.edit textarea{min-height:72px;resize:vertical}
+table.gv-minimal tr.edit input[type=text]:focus,table.gv-minimal tr.edit input[type=password]:focus,table.gv-minimal tr.edit input[type=email]:focus,table.gv-minimal tr.edit input[type=number]:focus,table.gv-minimal tr.edit input[type=date]:focus,table.gv-minimal tr.edit input:not([type]):focus,table.gv-minimal tr.edit select:focus,table.gv-minimal tr.edit textarea:focus{outline:0;border-color:#111111;box-shadow:0 0 0 3px #11111133}
+table.gv-minimal tr.edit input[type=checkbox],table.gv-minimal tr.edit input[type=radio]{accent-color:#111111;margin-right:6px;vertical-align:middle}
+table.gv-minimal tr.edit label{color:#888888;font-weight:600;font-size:12px}
+table.gv-minimal tr.edit input.invalid,table.gv-minimal tr.edit input.is-invalid{border-color:#c62828!important}
+table.gv-minimal tr.footer input[type=text],table.gv-minimal tr.footer input[type=password],table.gv-minimal tr.footer input[type=email],table.gv-minimal tr.footer input[type=number],table.gv-minimal tr.footer input[type=date],table.gv-minimal tr.footer input:not([type]),table.gv-minimal tr.footer select,table.gv-minimal tr.footer textarea{box-sizing:border-box;width:100%;min-width:110px;padding:6px 10px;border:1px solid #bbbbbb;border-radius:0;background:#ffffff;color:#222222;font:inherit;margin:2px 0}
+table.gv-minimal tr.footer textarea{min-height:72px;resize:vertical}
+table.gv-minimal tr.footer input[type=text]:focus,table.gv-minimal tr.footer input[type=password]:focus,table.gv-minimal tr.footer input[type=email]:focus,table.gv-minimal tr.footer input[type=number]:focus,table.gv-minimal tr.footer input[type=date]:focus,table.gv-minimal tr.footer input:not([type]):focus,table.gv-minimal tr.footer select:focus,table.gv-minimal tr.footer textarea:focus{outline:0;border-color:#111111;box-shadow:0 0 0 3px #11111133}
+table.gv-minimal tr.footer input[type=checkbox],table.gv-minimal tr.footer input[type=radio]{accent-color:#111111;margin-right:6px;vertical-align:middle}
+table.gv-minimal tr.footer label{color:#888888;font-weight:600;font-size:12px}
+table.gv-minimal tr.footer input.invalid,table.gv-minimal tr.footer input.is-invalid{border-color:#c62828!important}
+table.gv-minimal tr.edit td[colspan] label{display:block;margin:0 0 10px}
+table.gv-minimal tr.edit td[colspan]{padding:14px 16px}
+table.gv-minimal tr.edit button,table.gv-minimal tr.footer button{border-radius:0;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#ffffff;color:#222222;border:1px solid #bbbbbb}
+table.gv-minimal tr.edit button:hover,table.gv-minimal tr.footer button:hover{filter:brightness(1.08)}
+table.gv-minimal tr.edit button:focus-visible,table.gv-minimal tr.footer button:focus-visible{outline:0;box-shadow:0 0 0 3px #11111133}
+table.gv-minimal tr.edit button:disabled,table.gv-minimal tr.footer button:disabled{opacity:.55;cursor:not-allowed;filter:none}
+table.gv-minimal tr.edit button.save,table.gv-minimal tr.edit button.primary,table.gv-minimal tr.edit button[type=submit],table.gv-minimal tr.edit button[data-command=Update],table.gv-minimal tr.footer button.add,table.gv-minimal tr.footer button.primary,table.gv-minimal tr.footer button[type=submit],table.gv-minimal tr.footer button[data-command=Insert],table.gv-minimal tr.edit td>button:first-of-type,table.gv-minimal tr.edit td>*:not(label) button:first-of-type{border-radius:0;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#111111;color:#ffffff;border:1px solid #111111}
+table.gv-minimal tr.edit button+button{margin-left:6px}
+table.gv-minimal tr.edit button.delete,table.gv-minimal tr.edit button[data-command=Delete]{color:#c62828}

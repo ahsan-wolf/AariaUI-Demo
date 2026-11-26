@@ -92,8 +92,8 @@ export function parseWebFormsMarkup(markup: string): MigrationResult {
 
   if (controlType.toLowerCase() === 'gridview') {
     recommendations.push('Replace C# code-behind event handlers (e.g. OnRowDataBound) with TypeScript controller callbacks.');
-    reactCode = `import { WebFormsGridView } from "@wf-controls/react";
-import { GridViewController } from "@wf-controls/core";
+    reactCode = `import { WebFormsGridView } from "@wf-controls/pro-data-react";
+import { GridViewController } from "@wf-controls/pro-data";
 
 const ${id}Controller = new GridViewController({
   id: "${id}",
@@ -124,7 +124,7 @@ $("#${id}").wfGridView({
   allowSorting: ${allowSorting}
 });`;
   } else if (controlType.toLowerCase() === 'repeater') {
-    reactCode = `import { WebFormsRepeater } from "@wf-controls/react";
+    reactCode = `import { WebFormsRepeater } from "@wf-controls/pro-data-react";
 
 <WebFormsRepeater
   dataSource={data}

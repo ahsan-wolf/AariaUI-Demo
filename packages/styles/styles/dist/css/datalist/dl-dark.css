@@ -1,0 +1,35 @@
+/* dl-dark : DataList (WebFormsDataList). Added family, same palette as gv-dark/lg-dark.
+   Flow:  <div class="wf-datalist dl-dark"> div.datalist-item (+ .alt .selected .edit, header/footer/separator)
+   Table: <table class="datalist-table wf-datalist dl-dark"> td.datalist-cell (+ same classes), td.datalist-cell-empty;  empty: p.empty */
+div.dl-dark{box-sizing:border-box;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;font:14px/1.45 "Segoe UI",system-ui,sans-serif;color:#e5e7eb}
+div.dl-dark .datalist-item{box-sizing:border-box;padding:12px 16px;background:#111827;color:#e5e7eb;border:1px solid #374151;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.5);font-size:14px}
+div.dl-dark .datalist-item.alt,div.dl-dark .datalist-alternatingItem{background:#161e2e}
+div.dl-dark .datalist-item:hover{background:#243049}
+div.dl-dark .datalist-item.selected,div.dl-dark .datalist-selectedItem{background:#312e81;border-color:#6366f1}
+div.dl-dark .datalist-item.edit,div.dl-dark .datalist-editItem{background:#3b2f10}
+div.dl-dark .datalist-item.header,div.dl-dark .datalist-item.footer{grid-column:1/-1;background:#1f2937;color:#f9fafb;border:1px solid #374151;border-bottom:2px solid #6366f1;font-weight:700}
+div.dl-dark .datalist-item.separator{grid-column:1/-1;padding:0;height:0;border:0;border-top:1px solid #1f2937;background:transparent;box-shadow:none}
+table.dl-dark{width:100%;border-collapse:separate;border-spacing:0;font:14px/1.45 "Segoe UI",system-ui,sans-serif;color:#e5e7eb;font-size:14px;border:1px solid #374151;border-radius:6px;background:#111827}
+.dl-dark .datalist-cell{padding:12px 16px;vertical-align:top;border:0;border-bottom:1px solid #1f2937;background:#111827;color:#e5e7eb}
+.dl-dark .datalist-cell.alt,.dl-dark .datalist-cell.datalist-alternatingItem{background:#161e2e}
+.dl-dark .datalist-cell:hover{background:#243049}
+.dl-dark .datalist-cell.selected,.dl-dark .datalist-cell.datalist-selectedItem{background:#312e81}
+.dl-dark .datalist-cell.edit,.dl-dark .datalist-cell.datalist-editItem{background:#3b2f10}
+.dl-dark .datalist-cell.header,.dl-dark .datalist-cell.datalist-header,.dl-dark .datalist-cell.footer,.dl-dark .datalist-cell.datalist-footer{background:#1f2937;color:#f9fafb;font-weight:700;border-bottom:2px solid #6366f1}
+.dl-dark .datalist-cell.separator,.dl-dark .datalist-cell.datalist-separator{padding:0;height:0;border-bottom:1px solid #1f2937}
+.dl-dark .datalist-cell-empty{padding:28px;text-align:center;color:#9ca3af}
+.dl-dark .empty{padding:28px;text-align:center;color:#9ca3af}
+.dl-dark a{color:#6366f1;text-decoration:none}
+.dl-dark a:hover{text-decoration:underline}
+.dl-dark.wf-datalist .edit input[type=text],.dl-dark.wf-datalist .edit input[type=password],.dl-dark.wf-datalist .edit input[type=email],.dl-dark.wf-datalist .edit input[type=number],.dl-dark.wf-datalist .edit input[type=date],.dl-dark.wf-datalist .edit input:not([type]),.dl-dark.wf-datalist .edit select,.dl-dark.wf-datalist .edit textarea{box-sizing:border-box;width:100%;min-width:110px;padding:6px 10px;border:1px solid #374151;border-radius:4px;background:#0b1220;color:#e5e7eb;font:inherit;margin:2px 0 8px}
+.dl-dark.wf-datalist .edit textarea{min-height:72px;resize:vertical}
+.dl-dark.wf-datalist .edit input[type=text]:focus,.dl-dark.wf-datalist .edit input[type=password]:focus,.dl-dark.wf-datalist .edit input[type=email]:focus,.dl-dark.wf-datalist .edit input[type=number]:focus,.dl-dark.wf-datalist .edit input[type=date]:focus,.dl-dark.wf-datalist .edit input:not([type]):focus,.dl-dark.wf-datalist .edit select:focus,.dl-dark.wf-datalist .edit textarea:focus{outline:0;border-color:#6366f1;box-shadow:0 0 0 3px #6366f133}
+.dl-dark.wf-datalist .edit input[type=checkbox],.dl-dark.wf-datalist .edit input[type=radio]{accent-color:#6366f1;margin-right:6px;vertical-align:middle}
+.dl-dark.wf-datalist .edit label{color:#9ca3af;font-weight:600;font-size:12px}
+.dl-dark.wf-datalist .edit input.invalid,.dl-dark.wf-datalist .edit input.is-invalid{border-color:#f87171!important}
+.dl-dark button{border-radius:6px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#1f2937;color:#e5e7eb;border:1px solid #374151}
+.dl-dark button:hover{filter:brightness(1.08)}
+.dl-dark button:focus-visible{outline:0;box-shadow:0 0 0 3px #6366f133}
+.dl-dark button:disabled{opacity:.55;cursor:not-allowed;filter:none}
+.dl-dark button.add,.dl-dark button.save,.dl-dark button.primary,.dl-dark button[type=submit],.dl-dark button[data-command=Update],.dl-dark button[data-command=Save],.dl-dark button[data-command=Insert],.dl-dark.wf-datalist .edit>button:first-of-type,.dl-dark.wf-datalist .edit>*:not(.dl-dark .header) button:first-of-type{border-radius:6px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;background:#6366f1;color:#ffffff;border:1px solid #6366f1}
+.dl-dark button.delete,.dl-dark button[data-command=Delete]{color:#f87171}

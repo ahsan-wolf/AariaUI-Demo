@@ -1,0 +1,19 @@
+/* nv-corporate : navigation controls
+   SiteMapPath: <asp:SiteMapPath CssClass="nv-corporate" PathSeparatorStyle-CssClass="sep" CurrentNodeStyle-CssClass="current" PathSeparator=" " />
+   DataPager:   <asp:DataPager CssClass="nv-corporate-pager" ... CurrentPageLabelCssClass="current" />
+   Link list:   <ul class="nv-corporate-list"><li><a class="active">...</a></li></ul>  (Repeater / hand-written side navigation) */
+span.nv-corporate{display:inline-flex;flex-wrap:wrap;align-items:center;font:12px "Segoe UI",Tahoma,sans-serif;color:#607d8b;background:#eceff1;padding:8px 14px;border-radius:2px}
+span.nv-corporate a{color:#00796b;text-decoration:none}
+span.nv-corporate a:hover{text-decoration:underline}
+span.nv-corporate .sep{font-size:0;color:#607d8b}
+span.nv-corporate .sep::before{content:"\00BB";font-size:12px;margin:0 8px}
+span.nv-corporate .current{color:#263238;font-weight:600}
+span.nv-corporate-pager{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;font:12px "Segoe UI",Tahoma,sans-serif}
+span.nv-corporate-pager a,span.nv-corporate-pager span.current,span.nv-corporate-pager input[type="submit"],span.nv-corporate-pager .aspNetDisabled{display:inline-block;min-width:30px;padding:5px 10px;border:1px solid #cfd8dc;border-radius:2px;background:#ffffff;color:#263238;text-align:center;text-decoration:none;font:inherit;cursor:pointer}
+span.nv-corporate-pager a:hover,span.nv-corporate-pager input[type="submit"]:hover{background:#e0f2f1}
+span.nv-corporate-pager span.current{background:#00796b;border-color:#00796b;color:#ffffff;font-weight:600;cursor:default}
+span.nv-corporate-pager .aspNetDisabled{opacity:.4;cursor:default}
+ul.nv-corporate-list{list-style:none;margin:0;padding:6px;width:220px;background:#ffffff;border:1px solid #cfd8dc;border-radius:2px;font:12px "Segoe UI",Tahoma,sans-serif}
+ul.nv-corporate-list a{display:block;padding:9px 12px;color:#263238;text-decoration:none;border-radius:2px}
+ul.nv-corporate-list a:hover{background:#e0f2f1}
+ul.nv-corporate-list a.active,ul.nv-corporate-list a[aria-current]{background:#b2dfdb;color:#004d40;font-weight:600}

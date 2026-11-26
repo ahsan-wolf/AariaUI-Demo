@@ -1,0 +1,24 @@
+/* lg-dark : ASP.NET Login, CreateUserWizard, ChangePassword, PasswordRecovery, LoginStatus, LoginName
+   <asp:Login CssClass="lg-dark" TitleTextStyle-CssClass="title" FailureTextStyle-CssClass="failure" />
+   <asp:LoginStatus CssClass="lg-dark" />   <asp:LoginName CssClass="lg-dark" />            */
+table.lg-dark{border-collapse:separate!important;border-spacing:0;background:#111827;color:#e5e7eb;font:14px/1.45 "Segoe UI",system-ui,sans-serif;border:1px solid #374151;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.5);overflow:hidden;min-width:300px}
+table.lg-dark>tbody>tr>td{padding:20px 22px}
+table.lg-dark table{border-collapse:separate;border-spacing:0 8px;width:100%}
+table.lg-dark td{color:inherit}
+table.lg-dark table tr:first-child>td[colspan],table.lg-dark .title{font-size:18px;font-weight:700;text-align:left!important;padding-bottom:6px;}
+table.lg-dark td[align="right"]:not([colspan]){text-align:left}
+table.lg-dark label{color:#9ca3af;font-weight:600;font-size:12px}
+table.lg-dark input[type="text"],table.lg-dark input[type="password"],table.lg-dark input[type="email"]{box-sizing:border-box;width:calc(100% - 16px);min-width:180px;padding:8px 10px;border:1px solid #374151;border-radius:6px;background:#0b1220;color:#e5e7eb;font:inherit}
+table.lg-dark input[type="text"]:focus,table.lg-dark input[type="password"]:focus,table.lg-dark input[type="email"]:focus{outline:0;border-color:#6366f1;box-shadow:0 0 0 3px #6366f133}
+table.lg-dark input[type="checkbox"]{accent-color:#6366f1;margin-right:6px;vertical-align:middle}
+table.lg-dark input[type="submit"],table.lg-dark input[type="button"],table.lg-dark button{background:#6366f1;color:#ffffff;border:1px solid #6366f1;border-radius:6px;padding:8px 20px;font:inherit;font-weight:600;cursor:pointer}
+table.lg-dark input[type="submit"]:hover,table.lg-dark input[type="button"]:hover,table.lg-dark button:hover{filter:brightness(1.12)}
+table.lg-dark a{color:#6366f1;text-decoration:none}
+table.lg-dark a:hover{text-decoration:underline}
+table.lg-dark span[id$="Required"]{color:#f87171!important;font-weight:700;margin-left:4px}
+table.lg-dark .failure,table.lg-dark td[style*="color:Red"]{color:#f87171!important}
+table.lg-dark span[id$="FailureText"]:not(:empty){display:block;background:#3b1c1c;border:1px solid #f87171;border-radius:6px;padding:8px 10px;text-align:left}
+table.lg-dark .help,table.lg-dark .instruction{color:#9ca3af;font-size:12px}
+a.lg-dark{display:inline-block;color:#6366f1;border:1px solid #6366f1;border-radius:6px;padding:5px 14px;font:600 14px "Segoe UI",system-ui,sans-serif;text-decoration:none}
+a.lg-dark:hover{background:#6366f1;color:#ffffff}
+span.lg-dark{font:600 14px "Segoe UI",system-ui,sans-serif;color:#e5e7eb}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { controlsRegistry } from '../data/controlsRegistry';
-import { ControlCategory } from '../types/gallery';
+import { ControlCategory, Edition } from '../types/gallery';
+import { EditionChip } from './EditionChip';
 import {
   IconSearch,
   IconGrid,
@@ -21,6 +22,7 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ selectedControlId, onSelectControl }) => {
   const [filterQuery, setFilterQuery] = useState('');
+  const [editionFilter, setEditionFilter] = useState<Edition | 'all'>('all');
   const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({});
 
   const categories: { name: ControlCategory; icon: React.ReactNode }[] = [
@@ -39,9 +41,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ selectedControlId, onSelectCon
   };
 
   const filteredControls = controlsRegistry.filter((ctrl) =>
-    ctrl.name.toLowerCase().includes(filterQuery.toLowerCase()) ||
-    ctrl.aspEquivalent.toLowerCase().includes(filterQuery.toLowerCase()) ||
-    ctrl.category.toLowerCase().includes(filterQuery.toLowerCase())
+    (editionFilter === 'all' || ctrl.edition === editionFilter) &&
+    (ctrl.name.toLowerCase().includes(filterQuery.toLowerCase()) ||
+      ctrl.aspEquivalent.toLowerCase().includes(filterQuery.toLowerCase()) ||
+      ctrl.category.toLowerCase().includes(filterQuery.toLowerCase()))
   );
 
   return (
@@ -57,6 +60,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ selectedControlId, onSelectCon
           value={filterQuery}
           onChange={(e) => setFilterQuery(e.target.value)}
         />
+      </div>
+
+      <div className="edition-filter" role="group" aria-label="Filter by edition">
+        {(['all', 'free', 'pro', 'enterprise'] as const).map((e) => (
+          <button key={e} className={editionFilter === e ? 'active' : ''} data-edition-filter={e} onClick={() => setEditionFilter(e)}>
+            {e === 'all' ? 'All' : e === 'free' ? 'Free' : e === 'pro' ? 'Pro' : 'Enterprise'}
+          </button>
+        ))}
       </div>
 
       {categories.map((cat) => {
@@ -83,11 +94,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ selectedControlId, onSelectCon
                     onClick={() => onSelectControl(ctrl.id)}
                   >
                     <span>{ctrl.name}</span>
-                    {ctrl.badge && (
-                      <span className={`badge-chip ${ctrl.badge.toLowerCase()}`}>
-                        {ctrl.badge}
-                      </span>
-                    )}
+                    <span style={{ display: 'inline-flex', gap: '4px', alignItems: 'center' }}>
+                      {ctrl.badge && ctrl.badge !== 'Stable' && (
+                        <span className={`badge-chip ${ctrl.badge.toLowerCase()}`}>
+                          {ctrl.badge}
+                        </span>
+                      )}
+                      <EditionChip edition={ctrl.edition} />
+                    </span>
                   </div>
                 ))}
               </div>

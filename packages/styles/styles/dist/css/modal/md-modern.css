@@ -1,0 +1,33 @@
+/* md-modern : popup dialog (WebFormsModal / ModalBehavior). Added family, same palette as lg-modern/gv-modern.
+   <div class="modal fade show d-block md-modern" role="dialog" aria-modal="true"> > .modal-dialog > .modal-content
+   > .modal-header (h5.modal-title, button.btn-close) + .modal-body + .modal-footer (button.btn.btn-secondary, button.btn.btn-primary)
+   Backdrop colour: override --wf-backdrop on the adapter (the adapter sets it inline) or use background-color:...!important here. */
+.md-modern{position:fixed;inset:0;z-index:1050;display:flex!important;align-items:center;justify-content:center;box-sizing:border-box;padding:16px;overflow:auto;background-color:var(--wf-backdrop,rgba(0,0,0,.5));font:14px/1.45 "Segoe UI",system-ui,sans-serif;color:#1f2937;animation:md-modern-fade .15s ease-out}
+.md-modern .modal-dialog{box-sizing:border-box;width:100%;max-width:500px;margin:0;animation:md-modern-in .18s ease-out}
+.md-modern .modal-content{display:flex;flex-direction:column;max-height:calc(100vh - 32px);background:#ffffff;color:#1f2937;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);overflow:hidden}
+.md-modern .modal-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;background:#f9fafb;color:#1f2937;border-bottom:1px solid #e5e7eb}
+.md-modern .modal-title{margin:0;font-size:18px;font-weight:700;line-height:1.3;color:inherit}
+.md-modern .btn-close{position:relative;width:28px;height:28px;padding:0;border:0;border-radius:8px;background:transparent;color:#6b7280;font:inherit;font-size:0;cursor:pointer;flex:none}
+.md-modern .btn-close::before{content:"\00d7";font-size:24px;line-height:28px;display:block;text-align:center}
+.md-modern .btn-close:hover,.md-modern .btn-close:focus-visible{color:#1f2937;outline:0}
+.md-modern .btn-close:focus-visible{box-shadow:0 0 0 3px #2563eb33}
+.md-modern .modal-body{padding:20px;overflow:auto;font-size:14px;color:#1f2937}
+.md-modern .modal-body p{margin:0 0 10px}
+.md-modern .modal-body p:last-child{margin-bottom:0}
+.md-modern .modal-body input[type=text],.md-modern .modal-body input[type=password],.md-modern .modal-body input[type=email],.md-modern .modal-body input[type=number],.md-modern .modal-body input[type=date],.md-modern .modal-body input:not([type]),.md-modern .modal-body select,.md-modern .modal-body textarea{box-sizing:border-box;width:100%;min-width:110px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:6px;background:#ffffff;color:#1f2937;font:inherit}
+.md-modern .modal-body textarea{min-height:72px;resize:vertical}
+.md-modern .modal-body input[type=text]:focus,.md-modern .modal-body input[type=password]:focus,.md-modern .modal-body input[type=email]:focus,.md-modern .modal-body input[type=number]:focus,.md-modern .modal-body input[type=date]:focus,.md-modern .modal-body input:not([type]):focus,.md-modern .modal-body select:focus,.md-modern .modal-body textarea:focus{outline:0;border-color:#2563eb;box-shadow:0 0 0 3px #2563eb33}
+.md-modern .modal-body input[type=checkbox],.md-modern .modal-body input[type=radio]{accent-color:#2563eb;margin-right:6px;vertical-align:middle}
+.md-modern .modal-body label{color:#6b7280;font-weight:600;font-size:12px}
+.md-modern .modal-body input.invalid,.md-modern .modal-body input.is-invalid{border-color:#dc2626!important}
+.md-modern .modal-body a{color:#2563eb;text-decoration:none}
+.md-modern .modal-body a:hover{text-decoration:underline}
+.md-modern .modal-footer{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:12px 20px;background:#f9fafb;border-top:1px solid #e5e7eb}
+.md-modern .btn{border-radius:8px;padding:8px 20px;font:inherit;font-weight:600;cursor:pointer;background:#ffffff;color:#374151;border:1px solid #cbd5e1}
+.md-modern .btn-primary{border-radius:8px;padding:8px 20px;font:inherit;font-weight:600;cursor:pointer;background:#2563eb;color:#ffffff;border:1px solid #2563eb}
+.md-modern .btn:hover{filter:brightness(1.08)}
+.md-modern .btn:focus-visible{outline:0;box-shadow:0 0 0 3px #2563eb33}
+.md-modern .btn:disabled{opacity:.55;cursor:not-allowed;filter:none}
+@keyframes md-modern-fade{from{opacity:0}to{opacity:1}}
+@keyframes md-modern-in{from{opacity:0;transform:translateY(-12px) scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.md-modern,.md-modern .modal-dialog{animation:none}}

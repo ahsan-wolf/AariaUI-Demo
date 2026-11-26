@@ -1,13 +1,6 @@
 import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import {
-  DataColumn,
-  DataRelation,
-  DataSet,
-  DataTable,
-  DataView,
-  GridViewController,
-  type DataRow,
-} from '@wf-controls/core';
+import { DataColumn, DataRelation, DataSet, DataTable, DataView, type DataRow } from '@wf-controls/core';
+import { GridViewController } from '@wf-controls/pro-data';
 import { CodeSnippetViewer } from './CodeSnippetViewer';
 
 /**

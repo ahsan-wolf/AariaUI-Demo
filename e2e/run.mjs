@@ -155,15 +155,16 @@ try {
   assert.ok(embeddedTabs >= 5);
   ok(`GridView > API Reference tab embeds the generated reference (${embeddedTabs} sub-tabs, banner + 'Open in API Docs')`);
   await shot("gallery-gridview-api-tab.png");
-  // framework switch: jQuery shows the 'not published' notice
+  // framework switch: 'Plain JS' (the former jQuery tab) explains that there is no jQuery package
   await clickText(".detail-tab", "Multi-Framework Code"); await sleep(300);
-  await clickText(".framework-pills .framework-pill-btn", "HTML");
+  await clickText(".framework-pills .framework-pill-btn", "Plain JS");
   await sleep(300);
   assert.equal(await count(".aa-doc-notice"), 1);
+  assert.match(await text(".aa-doc-notice"), /no jQuery package/);
   await clickText(".framework-pills .framework-pill-btn", "Angular"); await sleep(300);
   assert.match(await text(".code-pre"), /\[controller\]|WebFormsGridViewComponent/);
   assert.ok(!/dataKeyNames/.test(await text(".code-pre")));
-  ok("Code tab: jQuery notice shown; Angular sample uses the real [controller] / WebFormsGridViewComponent API");
+  ok("Code tab: Plain JS notice says there is no jQuery package; Angular sample uses the real [controller] / WebFormsGridViewComponent API");
 
   // ---- DataTable live demo ----
   await clickText(".control-nav-item", "DataTable & DataView"); await sleep(400);
@@ -228,6 +229,134 @@ try {
   assert.equal(await count(".aa-dc-row .aa-dc-panel:first-child .aa-dc-table tbody tr"), before);
   ok("with 'cancel deletes' on, rowDeleting is logged as cancelled and the row stays");
   await shot("gallery-demo-binding.png", 1400, 1100);
+
+  // ---- editions: chips, package box, filter ----
+  await clickText(".nav-link-btn", "Controls Gallery"); await sleep(500);
+  await clickText(".control-nav-item", "GridView"); await sleep(400);
+  assert.match(await text('[data-testid="edition-box"]'), /Pro edition/);
+  assert.match(await text('[data-testid="edition-box"]'), /@wf-controls\/pro-data-react/);
+  assert.match(await text('[data-testid="edition-box"]'), /evaluation mode/);
+  assert.ok((await count(".control-nav-item .edition-chip.pro")) >= 4, "GridView, Repeater, DataList, ObjectDataSource... carry a Pro chip");
+  ok("GridView page: Pro edition box with the pro-data-react package, install line and evaluation-mode note; Pro chips in the sidebar");
+
+  await clickText(".control-nav-item", "DataGrid"); await sleep(400);
+  assert.match(await text('[data-testid="edition-box"]'), /Free edition/);
+  assert.doesNotMatch(await text('[data-testid="edition-box"]'), /evaluation mode/);
+  ok("DataGrid page: Free edition box, no evaluation-mode text");
+
+  await click('[data-edition-filter="enterprise"]'); await sleep(300);
+  const entItems = await ev(`[...document.querySelectorAll('.control-nav-item')].map(e=>e.textContent)`);
+  assert.equal(entItems.length, 2);
+  assert.ok(entItems.every((t) => /Enterprise/.test(t)));
+  assert.ok(entItems.some((t) => /SqlWhereBuilder/.test(t)) && entItems.some((t) => /Authentication/.test(t)));
+  await click('[data-edition-filter="all"]'); await sleep(200);
+  ok("sidebar edition filter: Enterprise shows exactly SqlWhereBuilder and Authentication & Authorization");
+
+  await clickText(".control-nav-item", "Authentication"); await sleep(400);
+  assert.match(await text('[data-testid="edition-box"]'), /enterprise-security-react/);
+  assert.match(await text('[data-testid="edition-box"]'), /security\.auth/);
+  ok("Authentication & Authorization page: Enterprise box lists enterprise-security and its React adapter, feature id security.auth");
+
+  // ---- Editions & Licensing page: live evaluation demo ----
+  await clickText(".nav-link-btn", "Editions"); await sleep(600);
+  assert.equal(await count('[data-testid="editions-page"]'), 1);
+  assert.equal(await count('[data-testid="tier-table"] tbody tr'), 4);
+  assert.equal(await count('[data-testid="evaluation-table"] tbody tr'), 5);
+  assert.equal(await text('[data-testid="eval-rows"]'), "25");
+  assert.equal(await text('[data-testid="eval-licensed"]'), "true");
+  assert.equal(await text('[data-testid="eval-edition"]'), "pro");
+  ok("Editions page: tier table (3 areas + packages), evaluation table, demo starts Licensed with all 25 rows");
+
+  await click('[data-mode="unlicensed"]'); await sleep(900);
+  assert.equal(await text('[data-testid="eval-rows"]'), "10");
+  assert.equal(await text('[data-testid="eval-licensed"]'), "false");
+  assert.equal(await text('[data-testid="eval-edition"]'), "free");
+  assert.match(await text(".wf-evaluation"), /Unlicensed.*first 10 records, editing disabled/);
+  await click('[data-testid="try-edit"]'); await sleep(300);
+  assert.match(await text('[data-testid="eval-attempt"]'), /beginEdit\(0\) returned false/);
+  await click('[data-testid="try-delete"]'); await sleep(300);
+  assert.match(await text('[data-testid="eval-attempt"]'), /deleteRow\(0\) returned false; rows 10 -> 10/);
+  ok("Unlicensed: 10 of 25 rows, red notice 'editing disabled', edit and delete are blocked and nothing is removed");
+
+  await click('[data-mode="trial"]'); await sleep(900);
+  assert.equal(await text('[data-testid="eval-rows"]'), "10");
+  assert.equal(await text('[data-testid="eval-edition"]'), "pro (trial)");
+  assert.match(await text(".wf-evaluation"), /Trial Edition.*first 10 records/);
+  assert.doesNotMatch(await text(".wf-evaluation"), /editing disabled/);
+  await click('[data-testid="try-edit"]'); await sleep(300);
+  assert.match(await text('[data-testid="eval-attempt"]'), /beginEdit\(0\) returned true/);
+  ok("Trial: still 10 rows with a trial notice, but editing is allowed");
+
+  await click('[data-mode="licensed"]'); await sleep(900);
+  assert.equal(await text('[data-testid="eval-rows"]'), "25");
+  assert.equal(await text('[data-testid="eval-licensed"]'), "true");
+  assert.equal(await count(".wf-evaluation"), 0);
+  ok("Licensed (Pro): all 25 rows, no notice");
+  await shot("gallery-editions.png", 1400, 1500);
+
+  // ---- every registry control renders with its edition box and all three code tabs ----
+  await clickText(".nav-link-btn", "Controls Gallery"); await sleep(500);
+  const total = await count(".control-nav-item");
+  assert.equal(total, 20, "all 20 controls are listed (found " + total + ")");
+  const seen = { free: 0, pro: 0, enterprise: 0, demo: 0 };
+  for (let i = 0; i < total; i++) {
+    await ev(`document.querySelectorAll('.control-nav-item')[${i}].click()`); await sleep(250);
+    const title = await text(".detail-title");
+    const box = await ev(`document.querySelector('[data-testid="edition-box"]')?.className ?? ''`);
+    const kind = box.replace("edition-box", "").trim();
+    assert.ok(title && kind in seen, "control " + i + " (" + title + ") has an edition box, got '" + box + "'");
+    seen[kind]++;
+    await clickText(".detail-tab", "Multi-Framework Code"); await sleep(120);
+    assert.ok((await text(".code-pre")).length > 20, title + ": code sample is empty");
+    await clickText(".detail-tab", "Live Preview"); await sleep(80);
+  }
+  assert.deepEqual(seen, { free: 12, pro: 6, enterprise: 2, demo: 0 });
+  ok("all 20 controls open: 12 Free, 6 Pro, 2 Enterprise, each with an edition box and a non-empty code sample; no AI Controls category");
+
+  // ---- home page text no longer mentions jQuery or MIT-only ----
+  await clickText(".nav-link-btn", "Home"); await sleep(500);
+  const homeText = await ev(`document.body.innerText`);
+  assert.doesNotMatch(homeText, /@wf-controls\/jquery|wfGridView/);
+  assert.match(homeText, /Free MIT core/);
+  assert.match(homeText, /153 \/ 153/);
+  ok("Home page: no jQuery plugin, mentions the Free MIT core and Pro / Enterprise packages");
+
+  // ---- hero text, hero image, no AI navigation ----
+  assert.match(await text(".hero-subtitle"), /^Aaira is an Enterprise Web UI Framework that bridges legacy ASP\.NET Web Forms and modern front-end development\./);
+  assert.match(await text(".hero-subtitle"), /zero ViewState or page postbacks\.$/);
+  assert.doesNotMatch(homeText, /Telerik|AI assistance|AI Demo Center|AI Controls|AI Grid/);
+  assert.deepEqual(await ev(`[...document.querySelectorAll('.nav-link-btn')].map(b=>b.textContent.trim())`), ["Home", "Controls Gallery", "Style Sheets", "Migration Center", "API Docs", "Docs", "Editions & Licensing"]);
+  const img = await ev(`(()=>{const i=document.querySelector('[data-testid="hero-image"]');const b=document.querySelector('.hero-actions');return {loaded:i.complete&&i.naturalWidth>0,before:!!(i.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING),src:i.getAttribute('src')}})()`);
+  assert.ok(img.loaded, "hero image loaded"); assert.ok(img.before, "image sits before the buttons"); assert.equal(img.src, "/aaira-demo.gif");
+  ok("Home: new hero text, GIF embedded before the buttons (loaded), no AI nav or Telerik text, 7 header links");
+
+  // ---- Contact us for Demo ----
+  assert.equal(await count('[data-testid="contact-demo-btn"]'), 1);
+  await click('[data-testid="contact-demo-btn"]'); await sleep(300);
+  assert.equal(await text('[data-testid="contact-address"]'), "ahsanalnasar@gmail.com");
+  await click('[data-testid="contact-send"]'); await sleep(200);
+  assert.equal(await count('.contact-field em'), 3, "name, email and message are required");
+  await setInput('[data-testid="contact-name"]', "Ada Lovelace");
+  await setInput('[data-testid="contact-email"]', "not-an-email");
+  await setInput('[data-testid="contact-message"]', "Please show GridView with SQL data source");
+  await click('[data-testid="contact-send"]'); await sleep(200);
+  assert.equal(await count('.contact-field em'), 1);
+  assert.match(await text('.contact-field em'), /valid email/);
+  await setInput('[data-testid="contact-email"]', "ada@example.com");
+  await setInput('[data-testid="contact-company"]', "Analytical Engines Ltd");
+  await click('[data-testid="contact-send"]'); await sleep(300);
+  const mailto = await ev(`document.querySelector('[data-testid="contact-mailto"]').getAttribute('href')`);
+  assert.ok(mailto.startsWith("mailto:ahsanalnasar@gmail.com?subject="), mailto.slice(0, 60));
+  const decoded = decodeURIComponent(mailto);
+  assert.match(decoded, /Aaira demo request from Ada Lovelace/);
+  assert.match(decoded, /Email: ada@example\.com/);
+  assert.match(decoded, /Company: Analytical Engines Ltd/);
+  assert.match(decoded, /Please show GridView with SQL data source/);
+  await shot("gallery-contact.png", 1400, 900);
+  ok("Contact dialog: shows ahsanalnasar@gmail.com, validates name/email/message, builds a mailto: with name, email, company and message");
+  await ev(`window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}))`); await sleep(200);
+  assert.equal(await count('[data-testid="contact-form"]'), 0);
+  ok("Escape closes the dialog");
 
   // ---- light theme sample ----
   await go("#/api/data-library/dataset/methods");

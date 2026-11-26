@@ -2,14 +2,10 @@
 // All five theme bundles are loaded at once; every rule is scoped to a class such as gv-modern, so switching
 // theme only changes the class suffix on each control root.
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  DataListController, GridViewController, InMemoryAuthProvider, LoginController, MenuController, ModalBehavior,
-  RepeaterController, SiteMapDataSource, SiteMapPathController, TabsController, TreeViewController,
-} from '@wf-controls/core';
-import {
-  Breadcrumb, NavigationMenu, TreeView, WebFormsDataList, WebFormsGridView, WebFormsLogin, WebFormsModal,
-  WebFormsRepeater, WebFormsTabs,
-} from '@wf-controls/react';
+import { InMemoryAuthProvider, LoginController, MenuController, ModalBehavior, SiteMapDataSource, SiteMapPathController, TabsController, TreeViewController } from '@wf-controls/core';
+import { DataListController, GridViewController, RepeaterController } from '@wf-controls/pro-data';
+import { Breadcrumb, NavigationMenu, TreeView, WebFormsLogin, WebFormsModal, WebFormsTabs } from '@wf-controls/react';
+import { WebFormsDataList, WebFormsGridView, WebFormsRepeater } from '@wf-controls/pro-data-react';
 import '@wf-controls/styles/bundles/modern-full.css';
 import '@wf-controls/styles/bundles/dark-full.css';
 import '@wf-controls/styles/bundles/classic-full.css';

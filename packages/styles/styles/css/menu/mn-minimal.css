@@ -1,0 +1,16 @@
+/* mn-minimal : asp:Menu (RenderingMode="List", the default from .NET 4.0). Horizontal by default.
+   <asp:Menu CssClass="mn-minimal" Orientation="Horizontal" />      Vertical: CssClass="mn-minimal mn-vertical" Orientation="Vertical"
+   ASP.NET positions/shows dynamic sub-menus with inline styles + script, so this sheet only sets appearance. */
+div.mn-minimal{display:block;font:14px "Helvetica Neue",Arial,sans-serif;background:#ffffff;color:#222222;border-radius:0;box-shadow:none}
+div.mn-minimal ul{list-style:none;margin:0;padding:0}
+div.mn-minimal ul.static{display:flex;flex-wrap:wrap}
+div.mn-minimal.mn-vertical{display:inline-block;min-width:200px}
+div.mn-minimal.mn-vertical ul.static{flex-direction:column}
+div.mn-minimal a{display:block;padding:10px 16px;color:#222222;text-decoration:none;white-space:nowrap}
+div.mn-minimal a:hover{background:#f3f3f3}
+div.mn-minimal a.selected,div.mn-minimal a.active{background:#111111;color:#ffffff}
+div.mn-minimal a.has-popup::after{content:"\25BE";margin-left:8px;font-size:.8em;opacity:.7}
+div.mn-minimal ul.dynamic{background:#ffffff;border:1px solid #dddddd;border-radius:0;box-shadow:0 6px 18px rgba(0,0,0,.18);min-width:170px;padding:4px 0}
+div.mn-minimal ul.dynamic a{color:#222222;padding:8px 16px}
+div.mn-minimal ul.dynamic a:hover{background:#fafafa}
+div.mn-minimal ul.dynamic a.selected{background:#f0f0f0;color:#000000}

@@ -1,0 +1,24 @@
+/* lg-classic : ASP.NET Login, CreateUserWizard, ChangePassword, PasswordRecovery, LoginStatus, LoginName
+   <asp:Login CssClass="lg-classic" TitleTextStyle-CssClass="title" FailureTextStyle-CssClass="failure" />
+   <asp:LoginStatus CssClass="lg-classic" />   <asp:LoginName CssClass="lg-classic" />            */
+table.lg-classic{border-collapse:separate!important;border-spacing:0;background:#ffffff;color:#333333;font:13px/1.45 Verdana,Arial,sans-serif;border:1px solid #7a96b5;border-radius:0;box-shadow:none;overflow:hidden;min-width:300px}
+table.lg-classic>tbody>tr>td{padding:20px 22px}
+table.lg-classic table{border-collapse:separate;border-spacing:0 8px;width:100%}
+table.lg-classic td{color:inherit}
+table.lg-classic table tr:first-child>td[colspan],table.lg-classic .title{font-size:18px;font-weight:700;text-align:left!important;padding-bottom:6px;background:linear-gradient(#5b8bc5,#3d6ca5);color:#ffffff;padding:8px 10px!important;}
+table.lg-classic td[align="right"]:not([colspan]){text-align:right}
+table.lg-classic label{color:#666666;font-weight:600;font-size:12px}
+table.lg-classic input[type="text"],table.lg-classic input[type="password"],table.lg-classic input[type="email"]{box-sizing:border-box;width:calc(100% - 16px);min-width:180px;padding:8px 10px;border:1px solid #7a96b5;border-radius:0;background:#ffffff;color:#333333;font:inherit}
+table.lg-classic input[type="text"]:focus,table.lg-classic input[type="password"]:focus,table.lg-classic input[type="email"]:focus{outline:0;border-color:#3d6ca5;box-shadow:0 0 0 3px #3d6ca533}
+table.lg-classic input[type="checkbox"]{accent-color:#3d6ca5;margin-right:6px;vertical-align:middle}
+table.lg-classic input[type="submit"],table.lg-classic input[type="button"],table.lg-classic button{background:#3d6ca5;color:#ffffff;border:1px solid #3d6ca5;border-radius:0;padding:8px 20px;font:inherit;font-weight:600;cursor:pointer}
+table.lg-classic input[type="submit"]:hover,table.lg-classic input[type="button"]:hover,table.lg-classic button:hover{filter:brightness(1.12)}
+table.lg-classic a{color:#3d6ca5;text-decoration:none}
+table.lg-classic a:hover{text-decoration:underline}
+table.lg-classic span[id$="Required"]{color:#b00020!important;font-weight:700;margin-left:4px}
+table.lg-classic .failure,table.lg-classic td[style*="color:Red"]{color:#b00020!important}
+table.lg-classic span[id$="FailureText"]:not(:empty){display:block;background:#fde8e8;border:1px solid #b00020;border-radius:0;padding:8px 10px;text-align:left}
+table.lg-classic .help,table.lg-classic .instruction{color:#666666;font-size:12px}
+a.lg-classic{display:inline-block;color:#3d6ca5;border:1px solid #3d6ca5;border-radius:0;padding:5px 14px;font:600 13px Verdana,Arial,sans-serif;text-decoration:none}
+a.lg-classic:hover{background:#3d6ca5;color:#ffffff}
+span.lg-classic{font:600 13px Verdana,Arial,sans-serif;color:#333333}

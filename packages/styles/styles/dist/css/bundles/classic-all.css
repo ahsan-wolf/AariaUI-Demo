@@ -1,0 +1,133 @@
+/* classic: GridView/table + login, menu, treeview, tabs, navigation, validation */
+/* gv-classic: traditional bordered grid, blue header, alternating rows */
+table.gv-classic{width:100%;border-collapse:collapse;font:13px Verdana,Arial,sans-serif;color:#333;border:1px solid #7a96b5!important}
+table.gv-classic th{background:linear-gradient(#5b8bc5,#3d6ca5);color:#fff;text-align:left;padding:7px 10px;border:1px solid #2f5a8f!important;font-weight:bold}
+table.gv-classic th a{color:#fff;text-decoration:underline}
+table.gv-classic td{padding:6px 10px;border:1px solid #c5d3e3!important;background:#fff}
+table.gv-classic tr:nth-child(even) td{background:#eef3f9}
+table.gv-classic tr:hover td{background:#fff4c2}
+table.gv-classic a.btn-link{color:#0645ad;margin-right:8px}
+table.gv-classic a.text-danger{color:#b00020}
+table.gv-classic .pager td,table.gv-classic tr.pager>td{background:#d9e4f1;padding:5px 10px;text-align:center}
+table.gv-classic .pager table{margin:0 auto}
+table.gv-classic .pager a{color:#0645ad;padding:2px 6px}
+table.gv-classic .pager span{font-weight:bold;padding:2px 6px;background:#fff;border:1px solid #7a96b5}
+table.gv-classic tr.selected td{background:#ffe9a8}
+table.gv-classic tr.edit td{background:#ffffe0}
+table.gv-classic .empty,table.gv-classic .empty td{padding:20px;text-align:center;font-style:italic}
+
+/* ---- nested pager table reset (GridView renders pager as a table inside a td) ---- */
+table.gv-classic tr.pager table td{padding:0!important;border:0!important;background:transparent!important}
+/* ---- INLINE EDIT / INSERT (EditRowStyle-CssClass="edit", FooterStyle-CssClass="footer") ---- */
+table.gv-classic tr.edit input[type=text],table.gv-classic tr.edit input[type=date],table.gv-classic tr.footer input[type=text],table.gv-classic tr.footer input[type=date]{width:100%;box-sizing:border-box;min-width:110px;padding:6px 10px;border:1px solid #7a96b5;border-radius:0;font:inherit;font-size:13px;background:#fff;color:#333}
+table.gv-classic tr.edit input:focus,table.gv-classic tr.footer input:focus{outline:0;border-color:#3d6ca5;box-shadow:0 0 0 3px #3d6ca533}
+table.gv-classic input.invalid{border-color:#dc2626!important}
+table.gv-classic tr.footer td{background:#d9e4f1!important}
+table.gv-classic tr.edit a.btn-link{font-weight:600}
+
+/* lg-classic : ASP.NET Login, CreateUserWizard, ChangePassword, PasswordRecovery, LoginStatus, LoginName
+   <asp:Login CssClass="lg-classic" TitleTextStyle-CssClass="title" FailureTextStyle-CssClass="failure" />
+   <asp:LoginStatus CssClass="lg-classic" />   <asp:LoginName CssClass="lg-classic" />            */
+table.lg-classic{border-collapse:separate!important;border-spacing:0;background:#ffffff;color:#333333;font:13px/1.45 Verdana,Arial,sans-serif;border:1px solid #7a96b5;border-radius:0;box-shadow:none;overflow:hidden;min-width:300px}
+table.lg-classic>tbody>tr>td{padding:20px 22px}
+table.lg-classic table{border-collapse:separate;border-spacing:0 8px;width:100%}
+table.lg-classic td{color:inherit}
+table.lg-classic table tr:first-child>td[colspan],table.lg-classic .title{font-size:18px;font-weight:700;text-align:left!important;padding-bottom:6px;background:linear-gradient(#5b8bc5,#3d6ca5);color:#ffffff;padding:8px 10px!important;}
+table.lg-classic td[align="right"]:not([colspan]){text-align:right}
+table.lg-classic label{color:#666666;font-weight:600;font-size:12px}
+table.lg-classic input[type="text"],table.lg-classic input[type="password"],table.lg-classic input[type="email"]{box-sizing:border-box;width:calc(100% - 16px);min-width:180px;padding:8px 10px;border:1px solid #7a96b5;border-radius:0;background:#ffffff;color:#333333;font:inherit}
+table.lg-classic input[type="text"]:focus,table.lg-classic input[type="password"]:focus,table.lg-classic input[type="email"]:focus{outline:0;border-color:#3d6ca5;box-shadow:0 0 0 3px #3d6ca533}
+table.lg-classic input[type="checkbox"]{accent-color:#3d6ca5;margin-right:6px;vertical-align:middle}
+table.lg-classic input[type="submit"],table.lg-classic input[type="button"],table.lg-classic button{background:#3d6ca5;color:#ffffff;border:1px solid #3d6ca5;border-radius:0;padding:8px 20px;font:inherit;font-weight:600;cursor:pointer}
+table.lg-classic input[type="submit"]:hover,table.lg-classic input[type="button"]:hover,table.lg-classic button:hover{filter:brightness(1.12)}
+table.lg-classic a{color:#3d6ca5;text-decoration:none}
+table.lg-classic a:hover{text-decoration:underline}
+table.lg-classic span[id$="Required"]{color:#b00020!important;font-weight:700;margin-left:4px}
+table.lg-classic .failure,table.lg-classic td[style*="color:Red"]{color:#b00020!important}
+table.lg-classic span[id$="FailureText"]:not(:empty){display:block;background:#fde8e8;border:1px solid #b00020;border-radius:0;padding:8px 10px;text-align:left}
+table.lg-classic .help,table.lg-classic .instruction{color:#666666;font-size:12px}
+a.lg-classic{display:inline-block;color:#3d6ca5;border:1px solid #3d6ca5;border-radius:0;padding:5px 14px;font:600 13px Verdana,Arial,sans-serif;text-decoration:none}
+a.lg-classic:hover{background:#3d6ca5;color:#ffffff}
+span.lg-classic{font:600 13px Verdana,Arial,sans-serif;color:#333333}
+
+/* mn-classic : asp:Menu (RenderingMode="List", the default from .NET 4.0). Horizontal by default.
+   <asp:Menu CssClass="mn-classic" Orientation="Horizontal" />      Vertical: CssClass="mn-classic mn-vertical" Orientation="Vertical"
+   ASP.NET positions/shows dynamic sub-menus with inline styles + script, so this sheet only sets appearance. */
+div.mn-classic{display:block;font:13px Verdana,Arial,sans-serif;background:linear-gradient(#5b8bc5,#3d6ca5);color:#ffffff;border-radius:0;box-shadow:none}
+div.mn-classic ul{list-style:none;margin:0;padding:0}
+div.mn-classic ul.static{display:flex;flex-wrap:wrap}
+div.mn-classic.mn-vertical{display:inline-block;min-width:200px}
+div.mn-classic.mn-vertical ul.static{flex-direction:column}
+div.mn-classic a{display:block;padding:10px 16px;color:#ffffff;text-decoration:none;white-space:nowrap}
+div.mn-classic a:hover{background:rgba(255,255,255,.22)}
+div.mn-classic a.selected,div.mn-classic a.active{background:#3d6ca5;color:#ffffff}
+div.mn-classic a.has-popup::after{content:"\25BE";margin-left:8px;font-size:.8em;opacity:.7}
+div.mn-classic ul.dynamic{background:#ffffff;border:1px solid #7a96b5;border-radius:0;box-shadow:0 6px 18px rgba(0,0,0,.18);min-width:170px;padding:4px 0}
+div.mn-classic ul.dynamic a{color:#333333;padding:8px 16px}
+div.mn-classic ul.dynamic a:hover{background:#fff4c2}
+div.mn-classic ul.dynamic a.selected{background:#ffe9a8;color:#000000}
+
+/* tv-classic : asp:TreeView
+   <asp:TreeView CssClass="tv-classic" RootNodeStyle-CssClass="root" ParentNodeStyle-CssClass="parent" LeafNodeStyle-CssClass="leaf" SelectedNodeStyle-CssClass="selected" />
+   TreeView draws the +/- glyphs as images; set ExpandImageUrl / CollapseImageUrl for custom icons. */
+div.tv-classic{display:inline-block;min-width:240px;font:13px Verdana,Arial,sans-serif;color:#333333;background:#ffffff;border:1px solid #7a96b5;border-radius:0;padding:8px}
+div.tv-classic table{border-collapse:collapse;border-spacing:0}
+div.tv-classic td{padding:1px 0;vertical-align:middle;white-space:nowrap}
+div.tv-classic a{color:#333333;text-decoration:none;border-radius:0}
+div.tv-classic a:not(:has(>img)){display:inline-block;padding:3px 8px}
+div.tv-classic a:not(:has(>img)):hover{background:#fff4c2}
+div.tv-classic a.root{font-weight:700}
+div.tv-classic a.parent{font-weight:600}
+div.tv-classic a.leaf{color:#666666}
+div.tv-classic a.selected{background:#ffe9a8;color:#000000;font-weight:600}
+div.tv-classic img{border:0;vertical-align:middle;}
+div.tv-classic div[id$="Nodes"]{border-left:1px dotted #7a96b5;margin-left:9px}
+div.tv-classic input[type="checkbox"]{accent-color:#3d6ca5;vertical-align:middle}
+
+/* tb-classic : tab strips
+   (a) AjaxControlToolkit TabContainer:  <ajaxToolkit:TabContainer CssClass="tb-classic" />   (replaces the default ajax__tab_xp skin)
+   (b) asp:Menu + asp:MultiView:          <asp:Menu CssClass="tb-classic" Orientation="Horizontal" />  and  <asp:Panel CssClass="tb-classic-panel"> around the MultiView */
+.tb-classic{font:13px Verdana,Arial,sans-serif;color:#333333}
+.tb-classic .ajax__tab_header{display:flex;flex-wrap:wrap;border-bottom:2px solid #7a96b5}
+.tb-classic .ajax__tab_outer,.tb-classic .ajax__tab_inner{display:inline-block}
+.tb-classic .ajax__tab_tab{display:inline-block;padding:9px 18px;margin-bottom:-2px;cursor:pointer;color:#666666;font-weight:600;border-bottom:2px solid transparent;border-radius:0 0 0 0}
+.tb-classic .ajax__tab_hover .ajax__tab_tab,.tb-classic .ajax__tab_tab:hover{color:#333333;background:#fff4c2}
+.tb-classic .ajax__tab_active .ajax__tab_tab{color:#ffffff;background:linear-gradient(#5b8bc5,#3d6ca5);border-bottom-color:#3d6ca5}
+.tb-classic .ajax__tab_body{border:1px solid #7a96b5;border-top:0;padding:16px;background:#ffffff;border-radius:0 0 0 0}
+div.tb-classic ul{list-style:none;margin:0;padding:0}
+div.tb-classic ul.static{display:flex;flex-wrap:wrap;border-bottom:2px solid #7a96b5}
+div.tb-classic a.static{display:block;padding:9px 18px;margin-bottom:-2px;color:#666666;font-weight:600;text-decoration:none;border-bottom:2px solid transparent;border-radius:0 0 0 0}
+div.tb-classic a.static:hover{color:#333333;background:#fff4c2}
+div.tb-classic a.static.selected,div.tb-classic a.static.active{color:#ffffff;background:linear-gradient(#5b8bc5,#3d6ca5);border-bottom-color:#3d6ca5}
+.tb-classic-panel{border:1px solid #7a96b5;border-top:0;padding:16px;background:#ffffff;color:#333333;font:13px Verdana,Arial,sans-serif;border-radius:0 0 0 0}
+
+/* nv-classic : navigation controls
+   SiteMapPath: <asp:SiteMapPath CssClass="nv-classic" PathSeparatorStyle-CssClass="sep" CurrentNodeStyle-CssClass="current" PathSeparator=" " />
+   DataPager:   <asp:DataPager CssClass="nv-classic-pager" ... CurrentPageLabelCssClass="current" />
+   Link list:   <ul class="nv-classic-list"><li><a class="active">...</a></li></ul>  (Repeater / hand-written side navigation) */
+span.nv-classic{display:inline-flex;flex-wrap:wrap;align-items:center;font:13px Verdana,Arial,sans-serif;color:#666666;background:#eef3f9;padding:8px 14px;border-radius:0}
+span.nv-classic a{color:#3d6ca5;text-decoration:none}
+span.nv-classic a:hover{text-decoration:underline}
+span.nv-classic .sep{font-size:0;color:#666666}
+span.nv-classic .sep::before{content:">";font-size:13px;margin:0 8px}
+span.nv-classic .current{color:#333333;font-weight:600}
+span.nv-classic-pager{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;font:13px Verdana,Arial,sans-serif}
+span.nv-classic-pager a,span.nv-classic-pager span.current,span.nv-classic-pager input[type="submit"],span.nv-classic-pager .aspNetDisabled{display:inline-block;min-width:30px;padding:5px 10px;border:1px solid #7a96b5;border-radius:0;background:#ffffff;color:#333333;text-align:center;text-decoration:none;font:inherit;cursor:pointer}
+span.nv-classic-pager a:hover,span.nv-classic-pager input[type="submit"]:hover{background:#fff4c2}
+span.nv-classic-pager span.current{background:#3d6ca5;border-color:#3d6ca5;color:#ffffff;font-weight:600;cursor:default}
+span.nv-classic-pager .aspNetDisabled{opacity:.4;cursor:default}
+ul.nv-classic-list{list-style:none;margin:0;padding:6px;width:220px;background:#ffffff;border:1px solid #7a96b5;border-radius:0;font:13px Verdana,Arial,sans-serif}
+ul.nv-classic-list a{display:block;padding:9px 12px;color:#333333;text-decoration:none;border-radius:0}
+ul.nv-classic-list a:hover{background:#fff4c2}
+ul.nv-classic-list a.active,ul.nv-classic-list a[aria-current]{background:#ffe9a8;color:#000000;font-weight:600}
+
+/* vl-classic : RequiredFieldValidator, CompareValidator, RangeValidator, RegularExpressionValidator, CustomValidator, ValidationSummary
+   <asp:RequiredFieldValidator CssClass="vl-classic" Display="Dynamic" ... />   <asp:ValidationSummary CssClass="vl-classic" />
+   Input highlighting: add validation-input-highlight.js (adds .is-invalid to the failing control). */
+span.vl-classic{color:#b00020!important;font:600 12px/1.4 Verdana,Arial,sans-serif;margin-left:6px}
+
+div.vl-classic{color:#b00020!important;background:#fde8e8;border:1px solid #b00020;border-left-width:4px;border-radius:0;padding:10px 14px;font:13px/1.4 Verdana,Arial,sans-serif;margin:8px 0}
+div.vl-classic ul{margin:4px 0 0;padding-left:18px}
+div.vl-classic li{margin:2px 0}
+input.is-invalid,select.is-invalid,textarea.is-invalid{border-color:#b00020!important;background-color:#fde8e8!important;outline:0;box-shadow:0 0 0 2px #b0002033}
+

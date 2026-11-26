@@ -1,0 +1,16 @@
+/* mn-corporate : asp:Menu (RenderingMode="List", the default from .NET 4.0). Horizontal by default.
+   <asp:Menu CssClass="mn-corporate" Orientation="Horizontal" />      Vertical: CssClass="mn-corporate mn-vertical" Orientation="Vertical"
+   ASP.NET positions/shows dynamic sub-menus with inline styles + script, so this sheet only sets appearance. */
+div.mn-corporate{display:block;font:12px "Segoe UI",Tahoma,sans-serif;background:#263238;color:#eceff1;border-radius:2px;box-shadow:none}
+div.mn-corporate ul{list-style:none;margin:0;padding:0}
+div.mn-corporate ul.static{display:flex;flex-wrap:wrap}
+div.mn-corporate.mn-vertical{display:inline-block;min-width:200px}
+div.mn-corporate.mn-vertical ul.static{flex-direction:column}
+div.mn-corporate a{display:block;padding:10px 16px;color:#eceff1;text-decoration:none;white-space:nowrap}
+div.mn-corporate a:hover{background:#37474f}
+div.mn-corporate a.selected,div.mn-corporate a.active{background:#00796b;color:#ffffff}
+div.mn-corporate a.has-popup::after{content:"\25BE";margin-left:8px;font-size:.8em;opacity:.7}
+div.mn-corporate ul.dynamic{background:#ffffff;border:1px solid #cfd8dc;border-radius:2px;box-shadow:0 6px 18px rgba(0,0,0,.18);min-width:170px;padding:4px 0}
+div.mn-corporate ul.dynamic a{color:#263238;padding:8px 16px}
+div.mn-corporate ul.dynamic a:hover{background:#e0f2f1}
+div.mn-corporate ul.dynamic a.selected{background:#b2dfdb;color:#004d40}

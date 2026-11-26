@@ -1,0 +1,19 @@
+/* nv-classic : navigation controls
+   SiteMapPath: <asp:SiteMapPath CssClass="nv-classic" PathSeparatorStyle-CssClass="sep" CurrentNodeStyle-CssClass="current" PathSeparator=" " />
+   DataPager:   <asp:DataPager CssClass="nv-classic-pager" ... CurrentPageLabelCssClass="current" />
+   Link list:   <ul class="nv-classic-list"><li><a class="active">...</a></li></ul>  (Repeater / hand-written side navigation) */
+span.nv-classic{display:inline-flex;flex-wrap:wrap;align-items:center;font:13px Verdana,Arial,sans-serif;color:#666666;background:#eef3f9;padding:8px 14px;border-radius:0}
+span.nv-classic a{color:#3d6ca5;text-decoration:none}
+span.nv-classic a:hover{text-decoration:underline}
+span.nv-classic .sep{font-size:0;color:#666666}
+span.nv-classic .sep::before{content:">";font-size:13px;margin:0 8px}
+span.nv-classic .current{color:#333333;font-weight:600}
+span.nv-classic-pager{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;font:13px Verdana,Arial,sans-serif}
+span.nv-classic-pager a,span.nv-classic-pager span.current,span.nv-classic-pager input[type="submit"],span.nv-classic-pager .aspNetDisabled{display:inline-block;min-width:30px;padding:5px 10px;border:1px solid #7a96b5;border-radius:0;background:#ffffff;color:#333333;text-align:center;text-decoration:none;font:inherit;cursor:pointer}
+span.nv-classic-pager a:hover,span.nv-classic-pager input[type="submit"]:hover{background:#fff4c2}
+span.nv-classic-pager span.current{background:#3d6ca5;border-color:#3d6ca5;color:#ffffff;font-weight:600;cursor:default}
+span.nv-classic-pager .aspNetDisabled{opacity:.4;cursor:default}
+ul.nv-classic-list{list-style:none;margin:0;padding:6px;width:220px;background:#ffffff;border:1px solid #7a96b5;border-radius:0;font:13px Verdana,Arial,sans-serif}
+ul.nv-classic-list a{display:block;padding:9px 12px;color:#333333;text-decoration:none;border-radius:0}
+ul.nv-classic-list a:hover{background:#fff4c2}
+ul.nv-classic-list a.active,ul.nv-classic-list a[aria-current]{background:#ffe9a8;color:#000000;font-weight:600}

@@ -1,6 +1,7 @@
 import { ControlDefinition } from '../types/gallery';
+import { editionControls } from './controlsRegistryEditions';
 
-export const controlsRegistry: ControlDefinition[] = [
+const baseControls: ControlDefinition[] = [
   {
     id: 'data-table',
     docs: { areaId: 'data-library', entryId: 'datatable' },
@@ -8,6 +9,8 @@ export const controlsRegistry: ControlDefinition[] = [
     category: 'ADO.NET Data Core',
     aspEquivalent: 'System.Data.DataTable / DataView',
     badge: 'Stable',
+    edition: 'free',
+    package: '@wf-controls/data',
     tagline: 'In-memory tables with a typed schema, row states, filtering, sorting and change tracking.',
     description:
       'The zero-dependency ADO.NET core of the framework (@wf-controls/data). A DataTable holds typed DataColumns and DataRows with Added / Modified / Deleted / Unchanged states and Original / Current / Proposed versions; a DataView gives a filtered, sorted projection without copying. Every data control binds to them.',
@@ -36,8 +39,9 @@ export const controlsRegistry: ControlDefinition[] = [
     ],
     codeSamples: {
       react: `import { useMemo, useState } from "react";
-import { DataTable, DataView, GridViewController } from "@wf-controls/core";
-import { WebFormsGridView } from "@wf-controls/react";
+import { DataTable, DataView } from "@wf-controls/core";
+import { GridViewController } from "@wf-controls/pro-data";
+import { WebFormsGridView } from "@wf-controls/pro-data-react";
 
 export function ProductGrid({ table }: { table: DataTable }) {
   const [filter, setFilter] = useState("");
@@ -73,8 +77,9 @@ export function ProductGrid({ table }: { table: DataTable }) {
 }`,
       angular: `// products.component.ts : bind a DataView to wf-grid-view through a GridViewController
 import { Component, OnInit } from "@angular/core";
-import { DataTable, DataView, GridViewController } from "@wf-controls/core";
-import { WebFormsGridViewComponent } from "@wf-controls/angular";
+import { DataTable, DataView } from "@wf-controls/core";
+import { GridViewController } from "@wf-controls/pro-data";
+import { WebFormsGridViewComponent } from "@wf-controls/pro-data-angular";
 
 @Component({ standalone: true, selector: "app-products", imports: [WebFormsGridViewComponent], templateUrl: "./products.component.html" })
 export class ProductsComponent implements OnInit {
@@ -122,6 +127,8 @@ console.log(view.toObjects());                  // [{ id: 2, name: "Drill", pric
     category: 'ADO.NET Data Core',
     aspEquivalent: 'System.Data.DataSet / DataRelation',
     badge: 'Stable',
+    edition: 'free',
+    package: '@wf-controls/data',
     tagline: 'A container of tables with parent / child relations and JSON / XML serialization.',
     description:
       'DataSet groups several DataTables and DataRelations for master / detail data. getChildRows() / getParentRow() navigate a relation, acceptChanges() / rejectChanges() cascade to every table, and toJson() / toXml() serialize the set (with documented limits: column types and keys are not preserved).',
@@ -149,8 +156,9 @@ console.log(view.toObjects());                  // [{ id: 2, name: "Drill", pric
     ],
     codeSamples: {
       react: `import { useMemo, useState } from "react";
-import { DataRelation, DataSet, DataTable, DataView, GridViewController } from "@wf-controls/core";
-import { WebFormsGridView } from "@wf-controls/react";
+import { DataRelation, DataSet, DataTable, DataView } from "@wf-controls/core";
+import { GridViewController } from "@wf-controls/pro-data";
+import { WebFormsGridView } from "@wf-controls/pro-data-react";
 
 // Master / detail: selecting a customer rebinds the child grid with that customer's orders.
 export function CustomerOrders({ ds, relation }: { ds: DataSet; relation: DataRelation }) {
@@ -186,7 +194,8 @@ export function CustomerOrders({ ds, relation }: { ds: DataSet; relation: DataRe
 }`,
       angular: `// master-detail.component.ts
 import { Component } from "@angular/core";
-import { DataRelation, DataSet, DataTable, GridViewController } from "@wf-controls/core";
+import { DataRelation, DataSet, DataTable } from "@wf-controls/core";
+import { GridViewController } from "@wf-controls/pro-data";
 
 export class MasterDetailComponent {
   ds = new DataSet("Shop");
@@ -237,6 +246,10 @@ const json = ds.toJson();                                                       
     category: 'ADO.NET Data Core',
     aspEquivalent: 'DataSource / DataBind() / DataSourceID',
     badge: 'New',
+    edition: 'pro',
+    package: '@wf-controls/pro-data',
+    adapterPackages: { react: '@wf-controls/pro-data-react', angular: '@wf-controls/pro-data-angular' },
+    featureId: 'data.gridView',
     tagline: 'Bind arrays, DataViews and data sources to GridView, Repeater, DataList and DataGrid, with the exact event pipeline.',
     description:
       'Every presentation controller binds with await controller.dataBind(source?). It copies the rows, raises dataBinding, then rowCreated / rowDataBound per row, then dataBound. Because the controllers bind a snapshot, edits must be written to the DataTable (inside rowUpdating / rowDeleting) and the control re-bound. The live demo below shows the event order, CRUD, row states and filtering.',
@@ -259,8 +272,9 @@ const json = ds.toJson();                                                       
     ],
     codeSamples: {
       react: `import { useEffect, useMemo } from "react";
-import { DataTable, DataView, GridViewController } from "@wf-controls/core";
-import { WebFormsGridView } from "@wf-controls/react";
+import { DataTable, DataView } from "@wf-controls/core";
+import { GridViewController } from "@wf-controls/pro-data";
+import { WebFormsGridView } from "@wf-controls/pro-data-react";
 
 export function BoundGrid({ table, onSave }: { table: DataTable; onSave: (id: unknown, values: object) => void }) {
   const grid = useMemo(() => {
@@ -283,7 +297,8 @@ export function BoundGrid({ table, onSave }: { table: DataTable; onSave: (id: un
 }`,
       angular: `// bound-grid.component.ts
 import { Component, OnInit } from "@angular/core";
-import { DataTable, DataView, GridViewController } from "@wf-controls/core";
+import { DataTable, DataView } from "@wf-controls/core";
+import { GridViewController } from "@wf-controls/pro-data";
 
 export class BoundGridComponent implements OnInit {
   table = new DataTable("Items");
@@ -300,7 +315,8 @@ export class BoundGridComponent implements OnInit {
     await this.grid.dataBind();
   }
 }`,
-      jquery: `import { DataTable, DataView, GridViewController } from "@wf-controls/core";
+      jquery: `import { DataTable, DataView } from "@wf-controls/core";
+import { GridViewController } from "@wf-controls/pro-data";
 
 const table = new DataTable("Items");
 table.columns.add("id", "number");
@@ -326,7 +342,11 @@ console.log(order.join(" > "));   // dataBinding > rowCreated > rowDataBound > r
     name: 'GridView',
     category: 'Data Controls',
     aspEquivalent: '<asp:GridView>',
-    badge: 'Enterprise',
+    badge: 'Stable',
+    edition: 'pro',
+    package: '@wf-controls/pro-data',
+    adapterPackages: { react: '@wf-controls/pro-data-react', angular: '@wf-controls/pro-data-angular' },
+    featureId: 'data.gridView',
     tagline: 'Tabular data presentation with sorting, paging, inline editing, and row selection.',
     description:
       'The flagship enterprise data grid replicating classic ASP.NET GridView semantics. Powered by a headless controller, it supports client and server pagination, multi-column sorting, row command routing, inline editing, and row selection with zero ViewState bloat.',
@@ -360,8 +380,8 @@ console.log(order.join(" > "));   // dataBinding > rowCreated > rowDataBound > r
     ],
     codeSamples: {
       react: `import { useEffect } from "react";
-import { GridViewController } from "@wf-controls/core";
-import { WebFormsGridView } from "@wf-controls/react";
+import { GridViewController } from "@wf-controls/pro-data";
+import { WebFormsGridView } from "@wf-controls/pro-data-react";
 
 interface Employee { id: number; name: string; role: string; salary: number }
 
@@ -390,8 +410,8 @@ export function EmployeeGrid({ employees }: { employees: Employee[] }) {
 }`,
       angular: `// employee-grid.component.ts
 import { Component, OnInit } from "@angular/core";
-import { GridViewController } from "@wf-controls/core";
-import { WebFormsGridViewComponent } from "@wf-controls/angular";
+import { GridViewController } from "@wf-controls/pro-data";
+import { WebFormsGridViewComponent } from "@wf-controls/pro-data-angular";
 
 @Component({
   standalone: true,
@@ -441,6 +461,10 @@ $("#employeeGrid").wfGridView({
     category: 'Data Controls',
     aspEquivalent: '<asp:Repeater>',
     badge: 'Stable',
+    edition: 'pro',
+    package: '@wf-controls/pro-data',
+    adapterPackages: { react: '@wf-controls/pro-data-react', angular: '@wf-controls/pro-data-angular' },
+    featureId: 'data.repeater',
     tagline: 'Lightweight, completely custom templated repeater control.',
     description:
       'Renders completely customizable markup with zero enforced wrapper HTML. Faithful to classic ASP.NET Repeater with HeaderTemplate, ItemTemplate, AlternatingItemTemplate, SeparatorTemplate, and FooterTemplate.',
@@ -468,8 +492,8 @@ $("#employeeGrid").wfGridView({
     ],
     codeSamples: {
       react: `import { useEffect } from "react";
-import { RepeaterController } from "@wf-controls/core";
-import { WebFormsRepeater } from "@wf-controls/react";
+import { RepeaterController } from "@wf-controls/pro-data";
+import { WebFormsRepeater } from "@wf-controls/pro-data-react";
 
 interface Order { orderId: number; total: number }
 
@@ -516,7 +540,11 @@ export function Orders({ orders }: { orders: Order[] }) {
     name: 'DataList',
     category: 'Data Controls',
     aspEquivalent: '<asp:DataList>',
-    badge: 'Enterprise',
+    badge: 'Stable',
+    edition: 'pro',
+    package: '@wf-controls/pro-data',
+    adapterPackages: { react: '@wf-controls/pro-data-react', angular: '@wf-controls/pro-data-angular' },
+    featureId: 'data.dataList',
     tagline: 'Flow and table layout grid repeater with horizontal/vertical repeat columns.',
     description:
       'Implements multi-column layout repeaters with computed layout matrix (getLayoutMatrix), repeatColumns, repeatDirection (Horizontal/Vertical), and repeatLayout (Table/Flow). Supports EditItemTemplate and SelectedItemTemplate.',
@@ -541,8 +569,8 @@ export function Orders({ orders }: { orders: Order[] }) {
     ],
     codeSamples: {
       react: `import { useEffect } from "react";
-import { DataListController } from "@wf-controls/core";
-import { WebFormsDataList } from "@wf-controls/react";
+import { DataListController } from "@wf-controls/pro-data";
+import { WebFormsDataList } from "@wf-controls/pro-data-react";
 
 interface Product { id: number; name: string; price: number }
 
@@ -569,8 +597,8 @@ export function Products({ products }: { products: Product[] }) {
 }`,
       angular: `// product-list.component.ts
 import { Component, OnInit } from "@angular/core";
-import { DataListController } from "@wf-controls/core";
-import { WebFormsDataListComponent } from "@wf-controls/angular";
+import { DataListController } from "@wf-controls/pro-data";
+import { WebFormsDataListComponent } from "@wf-controls/pro-data-angular";
 
 interface Product { id: number; name: string; price: number }
 
@@ -606,7 +634,10 @@ export class ProductListComponent implements OnInit {
     name: 'Menu',
     category: 'Navigation',
     aspEquivalent: '<asp:Menu>',
-    badge: 'Enterprise',
+    badge: 'Stable',
+    edition: 'free',
+    package: '@wf-controls/core',
+    adapterPackages: { react: '@wf-controls/react', angular: '@wf-controls/angular' },
     tagline: 'Hierarchical navigation menu with static and dynamic flyout levels.',
     description:
       'Implements multi-level navigation hierarchies supporting horizontal and vertical orientations, static display depth, and dynamic hover/click flyout menus. Seamlessly binds to SiteMapDataSource.',
@@ -674,7 +705,10 @@ export class MainNavComponent implements OnInit {
     name: 'TreeView',
     category: 'Navigation',
     aspEquivalent: '<asp:TreeView>',
-    badge: 'Enterprise',
+    badge: 'Stable',
+    edition: 'free',
+    package: '@wf-controls/core',
+    adapterPackages: { react: '@wf-controls/react', angular: '@wf-controls/angular' },
     tagline: 'Collapsible hierarchical tree with checkboxes, expand/collapse, and node selection.',
     description:
       'Rich hierarchical tree view supporting expand/collapse state machines, tri-state checkboxes, deep node filtering, and full keyboard accessibility. Binds to SiteMapDataSource or nested objects.',
@@ -737,7 +771,9 @@ export class SiteTreeComponent implements OnInit {
     name: 'ValidatorManager',
     category: 'Input & Validation',
     aspEquivalent: 'Page_IsValid & Validators',
-    badge: 'Enterprise',
+    badge: 'Stable',
+    edition: 'free',
+    package: '@wf-controls/core',
     tagline: 'Central validation coordinator simulating ASP.NET Page_IsValid and ValidationGroups.',
     description:
       'Coordinating brain for form validation across client and asynchronous server callbacks. Groups validators into ValidationGroups, validates individual controls, and simulates Page_IsValid with zero DOM dependencies.',
@@ -793,7 +829,10 @@ async submit() {
     name: 'ModalPopup',
     category: 'AJAX & Behaviors',
     aspEquivalent: '<ajaxToolkit:ModalPopupExtender>',
-    badge: 'Enterprise',
+    badge: 'Stable',
+    edition: 'free',
+    package: '@wf-controls/core',
+    adapterPackages: { react: '@wf-controls/react', angular: '@wf-controls/angular' },
     tagline: 'AjaxControlToolkit modal dialog with OK/Cancel lifecycle and backdrop blur.',
     description:
       'Faithfully replicates AjaxControlToolkit ModalPopupExtender lifecycle. Provides OkControlId, CancelControlId, OnOk, OnCancel, and cancellable showing/hiding events with zero DOM coupling.',
@@ -869,6 +908,9 @@ export class ConfirmOrderComponent {
     category: 'AJAX & Behaviors',
     aspEquivalent: '<ajaxToolkit:TabContainer>',
     badge: 'Stable',
+    edition: 'free',
+    package: '@wf-controls/core',
+    adapterPackages: { react: '@wf-controls/react', angular: '@wf-controls/angular' },
     tagline: 'AjaxControlToolkit TabContainer with keyboard navigation and disabled tabs.',
     description:
       'TabsController keeps the active index and the tab list; <WebFormsTabs /> renders accessible tablist markup (role="tab", arrow keys, Home/End) that the `tb-` style sheets theme.',
@@ -920,6 +962,9 @@ tabs.activeTabChanged.subscribe((_s, e) => showPanel(e.activeIndex));`,
     category: 'Navigation',
     aspEquivalent: '<asp:SiteMapPath>',
     badge: 'Stable',
+    edition: 'free',
+    package: '@wf-controls/core',
+    adapterPackages: { react: '@wf-controls/react', angular: '@wf-controls/angular' },
     tagline: 'Breadcrumb trail resolved from a site map.',
     description:
       'SiteMapPathController resolves the path to the current node from a SiteMapDataSource; <Breadcrumb /> renders the kit span markup themed by the `nv-` sheets.',
@@ -960,7 +1005,10 @@ const items = await path.dataBind(location.pathname);`,
     name: 'Login & Account',
     category: 'Login & Security',
     aspEquivalent: '<asp:Login> / LoginView / LoginStatus / LoginName',
-    badge: 'Enterprise',
+    badge: 'Stable',
+    edition: 'free',
+    package: '@wf-controls/core',
+    adapterPackages: { react: '@wf-controls/react', angular: '@wf-controls/angular' },
     tagline: 'Sign-in form, status link, user name and role-based content on one membership provider.',
     description:
       'LoginController, LoginStatusController, LoginNameController and LoginViewController share an IMembershipProvider through SecurityManager. The React adapters emit the markup the `lg-` sheets target.',
@@ -991,4 +1039,8 @@ login.setUserName(name); login.setPassword(pw); await login.login();`,
     },
     migrationNotes: 'The in-memory provider keeps plain-text passwords: implement IMembershipProvider against your server.',
   },
+
 ];
+
+/** Every control shown in the gallery: the original set plus the edition-aware additions (data sources, DualList, SqlWhereBuilder, auth, ...). */
+export const controlsRegistry: ControlDefinition[] = [...baseControls, ...editionControls];

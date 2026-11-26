@@ -1,0 +1,51 @@
+{
+  "name": "@wf-controls/styles",
+  "version": "1.0.0",
+  "description": "Framework-neutral CSS themes (modern, dark, classic, minimal, corporate) for GridView, Login, Menu, TreeView, Tabs, Navigation, Validation, Modal, Repeater and DataList controls",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahsan-wolf/webforms-ts-controls.git",
+    "directory": "packages/styles"
+  },
+  "type": "module",
+  "files": [
+    "dist",
+    "css",
+    "js",
+    "README.md"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "style": "css/bundles/modern-all.css",
+  "exports": {
+    "./css/*": "./css/*",
+    "./js/*": "./js/*",
+    "./dist/*": "./dist/*",
+    "./bundles/*": "./css/bundles/*",
+    "./adapters.css": "./css/adapters.css",
+    "./gridview/*": "./css/gridview/*",
+    "./login/*": "./css/login/*",
+    "./menu/*": "./css/menu/*",
+    "./treeview/*": "./css/treeview/*",
+    "./tabs/*": "./css/tabs/*",
+    "./navigation/*": "./css/navigation/*",
+    "./validation/*": "./css/validation/*",
+    "./modal/*": "./css/modal/*",
+    "./repeater/*": "./css/repeater/*",
+    "./datalist/*": "./css/datalist/*",
+    "./validation-input-highlight.js": "./js/validation-input-highlight.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "sync": "node scripts/sync-kit.mjs",
+    "gen": "node scripts/gen-families.mjs",
+    "bundle": "node scripts/bundle-full.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "npm run build && node --test test/*.test.mjs"
+  }
+}
