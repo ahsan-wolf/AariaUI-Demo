@@ -1,0 +1,134 @@
+/* dark: GridView/table + login, menu, treeview, tabs, navigation, validation */
+/* gv-dark: dark-mode grid with accent header */
+table.gv-dark{width:100%;border-collapse:collapse;background:#111827;color:#e5e7eb;font:14px "Segoe UI",system-ui,sans-serif;border:1px solid #374151!important}
+table.gv-dark th{background:#1f2937;color:#f9fafb;text-align:left;padding:12px 14px;border:1px solid #374151!important;border-bottom:2px solid #6366f1!important}
+table.gv-dark th a{color:#a5b4fc;text-decoration:none}
+table.gv-dark td{padding:10px 14px;border:1px solid #1f2937!important}
+table.gv-dark tr:nth-child(even) td{background:#161e2e}
+table.gv-dark tr:hover td{background:#243049}
+table.gv-dark a.btn-link{color:#818cf8;text-decoration:none;margin-right:10px}
+table.gv-dark a.btn-link:hover{color:#c7d2fe}
+table.gv-dark a.text-danger{color:#f87171}
+table.gv-dark .pager td,table.gv-dark tr.pager>td{background:#1f2937;padding:8px 14px}
+table.gv-dark .pager table{margin:0 auto}
+table.gv-dark .pager a{color:#a5b4fc;padding:3px 8px;text-decoration:none}
+table.gv-dark .pager span{background:#6366f1;color:#fff;padding:3px 8px;border-radius:4px}
+table.gv-dark tr.selected td{background:#312e81}
+table.gv-dark tr.edit td{background:#3b2f10}
+table.gv-dark .empty,table.gv-dark .empty td{padding:28px;text-align:center;color:#6b7280}
+
+/* ---- nested pager table reset (GridView renders pager as a table inside a td) ---- */
+table.gv-dark tr.pager table td{padding:0!important;border:0!important;background:transparent!important}
+/* ---- INLINE EDIT / INSERT (EditRowStyle-CssClass="edit", FooterStyle-CssClass="footer") ---- */
+table.gv-dark tr.edit input[type=text],table.gv-dark tr.edit input[type=date],table.gv-dark tr.footer input[type=text],table.gv-dark tr.footer input[type=date]{width:100%;box-sizing:border-box;min-width:110px;padding:6px 10px;border:1px solid #374151;border-radius:4px;font:inherit;font-size:14px;background:#0b1220;color:#e5e7eb}
+table.gv-dark tr.edit input:focus,table.gv-dark tr.footer input:focus{outline:0;border-color:#6366f1;box-shadow:0 0 0 3px #6366f133}
+table.gv-dark input.invalid{border-color:#dc2626!important}
+table.gv-dark tr.footer td{background:#1f2937!important}
+table.gv-dark tr.edit a.btn-link{font-weight:600}
+
+/* lg-dark : ASP.NET Login, CreateUserWizard, ChangePassword, PasswordRecovery, LoginStatus, LoginName
+   <asp:Login CssClass="lg-dark" TitleTextStyle-CssClass="title" FailureTextStyle-CssClass="failure" />
+   <asp:LoginStatus CssClass="lg-dark" />   <asp:LoginName CssClass="lg-dark" />            */
+table.lg-dark{border-collapse:separate!important;border-spacing:0;background:#111827;color:#e5e7eb;font:14px/1.45 "Segoe UI",system-ui,sans-serif;border:1px solid #374151;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.5);overflow:hidden;min-width:300px}
+table.lg-dark>tbody>tr>td{padding:20px 22px}
+table.lg-dark table{border-collapse:separate;border-spacing:0 8px;width:100%}
+table.lg-dark td{color:inherit}
+table.lg-dark table tr:first-child>td[colspan],table.lg-dark .title{font-size:18px;font-weight:700;text-align:left!important;padding-bottom:6px;}
+table.lg-dark td[align="right"]:not([colspan]){text-align:left}
+table.lg-dark label{color:#9ca3af;font-weight:600;font-size:12px}
+table.lg-dark input[type="text"],table.lg-dark input[type="password"],table.lg-dark input[type="email"]{box-sizing:border-box;width:calc(100% - 16px);min-width:180px;padding:8px 10px;border:1px solid #374151;border-radius:6px;background:#0b1220;color:#e5e7eb;font:inherit}
+table.lg-dark input[type="text"]:focus,table.lg-dark input[type="password"]:focus,table.lg-dark input[type="email"]:focus{outline:0;border-color:#6366f1;box-shadow:0 0 0 3px #6366f133}
+table.lg-dark input[type="checkbox"]{accent-color:#6366f1;margin-right:6px;vertical-align:middle}
+table.lg-dark input[type="submit"],table.lg-dark input[type="button"],table.lg-dark button{background:#6366f1;color:#ffffff;border:1px solid #6366f1;border-radius:6px;padding:8px 20px;font:inherit;font-weight:600;cursor:pointer}
+table.lg-dark input[type="submit"]:hover,table.lg-dark input[type="button"]:hover,table.lg-dark button:hover{filter:brightness(1.12)}
+table.lg-dark a{color:#6366f1;text-decoration:none}
+table.lg-dark a:hover{text-decoration:underline}
+table.lg-dark span[id$="Required"]{color:#f87171!important;font-weight:700;margin-left:4px}
+table.lg-dark .failure,table.lg-dark td[style*="color:Red"]{color:#f87171!important}
+table.lg-dark span[id$="FailureText"]:not(:empty){display:block;background:#3b1c1c;border:1px solid #f87171;border-radius:6px;padding:8px 10px;text-align:left}
+table.lg-dark .help,table.lg-dark .instruction{color:#9ca3af;font-size:12px}
+a.lg-dark{display:inline-block;color:#6366f1;border:1px solid #6366f1;border-radius:6px;padding:5px 14px;font:600 14px "Segoe UI",system-ui,sans-serif;text-decoration:none}
+a.lg-dark:hover{background:#6366f1;color:#ffffff}
+span.lg-dark{font:600 14px "Segoe UI",system-ui,sans-serif;color:#e5e7eb}
+
+/* mn-dark : asp:Menu (RenderingMode="List", the default from .NET 4.0). Horizontal by default.
+   <asp:Menu CssClass="mn-dark" Orientation="Horizontal" />      Vertical: CssClass="mn-dark mn-vertical" Orientation="Vertical"
+   ASP.NET positions/shows dynamic sub-menus with inline styles + script, so this sheet only sets appearance. */
+div.mn-dark{display:block;font:14px "Segoe UI",system-ui,sans-serif;background:#1f2937;color:#e5e7eb;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+div.mn-dark ul{list-style:none;margin:0;padding:0}
+div.mn-dark ul.static{display:flex;flex-wrap:wrap}
+div.mn-dark.mn-vertical{display:inline-block;min-width:200px}
+div.mn-dark.mn-vertical ul.static{flex-direction:column}
+div.mn-dark a{display:block;padding:10px 16px;color:#e5e7eb;text-decoration:none;white-space:nowrap}
+div.mn-dark a:hover{background:#374151}
+div.mn-dark a.selected,div.mn-dark a.active{background:#6366f1;color:#ffffff}
+div.mn-dark a.has-popup::after{content:"\25BE";margin-left:8px;font-size:.8em;opacity:.7}
+div.mn-dark ul.dynamic{background:#1f2937;border:1px solid #374151;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.18);min-width:170px;padding:4px 0}
+div.mn-dark ul.dynamic a{color:#e5e7eb;padding:8px 16px}
+div.mn-dark ul.dynamic a:hover{background:#243049}
+div.mn-dark ul.dynamic a.selected{background:#312e81;color:#c7d2fe}
+
+/* tv-dark : asp:TreeView
+   <asp:TreeView CssClass="tv-dark" RootNodeStyle-CssClass="root" ParentNodeStyle-CssClass="parent" LeafNodeStyle-CssClass="leaf" SelectedNodeStyle-CssClass="selected" />
+   TreeView draws the +/- glyphs as images; set ExpandImageUrl / CollapseImageUrl for custom icons. */
+div.tv-dark{display:inline-block;min-width:240px;font:14px "Segoe UI",system-ui,sans-serif;color:#e5e7eb;background:#111827;border:1px solid #374151;border-radius:6px;padding:8px}
+div.tv-dark table{border-collapse:collapse;border-spacing:0}
+div.tv-dark td{padding:1px 0;vertical-align:middle;white-space:nowrap}
+div.tv-dark a{color:#e5e7eb;text-decoration:none;border-radius:6px}
+div.tv-dark a:not(:has(>img)){display:inline-block;padding:3px 8px}
+div.tv-dark a:not(:has(>img)):hover{background:#243049}
+div.tv-dark a.root{font-weight:700}
+div.tv-dark a.parent{font-weight:600}
+div.tv-dark a.leaf{color:#9ca3af}
+div.tv-dark a.selected{background:#312e81;color:#c7d2fe;font-weight:600}
+div.tv-dark img{border:0;vertical-align:middle;filter:invert(1);}
+div.tv-dark div[id$="Nodes"]{border-left:1px dotted #374151;margin-left:9px}
+div.tv-dark input[type="checkbox"]{accent-color:#6366f1;vertical-align:middle}
+
+/* tb-dark : tab strips
+   (a) AjaxControlToolkit TabContainer:  <ajaxToolkit:TabContainer CssClass="tb-dark" />   (replaces the default ajax__tab_xp skin)
+   (b) asp:Menu + asp:MultiView:          <asp:Menu CssClass="tb-dark" Orientation="Horizontal" />  and  <asp:Panel CssClass="tb-dark-panel"> around the MultiView */
+.tb-dark{font:14px "Segoe UI",system-ui,sans-serif;color:#e5e7eb}
+.tb-dark .ajax__tab_header{display:flex;flex-wrap:wrap;border-bottom:2px solid #374151}
+.tb-dark .ajax__tab_outer,.tb-dark .ajax__tab_inner{display:inline-block}
+.tb-dark .ajax__tab_tab{display:inline-block;padding:9px 18px;margin-bottom:-2px;cursor:pointer;color:#9ca3af;font-weight:600;border-bottom:2px solid transparent;border-radius:6px 6px 0 0}
+.tb-dark .ajax__tab_hover .ajax__tab_tab,.tb-dark .ajax__tab_tab:hover{color:#e5e7eb;background:#243049}
+.tb-dark .ajax__tab_active .ajax__tab_tab{color:#a5b4fc;background:#1f2937;border-bottom-color:#6366f1}
+.tb-dark .ajax__tab_body{border:1px solid #374151;border-top:0;padding:16px;background:#111827;border-radius:0 0 6px 6px}
+div.tb-dark ul{list-style:none;margin:0;padding:0}
+div.tb-dark ul.static{display:flex;flex-wrap:wrap;border-bottom:2px solid #374151}
+div.tb-dark a.static{display:block;padding:9px 18px;margin-bottom:-2px;color:#9ca3af;font-weight:600;text-decoration:none;border-bottom:2px solid transparent;border-radius:6px 6px 0 0}
+div.tb-dark a.static:hover{color:#e5e7eb;background:#243049}
+div.tb-dark a.static.selected,div.tb-dark a.static.active{color:#a5b4fc;background:#1f2937;border-bottom-color:#6366f1}
+.tb-dark-panel{border:1px solid #374151;border-top:0;padding:16px;background:#111827;color:#e5e7eb;font:14px "Segoe UI",system-ui,sans-serif;border-radius:0 0 6px 6px}
+
+/* nv-dark : navigation controls
+   SiteMapPath: <asp:SiteMapPath CssClass="nv-dark" PathSeparatorStyle-CssClass="sep" CurrentNodeStyle-CssClass="current" PathSeparator=" " />
+   DataPager:   <asp:DataPager CssClass="nv-dark-pager" ... CurrentPageLabelCssClass="current" />
+   Link list:   <ul class="nv-dark-list"><li><a class="active">...</a></li></ul>  (Repeater / hand-written side navigation) */
+span.nv-dark{display:inline-flex;flex-wrap:wrap;align-items:center;font:14px "Segoe UI",system-ui,sans-serif;color:#9ca3af;background:#1f2937;padding:8px 14px;border-radius:6px}
+span.nv-dark a{color:#6366f1;text-decoration:none}
+span.nv-dark a:hover{text-decoration:underline}
+span.nv-dark .sep{font-size:0;color:#9ca3af}
+span.nv-dark .sep::before{content:"\203A";font-size:14px;margin:0 8px}
+span.nv-dark .current{color:#e5e7eb;font-weight:600}
+span.nv-dark-pager{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;font:14px "Segoe UI",system-ui,sans-serif}
+span.nv-dark-pager a,span.nv-dark-pager span.current,span.nv-dark-pager input[type="submit"],span.nv-dark-pager .aspNetDisabled{display:inline-block;min-width:30px;padding:5px 10px;border:1px solid #374151;border-radius:6px;background:#111827;color:#e5e7eb;text-align:center;text-decoration:none;font:inherit;cursor:pointer}
+span.nv-dark-pager a:hover,span.nv-dark-pager input[type="submit"]:hover{background:#243049}
+span.nv-dark-pager span.current{background:#6366f1;border-color:#6366f1;color:#ffffff;font-weight:600;cursor:default}
+span.nv-dark-pager .aspNetDisabled{opacity:.4;cursor:default}
+ul.nv-dark-list{list-style:none;margin:0;padding:6px;width:220px;background:#111827;border:1px solid #374151;border-radius:6px;font:14px "Segoe UI",system-ui,sans-serif}
+ul.nv-dark-list a{display:block;padding:9px 12px;color:#e5e7eb;text-decoration:none;border-radius:6px}
+ul.nv-dark-list a:hover{background:#243049}
+ul.nv-dark-list a.active,ul.nv-dark-list a[aria-current]{background:#312e81;color:#c7d2fe;font-weight:600}
+
+/* vl-dark : RequiredFieldValidator, CompareValidator, RangeValidator, RegularExpressionValidator, CustomValidator, ValidationSummary
+   <asp:RequiredFieldValidator CssClass="vl-dark" Display="Dynamic" ... />   <asp:ValidationSummary CssClass="vl-dark" />
+   Input highlighting: add validation-input-highlight.js (adds .is-invalid to the failing control). */
+span.vl-dark{color:#f87171!important;font:600 12px/1.4 "Segoe UI",system-ui,sans-serif;margin-left:6px}
+span.vl-dark::before{content:"\26A0\FE0E ";}
+div.vl-dark{color:#f87171!important;background:#3b1c1c;border:1px solid #f87171;border-left-width:4px;border-radius:6px;padding:10px 14px;font:14px/1.4 "Segoe UI",system-ui,sans-serif;margin:8px 0}
+div.vl-dark ul{margin:4px 0 0;padding-left:18px}
+div.vl-dark li{margin:2px 0}
+input.is-invalid,select.is-invalid,textarea.is-invalid{border-color:#f87171!important;background-color:#3b1c1c!important;outline:0;box-shadow:0 0 0 2px #f8717133}
+

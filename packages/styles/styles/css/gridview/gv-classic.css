@@ -1,0 +1,25 @@
+/* gv-classic: traditional bordered grid, blue header, alternating rows */
+table.gv-classic{width:100%;border-collapse:collapse;font:13px Verdana,Arial,sans-serif;color:#333;border:1px solid #7a96b5!important}
+table.gv-classic th{background:linear-gradient(#5b8bc5,#3d6ca5);color:#fff;text-align:left;padding:7px 10px;border:1px solid #2f5a8f!important;font-weight:bold}
+table.gv-classic th a{color:#fff;text-decoration:underline}
+table.gv-classic td{padding:6px 10px;border:1px solid #c5d3e3!important;background:#fff}
+table.gv-classic tr:nth-child(even) td{background:#eef3f9}
+table.gv-classic tr:hover td{background:#fff4c2}
+table.gv-classic a.btn-link{color:#0645ad;margin-right:8px}
+table.gv-classic a.text-danger{color:#b00020}
+table.gv-classic .pager td,table.gv-classic tr.pager>td{background:#d9e4f1;padding:5px 10px;text-align:center}
+table.gv-classic .pager table{margin:0 auto}
+table.gv-classic .pager a{color:#0645ad;padding:2px 6px}
+table.gv-classic .pager span{font-weight:bold;padding:2px 6px;background:#fff;border:1px solid #7a96b5}
+table.gv-classic tr.selected td{background:#ffe9a8}
+table.gv-classic tr.edit td{background:#ffffe0}
+table.gv-classic .empty,table.gv-classic .empty td{padding:20px;text-align:center;font-style:italic}
+
+/* ---- nested pager table reset (GridView renders pager as a table inside a td) ---- */
+table.gv-classic tr.pager table td{padding:0!important;border:0!important;background:transparent!important}
+/* ---- INLINE EDIT / INSERT (EditRowStyle-CssClass="edit", FooterStyle-CssClass="footer") ---- */
+table.gv-classic tr.edit input[type=text],table.gv-classic tr.edit input[type=date],table.gv-classic tr.footer input[type=text],table.gv-classic tr.footer input[type=date]{width:100%;box-sizing:border-box;min-width:110px;padding:6px 10px;border:1px solid #7a96b5;border-radius:0;font:inherit;font-size:13px;background:#fff;color:#333}
+table.gv-classic tr.edit input:focus,table.gv-classic tr.footer input:focus{outline:0;border-color:#3d6ca5;box-shadow:0 0 0 3px #3d6ca533}
+table.gv-classic input.invalid{border-color:#dc2626!important}
+table.gv-classic tr.footer td{background:#d9e4f1!important}
+table.gv-classic tr.edit a.btn-link{font-weight:600}

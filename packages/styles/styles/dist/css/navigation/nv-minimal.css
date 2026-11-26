@@ -1,0 +1,19 @@
+/* nv-minimal : navigation controls
+   SiteMapPath: <asp:SiteMapPath CssClass="nv-minimal" PathSeparatorStyle-CssClass="sep" CurrentNodeStyle-CssClass="current" PathSeparator=" " />
+   DataPager:   <asp:DataPager CssClass="nv-minimal-pager" ... CurrentPageLabelCssClass="current" />
+   Link list:   <ul class="nv-minimal-list"><li><a class="active">...</a></li></ul>  (Repeater / hand-written side navigation) */
+span.nv-minimal{display:inline-flex;flex-wrap:wrap;align-items:center;font:14px "Helvetica Neue",Arial,sans-serif;color:#888888;background:#fafafa;padding:8px 14px;border-radius:0}
+span.nv-minimal a{color:#111111;text-decoration:none}
+span.nv-minimal a:hover{text-decoration:underline}
+span.nv-minimal .sep{font-size:0;color:#888888}
+span.nv-minimal .sep::before{content:"/";font-size:14px;margin:0 8px}
+span.nv-minimal .current{color:#222222;font-weight:600}
+span.nv-minimal-pager{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;font:14px "Helvetica Neue",Arial,sans-serif}
+span.nv-minimal-pager a,span.nv-minimal-pager span.current,span.nv-minimal-pager input[type="submit"],span.nv-minimal-pager .aspNetDisabled{display:inline-block;min-width:30px;padding:5px 10px;border:1px solid #dddddd;border-radius:0;background:#ffffff;color:#222222;text-align:center;text-decoration:none;font:inherit;cursor:pointer}
+span.nv-minimal-pager a:hover,span.nv-minimal-pager input[type="submit"]:hover{background:#fafafa}
+span.nv-minimal-pager span.current{background:#111111;border-color:#111111;color:#ffffff;font-weight:600;cursor:default}
+span.nv-minimal-pager .aspNetDisabled{opacity:.4;cursor:default}
+ul.nv-minimal-list{list-style:none;margin:0;padding:6px;width:220px;background:#ffffff;border:1px solid #dddddd;border-radius:0;font:14px "Helvetica Neue",Arial,sans-serif}
+ul.nv-minimal-list a{display:block;padding:9px 12px;color:#222222;text-decoration:none;border-radius:0}
+ul.nv-minimal-list a:hover{background:#fafafa}
+ul.nv-minimal-list a.active,ul.nv-minimal-list a[aria-current]{background:#f0f0f0;color:#000000;font-weight:600}

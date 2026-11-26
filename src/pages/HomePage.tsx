@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Framework } from '../types/gallery';
 import { mockEmployees } from '../data/mockData';
+import { controlsRegistry } from '../data/controlsRegistry';
 import {
   IconArrowRight,
   IconSparkles,
@@ -9,20 +10,20 @@ import {
   IconCheck,
   IconZap,
   IconCode,
-  IconExternalLink,
-  IconX,
 } from '../components/Icons';
 import { CodeSnippetViewer } from '../components/CodeSnippetViewer';
-import aairaDemoGif from '../../images/aaira-demo-720px.gif';
 
 interface HomePageProps {
   onNavigate: (page: 'home' | 'controls' | 'migration' | 'docs', controlId?: string) => void;
+  /** Opens the "Contact us for Demo" dialog. */
+  onContact: () => void;
   framework: Framework;
   onFrameworkChange: (fw: Framework) => void;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({
   onNavigate,
+  onContact,
   framework,
   onFrameworkChange,
 }) => {
@@ -31,51 +32,6 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [sortField, setSortField] = useState<string>('name');
   const [sortAsc, setSortAsc] = useState<boolean>(true);
   const [selectedRowId, setSelectedRowId] = useState<number | null>(102);
-  const [contactOpen, setContactOpen] = useState(false);
-  const [contactSubmitted, setContactSubmitted] = useState(false);
-  const [contactSending, setContactSending] = useState(false);
-  const [contactName, setContactName] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
-  const [contactCompany, setContactCompany] = useState('');
-  const [contactDetails, setContactDetails] = useState('');
-
-  const handleContactSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setContactSending(true);
-    try {
-      const response = await fetch('https://formsubmit.co/ajax/ahsanalnasar@gmail.com', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          _subject: `Aaira Controls Demo Request from ${contactName}`,
-          name: contactName,
-          email: contactEmail,
-          company: contactCompany || 'N/A',
-          message: contactDetails || 'Demo request submitted from Aaira Controls main page.',
-        }),
-      });
-      if (!response.ok) {
-        throw new Error('FormSubmit failed');
-      }
-      setContactSubmitted(true);
-      setContactName('');
-      setContactEmail('');
-      setContactCompany('');
-      setContactDetails('');
-    } catch {
-      const subject = encodeURIComponent(`Aaira Controls Demo Request - ${contactName}`);
-      const body = encodeURIComponent(
-        `Name: ${contactName}\nEmail: ${contactEmail}\nCompany: ${contactCompany}\n\nProject Details:\n${contactDetails}`
-      );
-      window.location.href = `mailto:ahsanalnasar@gmail.com?subject=${subject}&body=${body}`;
-      setContactSubmitted(true);
-    } finally {
-      setContactSending(false);
-    }
-  };
 
   const pageSize = 4;
 
@@ -105,8 +61,8 @@ export const HomePage: React.FC<HomePageProps> = ({
   };
 
   const heroCodeSnippets = {
-    react: `import { WebFormsGridView } from "@wf-controls/react";
-import { GridViewController } from "@wf-controls/core";
+    react: `import { WebFormsGridView } from "@wf-controls/pro-data-react";
+import { GridViewController } from "@wf-controls/pro-data";
 
 const gridCtrl = new GridViewController({
   dataSource: employees,
@@ -132,14 +88,18 @@ export default function App() {
   [allowSorting]="true"
   [density]="'${density}'">
 </wf-grid-view>`,
-    jquery: `// Pure HTML & jQuery Plugin
-$("#employeesGrid").wfGridView({
+    jquery: `// Plain JS: import the controllers directly (GridView is Pro: needs a license key)
+import { GridViewController } from "@wf-controls/pro-data";
+
+const grid = new GridViewController({
+  id: "employeesGrid",
   dataSource: employees,
   allowPaging: true,
   pageSize: 4,
-  allowSorting: true,
-  density: "${density}"
-});`,
+  allowSorting: true
+});
+grid.stateChanged.subscribe(() => render(grid.visibleRows));   // density: "${density}" is a CSS choice
+await grid.dataBind();`,
   };
 
   return (
@@ -148,7 +108,7 @@ $("#employeesGrid").wfGridView({
       <section className="hero-banner">
         <div className="hero-badge">
           <IconSparkles size={14} />
-          <span>Enterprise UI Suite &bull; React, Angular &amp; jQuery</span>
+          <span>Free MIT core &bull; Pro &amp; Enterprise packages &bull; React, Angular &amp; plain JS</span>
         </div>
 
         <h1 className="hero-title">
@@ -157,28 +117,17 @@ $("#employeesGrid").wfGridView({
         </h1>
 
         <p className="hero-subtitle">
-          Aaira is an enterprise UI framework that bridges legacy ASP.NET Web Forms and modern front-end development. 
-          Use familiar controls like GridView, Repeater, Login, Menu, and validators directly in React, Angular, 
-          or plain JavaScript—retaining consistent properties, events, and data models with zero ViewState or page postbacks.
+          Aaira is an Enterprise Web UI Framework that bridges legacy ASP.NET Web Forms and modern front-end development. Use familiar controls like GridView, Repeater, Login, Menu, and validators directly in React, Angular, or plain JavaScript&mdash;retaining consistent properties, events, and data models with zero ViewState or page postbacks.
         </p>
 
-        <div
-          style={{
-            width: '100%',
-            maxWidth: '720px',
-            borderRadius: '12px',
-            overflow: 'hidden',
-            border: '1px solid var(--aa-border-subtle)',
-            boxShadow: 'var(--aa-shadow-lg)',
-          }}
-        >
-          <img
-            src={aairaDemoGif}
-            alt="Aaira Enterprise UI Framework Demo"
-            width={720}
-            style={{ width: '100%', height: 'auto', display: 'block' }}
-          />
-        </div>
+        <img
+          className="hero-image"
+          src={`${import.meta.env.BASE_URL}aaira-demo.gif`}
+          alt="Web Forms controls, running in React and Angular: GridView, Repeater, SqlDataSource, Login and TreeView"
+          width={720}
+          height={405}
+          data-testid="hero-image"
+        />
 
         <div className="hero-actions">
           <button className="btn-primary" onClick={() => onNavigate('controls', 'grid-view')}>
@@ -188,38 +137,28 @@ $("#employeesGrid").wfGridView({
           <button className="btn-secondary" onClick={() => onNavigate('migration')}>
             <span>WebForms Migration Center</span>
           </button>
-          <a
-            href="#contact-demo"
-            className="btn-secondary"
-            style={{ textDecoration: 'none' }}
-            onClick={(e) => {
-              e.preventDefault();
-              setContactSubmitted(false);
-              setContactOpen(true);
-            }}
-          >
-            <span>Contact us for demo</span>
-            <IconExternalLink size={15} />
-          </a>
+          <button className="btn-secondary" onClick={onContact} data-testid="contact-demo-btn">
+            <span>Contact us for Demo</span>
+          </button>
         </div>
       </section>
 
       {/* Metrics Counter */}
       <section className="metrics-row">
         <div className="metric-card">
-          <div className="metric-number">20+</div>
-          <div className="metric-label">Enterprise Controls</div>
+          <div className="metric-number">{controlsRegistry.length}</div>
+          <div className="metric-label">Controls (Free, Pro &amp; Enterprise)</div>
         </div>
         <div className="metric-card">
           <div className="metric-number">3</div>
-          <div className="metric-label">Native Frameworks (React, Angular, jQuery)</div>
+          <div className="metric-label">Frameworks (React, Angular, plain JS)</div>
         </div>
         <div className="metric-card">
           <div className="metric-number">100%</div>
           <div className="metric-label">Headless Core (Zero DOM Dependencies)</div>
         </div>
         <div className="metric-card">
-          <div className="metric-number">88 / 88</div>
+          <div className="metric-number">153 / 153</div>
           <div className="metric-label">Automated Unit Tests Passing</div>
         </div>
       </section>
@@ -268,7 +207,7 @@ $("#employeesGrid").wfGridView({
                 className={`teaser-tab-btn ${framework === 'jquery' ? 'active' : ''}`}
                 onClick={() => onFrameworkChange('jquery')}
               >
-                jQuery
+                Plain JS
               </button>
             </div>
           </div>
@@ -421,6 +360,17 @@ $("#employeesGrid").wfGridView({
             </div>
           </div>
 
+          <div className="feature-card" onClick={onContact}>
+            <div className="card-icon-box" style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10b981' }}>
+              <IconArrowRight size={22} />
+            </div>
+            <div className="card-title">Contact us for Demo</div>
+            <div className="card-tag">Live walkthrough</div>
+            <div className="card-desc">
+              Book a walkthrough of the controls, the Pro and Enterprise editions and your WebForms migration.
+            </div>
+          </div>
+
           <div className="feature-card" onClick={() => onNavigate('migration')}>
             <div className="card-icon-box" style={{ background: 'rgba(6, 182, 212, 0.12)', color: '#06b6d4' }}>
               <IconCode size={22} />
@@ -428,158 +378,11 @@ $("#employeesGrid").wfGridView({
             <div className="card-title">WebForms Migration Center</div>
             <div className="card-tag">AST Code Generator</div>
             <div className="card-desc">
-              Paste classic ASPX markup and receive instant React, Angular, and jQuery equivalents with migration scores.
+              Paste classic ASPX markup and receive instant React, Angular, and plain JS equivalents with migration scores.
             </div>
           </div>
         </div>
       </section>
-
-      {/* Contact Us for Demo CTA Section */}
-      <section
-        id="contact-demo"
-        style={{
-          background: 'var(--aa-bg-surface)',
-          border: '1px solid var(--aa-border-subtle)',
-          borderRadius: '16px',
-          padding: '32px 36px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '20px',
-          boxShadow: 'var(--aa-shadow-sm)',
-        }}
-      >
-        <div>
-          <h3 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--aa-text-primary)' }}>
-            Ready to modernize your ASP.NET WebForms or enterprise UI?
-          </h3>
-          <p style={{ color: 'var(--aa-text-secondary)', fontSize: '14px', marginTop: '6px' }}>
-            Schedule a live technical walkthrough and custom architecture demo with our engineering team.
-          </p>
-        </div>
-        <a
-          href="mailto:ahsanalnasar@gmail.com?subject=Aaira%20Controls%20Demo%20Request"
-          className="btn-primary"
-          style={{ textDecoration: 'none' }}
-          onClick={(e) => {
-            e.preventDefault();
-            setContactSubmitted(false);
-            setContactOpen(true);
-          }}
-        >
-          <span>Contact us for demo</span>
-          <IconArrowRight size={16} />
-        </a>
-      </section>
-
-      {contactOpen && (
-        <div className="modal-overlay" onClick={() => setContactOpen(false)}>
-          <div
-            className="search-modal"
-            style={{ width: '480px', maxWidth: '92vw', padding: '24px' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--aa-text-primary)' }}>
-                Contact Us for a Live Demo
-              </h3>
-              <button
-                onClick={() => setContactOpen(false)}
-                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--aa-text-muted)' }}
-                aria-label="Close modal"
-              >
-                <IconX size={18} />
-              </button>
-            </div>
-
-            {contactSubmitted ? (
-              <div style={{ padding: '16px 0', textAlign: 'center' }}>
-                <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--aa-text-primary)', marginBottom: '8px' }}>
-                  Thank you! Your demo request has been sent.
-                </p>
-                <p style={{ fontSize: '13px', color: 'var(--aa-text-secondary)', marginBottom: '20px' }}>
-                  You can also reach us directly at{' '}
-                  <a href="mailto:ahsanalnasar@gmail.com?subject=Aaira%20Controls%20Demo%20Request" style={{ color: 'var(--aa-brand-primary)' }}>
-                    ahsanalnasar@gmail.com
-                  </a>
-                  .
-                </p>
-                <button className="btn-primary" onClick={() => setContactOpen(false)}>
-                  Close
-                </button>
-              </div>
-            ) : (
-              <form
-                onSubmit={handleContactSubmit}
-                style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
-              >
-                <p style={{ color: 'var(--aa-text-secondary)', fontSize: '13px', lineHeight: 1.5 }}>
-                  Tell us about your project or email us directly at{' '}
-                  <a
-                    href="mailto:ahsanalnasar@gmail.com?subject=Aaira%20Controls%20Demo%20Request"
-                    style={{ color: 'var(--aa-brand-primary)', fontWeight: 600 }}
-                  >
-                    ahsanalnasar@gmail.com
-                  </a>
-                  .
-                </p>
-                <input
-                  type="text"
-                  name="name"
-                  required
-                  placeholder="Your Name"
-                  value={contactName}
-                  onChange={(e) => setContactName(e.target.value)}
-                  className="sidebar-search-input"
-                  style={{ paddingLeft: '12px' }}
-                />
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  placeholder="Work Email"
-                  value={contactEmail}
-                  onChange={(e) => setContactEmail(e.target.value)}
-                  className="sidebar-search-input"
-                  style={{ paddingLeft: '12px' }}
-                />
-                <input
-                  type="text"
-                  name="company"
-                  placeholder="Company / Organization"
-                  value={contactCompany}
-                  onChange={(e) => setContactCompany(e.target.value)}
-                  className="sidebar-search-input"
-                  style={{ paddingLeft: '12px' }}
-                />
-                <textarea
-                  name="message"
-                  rows={3}
-                  placeholder="Project details (e.g., WebForms migration, React/Angular evaluation)"
-                  value={contactDetails}
-                  onChange={(e) => setContactDetails(e.target.value)}
-                  className="sidebar-search-input"
-                  style={{ paddingLeft: '12px', resize: 'vertical', fontFamily: 'inherit' }}
-                />
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '6px' }}>
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    disabled={contactSending}
-                    onClick={() => setContactOpen(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn-primary" disabled={contactSending}>
-                    {contactSending ? 'Sending...' : 'Request Demo'}
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

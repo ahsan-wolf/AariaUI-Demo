@@ -1,0 +1,27 @@
+{
+  "name": "@wf-controls/license",
+  "version": "1.1.0",
+  "description": "Offline license-key verification and feature gating for WebForms-TS-Controls editions (Free, Pro, Enterprise)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahsan-wolf/webforms-ts-controls.git",
+    "directory": "packages/license"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test test/*.test.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.2"
+  }
+}

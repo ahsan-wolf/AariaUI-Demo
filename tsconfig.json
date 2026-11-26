@@ -18,7 +18,10 @@
     "paths": {
       "@wf-controls/data": ["./packages/data/dist/index.d.ts"],
       "@wf-controls/core": ["./packages/core/dist/index.d.ts"],
-      "@wf-controls/react": ["./packages/react/dist/index.d.ts"]
+      "@wf-controls/react": ["./packages/react/dist/index.d.ts"],
+      "@wf-controls/license": ["./packages/license/dist/index.d.ts"],
+      "@wf-controls/pro-data": ["./packages/pro-data/dist/index.d.ts"],
+      "@wf-controls/pro-data-react": ["./packages/pro-data-react/dist/index.d.ts"]
     }
   },
   "include": ["src", "vite.config.ts"]

@@ -1,0 +1,30 @@
+{
+  "name": "@wf-controls/core",
+  "version": "2.0.0",
+  "description": "Headless WebForms-style controllers, data sources, validators and security",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahsan-wolf/webforms-ts-controls.git",
+    "directory": "packages/core"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@wf-controls/data": "1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.2"
+  }
+}

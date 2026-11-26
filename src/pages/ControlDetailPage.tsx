@@ -12,6 +12,8 @@ import { DataCoreDemo } from '../components/DataCoreDemo';
 import { TabsDemo, BreadcrumbDemo, LoginDemo, ValidationDemo } from '../components/AdapterDemos';
 import { ApiDocViewer } from '../components/ApiDocViewer';
 import { ApiRoute } from '../lib/apiRoute';
+import { EditionChip } from '../components/EditionChip';
+import { EditionBox } from '../components/EditionBox';
 
 interface ControlDetailPageProps {
   controlId: string;
@@ -192,6 +194,7 @@ export const ControlDetailPage: React.FC<ControlDetailPageProps> = ({
         <div className="detail-title-row">
           <h1 className="detail-title">{control.name}</h1>
           <span className="asp-tag-pill">{control.aspEquivalent}</span>
+          <EditionChip edition={control.edition} />
           {control.badge && (
             <span className={`badge-chip ${control.badge.toLowerCase()}`}>
               {control.badge}
@@ -200,6 +203,8 @@ export const ControlDetailPage: React.FC<ControlDetailPageProps> = ({
         </div>
         <p className="detail-tagline">{control.tagline}</p>
       </div>
+
+      <EditionBox control={control} />
 
       <div className="detail-tabs-bar">
         <button
@@ -340,15 +345,15 @@ export const ControlDetailPage: React.FC<ControlDetailPageProps> = ({
                 className={`framework-pill-btn ${framework === 'jquery' ? 'active' : ''}`}
                 onClick={() => onFrameworkChange('jquery')}
               >
-                HTML / jQuery
+                Plain JS
               </button>
             </div>
           </div>
 
           {framework === 'jquery' && (
             <div className="aa-doc-notice">
-              <strong>Heads up:</strong> the jQuery / HTML adapter (<code>@wf-controls/jquery</code>) is not published yet, so the
-              plugin call below shows the intended API. Today you can use the headless <code>@wf-controls/core</code> with plain DOM code.
+              <strong>Plain JS:</strong> there is no jQuery package. These samples import the controllers directly
+              (<code>@wf-controls/core</code>, and the Pro / Enterprise packages where the edition box above says so) and render with plain DOM code.
             </div>
           )}
 

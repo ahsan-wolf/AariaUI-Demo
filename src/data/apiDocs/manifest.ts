@@ -726,7 +726,7 @@ export const apiAreas: ApiArea[] = [
     "id": "gridviewcontroller",
     "title": "GridViewController",
     "kind": "class",
-    "summary": "Table-style controller with paging, sorting, row selection and in-place row editing. ASP.NET equivalent: <asp:GridView> .",
+    "summary": "Edition: Pro. Package @wf-controls/pro-data (adapters: @wf-controls/pro-data-react , @wf-controls/pro-data-angular ). Without a license key it runs in evaluation mode : the first 10 rows, editing and ",
     "source": "v1.0.0/api/data-controls.md",
     "tabs": [
      {
@@ -775,7 +775,7 @@ export const apiAreas: ApiArea[] = [
     "id": "datagridcontroller",
     "title": "DataGridController",
     "kind": "class",
-    "summary": "Legacy-style grid. Compared to GridView it auto-generates columns , exposes state as plain mutable fields instead of an options bag, supports button/hyperlink columns, and uses *Command event names. A",
+    "summary": "Edition: Free (MIT). Package @wf-controls/core .",
     "source": "v1.0.0/api/data-controls.md",
     "tabs": [
      {
@@ -820,7 +820,7 @@ export const apiAreas: ApiArea[] = [
     "id": "repeatercontroller",
     "title": "RepeaterController",
     "kind": "class",
-    "summary": "Lightweight, templated list with no built-in UI: it raises per-item events with an itemType ( Header , Item , AlternatingItem , Separator , Footer ) that adapters use to choose a template. It also sup",
+    "summary": "Edition: Pro. Package @wf-controls/pro-data (adapters: @wf-controls/pro-data-react , @wf-controls/pro-data-angular ). Without a license key it runs in evaluation mode : the first 10 rows, editing and ",
     "source": "v1.0.0/api/data-controls.md",
     "tabs": [
      {
@@ -853,7 +853,7 @@ export const apiAreas: ApiArea[] = [
     "id": "datalistcontroller",
     "title": "DataListController",
     "kind": "class",
-    "summary": "Multi-column templated list with selection, edit mode, and layout computation. ASP.NET equivalent: <asp:DataList> .",
+    "summary": "Edition: Pro. Package @wf-controls/pro-data (adapters: @wf-controls/pro-data-react , @wf-controls/pro-data-angular ). Without a license key it runs in evaluation mode : the first 10 rows, editing and ",
     "source": "v1.0.0/api/data-controls.md",
     "tabs": [
      {
@@ -995,7 +995,7 @@ export const apiAreas: ApiArea[] = [
     "id": "parameters",
     "title": "Parameters",
     "kind": "topic",
-    "summary": "Source: parameter.ts .",
+    "summary": "Edition: Free (MIT). Package @wf-controls/core .",
     "source": "v1.0.0/api/data-sources.md",
     "tabs": [
      {
@@ -1048,7 +1048,7 @@ export const apiAreas: ApiArea[] = [
     "id": "sqldatasource",
     "title": "SqlDataSource",
     "kind": "class",
-    "summary": "Source: sql-data-source.ts . Extends DataSourceControl .",
+    "summary": "Edition: Free (MIT). Package @wf-controls/core .",
     "source": "v1.0.0/api/data-sources.md",
     "tabs": [
      {
@@ -1089,7 +1089,7 @@ export const apiAreas: ApiArea[] = [
     "id": "objectdatasource",
     "title": "ObjectDataSource",
     "kind": "class",
-    "summary": "Source: object-data-source.ts . Extends DataSourceControl .",
+    "summary": "Edition: Pro. Package @wf-controls/pro-data . Without a license key select returns only the first 10 rows and insert / update / delete are blocked (they return 0). See docs/EDITIONS.md .",
     "source": "v1.0.0/api/data-sources.md",
     "tabs": [
      {
@@ -1122,7 +1122,7 @@ export const apiAreas: ApiArea[] = [
     "id": "accessdatasource",
     "title": "AccessDataSource",
     "kind": "class",
-    "summary": "Source: access-data-source.ts . Extends DataSourceControl .",
+    "summary": "Edition: Pro. Package @wf-controls/pro-data . Without a license key select returns only the first 10 rows and insert / update / delete are blocked (they return 0). See docs/EDITIONS.md .",
     "source": "v1.0.0/api/data-sources.md",
     "tabs": [
      {
@@ -1155,7 +1155,7 @@ export const apiAreas: ApiArea[] = [
     "id": "xmldatasource",
     "title": "XmlDataSource",
     "kind": "class",
-    "summary": "Source: xml-data-source.ts . Extends DataSourceControl . Read-only.",
+    "summary": "Edition: Pro. Package @wf-controls/pro-data . Without a license key select returns only the first 10 rows. See docs/EDITIONS.md .",
     "source": "v1.0.0/api/data-sources.md",
     "tabs": [
      {
@@ -1188,7 +1188,7 @@ export const apiAreas: ApiArea[] = [
     "id": "sitemapdatasource",
     "title": "SiteMapDataSource",
     "kind": "class",
-    "summary": "Source: sitemap-data-source.ts . Extends DataSourceControl . Read-only.",
+    "summary": "Edition: Free (MIT). Package @wf-controls/core . (the free Menu, TreeView and SiteMapPath depend on it).",
     "source": "v1.0.0/api/data-sources.md",
     "tabs": [
      {
@@ -2072,6 +2072,19 @@ export const apiAreas: ApiArea[] = [
     "title": "Gotchas and known inconsistencies",
     "kind": "topic",
     "summary": "",
+    "source": "v1.0.0/api/security.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     }
+    ]
+   },
+   {
+    "id": "authentication-and-authorization-free-in-core-forms-url-authorization-in-enterprise-security",
+    "title": "Authentication and authorization (free in core, Forms/URL authorization in enterprise-security)",
+    "kind": "class",
+    "summary": "Headless. Free pieces (principals, roles, PasswordPolicy , authorizeControl , CurrentPrincipal ) live in packages/core/src/security/ ; Enterprise pieces ( FormsAuthentication , UrlAuthorization , Wind",
     "source": "v1.0.0/api/security.md",
     "tabs": [
      {
@@ -4408,7 +4421,20 @@ export const apiAreas: ApiArea[] = [
     "id": "ab-packages-core-src",
     "title": "packages/core/src",
     "kind": "class",
-    "summary": "Tests: packages/core/test/{core,datasource,validation,navigation,security,specialized,behaviors,datalist-datagrid,naming}.test.mjs .",
+    "summary": "Tests: packages/core/test/{datasource,validation,navigation,security,principal-roles,specialized,behaviors,datalist-datagrid,naming}.test.mjs .",
+    "source": "design-architecture/chapters/B-file-map.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     }
+    ]
+   },
+   {
+    "id": "ab-paid-packages",
+    "title": "Paid packages",
+    "kind": "topic",
+    "summary": "Tests: packages/pro-data/test , packages/enterprise-security/test , packages/enterprise-extras/test , packages/pro-extras/test , packages/license/test .",
     "source": "design-architecture/chapters/B-file-map.md",
     "tabs": [
      {
@@ -4509,8 +4535,8 @@ export const apiAreas: ApiArea[] = [
     ]
    },
    {
-    "id": "ac-gridview-reference-packages-core-src-grid-view-ts",
-    "title": "GridView reference (packages/core/src/grid-view.ts)",
+    "id": "ac-gridview-reference-packages-pro-data-src-grid-view-ts",
+    "title": "GridView reference (packages/pro-data/src/grid-view.ts)",
     "kind": "class",
     "summary": "Class GridViewController<T> . Options are declared in GridViewOptions<T> and defaulted in the constructor.",
     "source": "design-architecture/chapters/C-code-map.md",
@@ -4606,6 +4632,426 @@ export const apiAreas: ApiArea[] = [
   "title": "Guides & Notes",
   "icon": "book",
   "entries": [
+   {
+    "id": "editions-what-is-in-each-edition",
+    "title": "Editions · What is in each edition",
+    "kind": "topic",
+    "summary": "Not yet tiered (still Free): the four non-modern themes, validation.async , SSO/OIDC UI, theme builder, migration engine. Those ids exist in FEATURES as planned features.",
+    "source": "EDITIONS.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     },
+     {
+      "id": "feature-ids-features-in-packages-license-src-index-ts",
+      "title": "Feature ids (FEATURES in packages/license/src/index.ts)"
+     }
+    ]
+   },
+   {
+    "id": "editions-the-1-x-line-stays-mit",
+    "title": "Editions · The 1.x line stays MIT",
+    "kind": "topic",
+    "summary": "@wf-controls/core , react , angular , data , styles 1.0.0 were published under MIT with every control in core . They stay available on npm and are preserved in this repository as the tag v1.0.0-mit an",
+    "source": "EDITIONS.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     }
+    ]
+   },
+   {
+    "id": "editions-the-license-model",
+    "title": "Editions · The license model",
+    "kind": "topic",
+    "summary": "Layers, strongest first:",
+    "source": "EDITIONS.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     },
+     {
+      "id": "what-this-does-and-does-not-protect",
+      "title": "What this does and does not protect"
+     }
+    ]
+   },
+   {
+    "id": "editions-activating-a-license-key",
+    "title": "Editions · Activating a license key",
+    "kind": "topic",
+    "summary": "To ship the public key inside the package: npm run license:embed-key -- public-key.jwk.json , then rebuild @wf-controls/license (the script refuses a JWK that contains private material). Until a key i",
+    "source": "EDITIONS.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     }
+    ]
+   },
+   {
+    "id": "editions-rules-for-contributors",
+    "title": "Editions · Rules for contributors",
+    "kind": "topic",
+    "summary": "",
+    "source": "EDITIONS.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     }
+    ]
+   },
+   {
+    "id": "authguide-preface",
+    "title": "Auth guide · Preface",
+    "kind": "topic",
+    "summary": "ASP.NET Web Forms applications get sign-in, roles and page protection from a handful of well-known pieces: Membership , Roles , Forms Authentication , Windows Authentication , HttpContext.User and the",
+    "source": "v1.0.0/authentication-authorization.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     },
+     {
+      "id": "what-you-will-be-able-to-do",
+      "title": "What you will be able to do"
+     },
+     {
+      "id": "the-honest-limits",
+      "title": "The honest limits"
+     },
+     {
+      "id": "editions",
+      "title": "Editions"
+     },
+     {
+      "id": "where-things-live",
+      "title": "Where things live"
+     }
+    ]
+   },
+   {
+    "id": "authguide-concepts-and-the-asp-net-mapping",
+    "title": "Auth guide · Concepts and the ASP.NET mapping",
+    "kind": "topic",
+    "summary": "",
+    "source": "v1.0.0/authentication-authorization.md",
+    "tabs": [
+     {
+      "id": "how-the-pieces-fit",
+      "title": "How the pieces fit"
+     },
+     {
+      "id": "the-mapping",
+      "title": "The mapping"
+     },
+     {
+      "id": "rule-evaluation-by-example",
+      "title": "Rule evaluation, by example"
+     }
+    ]
+   },
+   {
+    "id": "authguide-the-core-api",
+    "title": "Auth guide · The core API",
+    "kind": "topic",
+    "summary": "Principals, roles, password policy, CurrentPrincipal and the Login controls are exported from the free @wf-controls/core . FormsAuthentication , UrlAuthorization , WindowsLikeIdentity , RestMembership",
+    "source": "v1.0.0/authentication-authorization.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     },
+     {
+      "id": "principals-and-identities",
+      "title": "Principals and identities"
+     },
+     {
+      "id": "currentprincipal-httpcontext-user",
+      "title": "CurrentPrincipal (HttpContext.User)"
+     },
+     {
+      "id": "membership-and-the-login-controls",
+      "title": "Membership and the Login controls"
+     },
+     {
+      "id": "roles",
+      "title": "Roles"
+     },
+     {
+      "id": "formsauthentication-enterprise",
+      "title": "FormsAuthentication (Enterprise)"
+     },
+     {
+      "id": "urlauthorization-enterprise-and-authorizecontrol-free",
+      "title": "UrlAuthorization (Enterprise) and authorizeControl (free)"
+     },
+     {
+      "id": "password-policy",
+      "title": "Password policy"
+     }
+    ]
+   },
+   {
+    "id": "authguide-using-it-from-react",
+    "title": "Auth guide · Using it from React",
+    "kind": "topic",
+    "summary": "@wf-controls/enterprise-security-react (Enterprise) adds three small pieces on top of @wf-controls/core and @wf-controls/enterprise-security . They read CurrentPrincipal and UrlAuthorization ; they ho",
+    "source": "v1.0.0/authentication-authorization.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     },
+     {
+      "id": "setup-once-at-startup",
+      "title": "Setup (once, at startup)"
+     },
+     {
+      "id": "show-who-is-signed-in",
+      "title": "Show who is signed in"
+     },
+     {
+      "id": "hide-a-block-from-people-who-lack-a-role",
+      "title": "Hide a block from people who lack a role"
+     },
+     {
+      "id": "guard-a-route",
+      "title": "Guard a route"
+     },
+     {
+      "id": "the-login-controls",
+      "title": "The Login controls"
+     },
+     {
+      "id": "the-sample",
+      "title": "The sample"
+     }
+    ]
+   },
+   {
+    "id": "authguide-using-it-from-angular",
+    "title": "Auth guide · Using it from Angular",
+    "kind": "topic",
+    "summary": "@wf-controls/enterprise-security-angular (Enterprise) adds a service, a structural directive and a guard helper. The package has no dependency on @angular/router , so the guard helper is a plain funct",
+    "source": "v1.0.0/authentication-authorization.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     },
+     {
+      "id": "setup-once-before-bootstrapping-or-in-an-appinitializer",
+      "title": "Setup (once, before bootstrapping or in an APPINITIALIZER)"
+     },
+     {
+      "id": "template",
+      "title": "Template"
+     },
+     {
+      "id": "a-route-guard",
+      "title": "A route guard"
+     },
+     {
+      "id": "the-sample",
+      "title": "The sample"
+     }
+    ]
+   },
+   {
+    "id": "authguide-using-it-from-plain-html-javascript",
+    "title": "Auth guide · Using it from plain HTML / JavaScript",
+    "kind": "topic",
+    "summary": "There is no jQuery plugin: import @wf-controls/core and @wf-controls/enterprise-security (an import map or one bundled script) and write a few lines of DOM code. samples/auth-js is a complete example ",
+    "source": "v1.0.0/authentication-authorization.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     },
+     {
+      "id": "the-pattern",
+      "title": "The pattern"
+     },
+     {
+      "id": "guarding-a-page",
+      "title": "Guarding a page"
+     },
+     {
+      "id": "the-sample",
+      "title": "The sample"
+     }
+    ]
+   },
+   {
+    "id": "authguide-servers-windows-authentication-and-tokens",
+    "title": "Auth guide · Servers, Windows authentication and tokens",
+    "kind": "topic",
+    "summary": "The browser side of this library shows the right UI. The server decides what is allowed . This chapter covers the three common ways to connect them.",
+    "source": "v1.0.0/authentication-authorization.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     },
+     {
+      "id": "a-rest-membership-provider",
+      "title": "A REST membership provider"
+     },
+     {
+      "id": "windows-integrated-authentication",
+      "title": "Windows / Integrated authentication"
+     },
+     {
+      "id": "jwt-and-openid-connect",
+      "title": "JWT and OpenID Connect"
+     },
+     {
+      "id": "what-the-server-must-still-do",
+      "title": "What the server must still do"
+     }
+    ]
+   },
+   {
+    "id": "authguide-samples-and-browser-testing",
+    "title": "Auth guide · Samples and browser testing",
+    "kind": "topic",
+    "summary": "",
+    "source": "v1.0.0/authentication-authorization.md",
+    "tabs": [
+     {
+      "id": "one-demo-three-uis",
+      "title": "One demo, three UIs"
+     },
+     {
+      "id": "the-browser-test",
+      "title": "The browser test"
+     },
+     {
+      "id": "unit-tests",
+      "title": "Unit tests"
+     },
+     {
+      "id": "testing-your-own-app",
+      "title": "Testing your own app"
+     }
+    ]
+   },
+   {
+    "id": "authguide-quick-reference",
+    "title": "Auth guide · Quick reference",
+    "kind": "topic",
+    "summary": "",
+    "source": "v1.0.0/authentication-authorization.md",
+    "tabs": [
+     {
+      "id": "exports-free-wf-controls-core-and-enterprise-wf-controls-enterprise-security",
+      "title": "Exports (free @wf-controls/core, and Enterprise @wf-controls/enterprise-security)"
+     },
+     {
+      "id": "react-wf-controls-react-and-angular-wf-controls-angular",
+      "title": "React (@wf-controls/react) and Angular (@wf-controls/angular)"
+     },
+     {
+      "id": "rule-subjects",
+      "title": "Rule subjects"
+     },
+     {
+      "id": "common-mistakes",
+      "title": "Common mistakes"
+     }
+    ]
+   },
+   {
+    "id": "authguide-secure-server-side-authentication-new",
+    "title": "Auth guide · Secure server-side authentication (new)",
+    "kind": "topic",
+    "summary": "For real security run the engine on a server: hashed membership ( StoreMembershipProvider , free), signed Forms tickets, JWT/refresh tokens, OIDC and the ready-made router ( createAuthRouter , Enterpr",
+    "source": "v1.0.0/authentication-authorization.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     }
+    ]
+   },
+   {
+    "id": "licensing-overview-of-modes",
+    "title": "Licensing · Overview of Modes",
+    "kind": "topic",
+    "summary": "",
+    "source": "v1.0.0/licensing-and-trial-protection.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     }
+    ]
+   },
+   {
+    "id": "licensing-hardened-trial-limitations-beyond-visual-watermarks",
+    "title": "Licensing · Hardened Trial Limitations (Beyond Visual Watermarks)",
+    "kind": "topic",
+    "summary": "Visual watermarks alone can be tampered with in browser DevTools. To safeguard commercial assets, the framework implements functional restrictions during Trial Mode:",
+    "source": "v1.0.0/licensing-and-trial-protection.md",
+    "tabs": [
+     {
+      "id": "details",
+      "title": "Details"
+     }
+    ]
+   },
+   {
+    "id": "licensing-anti-tamper-self-healing-protection",
+    "title": "Licensing · Anti-Tamper Self-Healing Protection",
+    "kind": "topic",
+    "summary": "In @wf-controls/pro-extras (plain DOM, React, and Angular adapters), components implement automated tamper detection via the browser's MutationObserver :",
+    "source": "v1.0.0/licensing-and-trial-protection.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     },
+     {
+      "id": "how-it-works",
+      "title": "How It Works:"
+     }
+    ]
+   },
+   {
+    "id": "licensing-api-reference",
+    "title": "Licensing · API Reference",
+    "kind": "topic",
+    "summary": "",
+    "source": "v1.0.0/licensing-and-trial-protection.md",
+    "tabs": [
+     {
+      "id": "enabletrial-options-trialoptions-licensestate",
+      "title": "enableTrial(options?: TrialOptions): LicenseState"
+     },
+     {
+      "id": "license-activate-token-string-promise",
+      "title": "License.activate(token: string): Promise<LicenseState>"
+     }
+    ]
+   },
+   {
+    "id": "licensing-automated-verification",
+    "title": "Licensing · Automated Verification",
+    "kind": "topic",
+    "summary": "All trial limitation and anti-tamper behaviors are covered by automated unit and E2E test suites:",
+    "source": "v1.0.0/licensing-and-trial-protection.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     }
+    ]
+   },
    {
     "id": "guide-what-you-get",
     "title": "What you get",
@@ -4990,6 +5436,19 @@ export const apiAreas: ApiArea[] = [
     "title": "JavaScript guide · Where to go next",
     "kind": "topic",
     "summary": "",
+    "source": "v1.0.0/javascript-html-guide.md",
+    "tabs": [
+     {
+      "id": "overview",
+      "title": "Overview"
+     }
+    ]
+   },
+   {
+    "id": "jsguide-server-sign-in-from-plain-js-html",
+    "title": "JavaScript guide · Server sign-in from plain JS/HTML",
+    "kind": "topic",
+    "summary": "No jQuery or plugin is needed: import AuthClient from @wf-controls/enterprise-auth (import map or bundle) and call await client.login(user, password) ; read client.user , subscribe with client.onChang",
     "source": "v1.0.0/javascript-html-guide.md",
     "tabs": [
      {

@@ -1,0 +1,19 @@
+/* nv-modern : navigation controls
+   SiteMapPath: <asp:SiteMapPath CssClass="nv-modern" PathSeparatorStyle-CssClass="sep" CurrentNodeStyle-CssClass="current" PathSeparator=" " />
+   DataPager:   <asp:DataPager CssClass="nv-modern-pager" ... CurrentPageLabelCssClass="current" />
+   Link list:   <ul class="nv-modern-list"><li><a class="active">...</a></li></ul>  (Repeater / hand-written side navigation) */
+span.nv-modern{display:inline-flex;flex-wrap:wrap;align-items:center;font:14px "Segoe UI",system-ui,sans-serif;color:#6b7280;background:#f9fafb;padding:8px 14px;border-radius:8px}
+span.nv-modern a{color:#2563eb;text-decoration:none}
+span.nv-modern a:hover{text-decoration:underline}
+span.nv-modern .sep{font-size:0;color:#6b7280}
+span.nv-modern .sep::before{content:"\203A";font-size:14px;margin:0 8px}
+span.nv-modern .current{color:#1f2937;font-weight:600}
+span.nv-modern-pager{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;font:14px "Segoe UI",system-ui,sans-serif}
+span.nv-modern-pager a,span.nv-modern-pager span.current,span.nv-modern-pager input[type="submit"],span.nv-modern-pager .aspNetDisabled{display:inline-block;min-width:30px;padding:5px 10px;border:1px solid #e5e7eb;border-radius:8px;background:#ffffff;color:#1f2937;text-align:center;text-decoration:none;font:inherit;cursor:pointer}
+span.nv-modern-pager a:hover,span.nv-modern-pager input[type="submit"]:hover{background:#f0f7ff}
+span.nv-modern-pager span.current{background:#2563eb;border-color:#2563eb;color:#ffffff;font-weight:600;cursor:default}
+span.nv-modern-pager .aspNetDisabled{opacity:.4;cursor:default}
+ul.nv-modern-list{list-style:none;margin:0;padding:6px;width:220px;background:#ffffff;border:1px solid #e5e7eb;border-radius:8px;font:14px "Segoe UI",system-ui,sans-serif}
+ul.nv-modern-list a{display:block;padding:9px 12px;color:#1f2937;text-decoration:none;border-radius:8px}
+ul.nv-modern-list a:hover{background:#f0f7ff}
+ul.nv-modern-list a.active,ul.nv-modern-list a[aria-current]{background:#dbeafe;color:#1e40af;font-weight:600}

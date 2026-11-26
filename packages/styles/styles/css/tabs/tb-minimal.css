@@ -1,0 +1,16 @@
+/* tb-minimal : tab strips
+   (a) AjaxControlToolkit TabContainer:  <ajaxToolkit:TabContainer CssClass="tb-minimal" />   (replaces the default ajax__tab_xp skin)
+   (b) asp:Menu + asp:MultiView:          <asp:Menu CssClass="tb-minimal" Orientation="Horizontal" />  and  <asp:Panel CssClass="tb-minimal-panel"> around the MultiView */
+.tb-minimal{font:14px "Helvetica Neue",Arial,sans-serif;color:#222222}
+.tb-minimal .ajax__tab_header{display:flex;flex-wrap:wrap;border-bottom:2px solid #dddddd}
+.tb-minimal .ajax__tab_outer,.tb-minimal .ajax__tab_inner{display:inline-block}
+.tb-minimal .ajax__tab_tab{display:inline-block;padding:9px 18px;margin-bottom:-2px;cursor:pointer;color:#888888;font-weight:600;border-bottom:2px solid transparent;border-radius:0 0 0 0}
+.tb-minimal .ajax__tab_hover .ajax__tab_tab,.tb-minimal .ajax__tab_tab:hover{color:#222222;background:#fafafa}
+.tb-minimal .ajax__tab_active .ajax__tab_tab{color:#111111;background:#ffffff;border-bottom-color:#111111}
+.tb-minimal .ajax__tab_body{border:1px solid #dddddd;border-top:0;padding:16px;background:#ffffff;border-radius:0 0 0 0}
+div.tb-minimal ul{list-style:none;margin:0;padding:0}
+div.tb-minimal ul.static{display:flex;flex-wrap:wrap;border-bottom:2px solid #dddddd}
+div.tb-minimal a.static{display:block;padding:9px 18px;margin-bottom:-2px;color:#888888;font-weight:600;text-decoration:none;border-bottom:2px solid transparent;border-radius:0 0 0 0}
+div.tb-minimal a.static:hover{color:#222222;background:#fafafa}
+div.tb-minimal a.static.selected,div.tb-minimal a.static.active{color:#111111;background:#ffffff;border-bottom-color:#111111}
+.tb-minimal-panel{border:1px solid #dddddd;border-top:0;padding:16px;background:#ffffff;color:#222222;font:14px "Helvetica Neue",Arial,sans-serif;border-radius:0 0 0 0}

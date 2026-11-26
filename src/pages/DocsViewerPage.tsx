@@ -79,25 +79,39 @@ export const DocsViewerPage: React.FC<DocsViewerPageProps> = ({ onOpenApi }) => 
           </p>
 
           <CodeSnippetViewer
-            code={`# 1. Install Headless Core (Required)
-npm install @wf-controls/core
+            code={`# FREE (MIT, public npm)
+npm install @wf-controls/core            # headless controllers (+ @wf-controls/data)
+npm install @wf-controls/react           # React adapters: navigation, tabs, modal, login family
+npm install @wf-controls/angular         # Angular adapters (same set)
+npm install @wf-controls/styles          # CSS themes (optional)
 
-# 2. Install React Presentation Adapter
-npm install @wf-controls/react
+# PRO (private registry + license key): GridView, DataList, Repeater, Object/Access/Xml data sources
+npm install @wf-controls/pro-data @wf-controls/pro-data-react @wf-controls/license
+#   Angular: @wf-controls/pro-data-angular
 
-# Or for Angular:
-npm install @wf-controls/angular
+# ENTERPRISE (private registry + license key): Forms auth, URL authorization, SqlWhereBuilder
+npm install @wf-controls/enterprise-security @wf-controls/enterprise-security-react
 
-# Or for pure HTML/jQuery:
-npm install @wf-controls/jquery`}
+# Plain HTML / JS: there is no extra package. Import @wf-controls/core (and the paid packages you license)
+# with an import map or a bundler. There is no @wf-controls/jquery.`}
             language="bash"
             title="Terminal"
           />
 
-          <h3 style={{ fontSize: '18px', fontWeight: 700, marginTop: '16px' }}>Quick Start (React)</h3>
+          <p style={{ color: 'var(--aa-text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
+            Pro and Enterprise controls run in <strong>evaluation mode</strong> without a license key: the first 10 rows, editing blocked and a notice.
+            Activate a key once at start-up (see <strong>Editions &amp; Licensing</strong> for a live demo of the three states).
+          </p>
+
+          <h3 style={{ fontSize: '18px', fontWeight: 700, marginTop: '16px' }}>Quick Start (React, Pro GridView)</h3>
           <CodeSnippetViewer
-            code={`import { WebFormsGridView } from "@wf-controls/react";
-import { GridViewController } from "@wf-controls/core";
+            code={`import { License } from "@wf-controls/license";
+import { WebFormsGridView } from "@wf-controls/pro-data-react";
+import { GridViewController } from "@wf-controls/pro-data";
+
+// Once, at start-up: the vendor's PUBLIC key and your license token.
+License.configure({ publicKeys: [PUBLIC_KEY_JWK] });
+await License.activate(token);
 
 const controller = new GridViewController({
   dataSource: [
@@ -126,7 +140,7 @@ export function App() {
           </p>
 
           <div style={{ background: 'var(--aa-bg-surface)', padding: '20px', borderRadius: '10px', border: '1px solid var(--aa-border-subtle)', fontFamily: 'var(--aa-font-mono)', fontSize: '12px', lineHeight: 1.6 }}>
-            <div style={{ color: '#06b6d4', fontWeight: 700 }}>1. PRESENTATION ADAPTERS (React, Angular, jQuery)</div>
+            <div style={{ color: '#06b6d4', fontWeight: 700 }}>1. PRESENTATION ADAPTERS (React, Angular; plain JS uses core directly)</div>
             <div style={{ color: 'var(--aa-text-secondary)', marginLeft: '16px' }}>&bull; Thin observers rendering HTML &amp; native templates</div>
             <div style={{ color: 'var(--aa-text-secondary)', marginLeft: '16px' }}>&bull; Dispatches UI commands (e.g. executeCommand(&apos;Page&apos;, &apos;2&apos;))</div>
             <div style={{ margin: '8px 0', borderBottom: '1px dashed var(--aa-border-subtle)' }}></div>
@@ -136,7 +150,7 @@ export function App() {
             <div style={{ margin: '8px 0', borderBottom: '1px dashed var(--aa-border-subtle)' }}></div>
             <div style={{ color: '#10b981', fontWeight: 700 }}>3. DATA &amp; INFRASTRUCTURE LAYER</div>
             <div style={{ color: 'var(--aa-text-secondary)', marginLeft: '16px' }}>&bull; In-memory ADO.NET: DataSet, DataTable, DataView, DataRow</div>
-            <div style={{ color: 'var(--aa-text-secondary)', marginLeft: '16px' }}>&bull; DataSources: SqlDataSource, ObjectDataSource, XmlDataSource</div>
+            <div style={{ color: 'var(--aa-text-secondary)', marginLeft: '16px' }}>&bull; DataSources: SqlDataSource (free), ObjectDataSource / XmlDataSource / AccessDataSource (Pro)</div>
           </div>
         </div>
       )}

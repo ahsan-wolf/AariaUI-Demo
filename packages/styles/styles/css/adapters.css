@@ -1,0 +1,35 @@
+/* adapters.css - structural glue for the @wf-controls/react and @wf-controls/angular adapters.
+   Import it AFTER a theme (or a <theme>-all bundle):  it carries no colours, fonts or sizes, so the theme still decides the look.
+
+   Why it exists: the kit's sheets were written for the tables and anchors ASP.NET renders. The adapters render the same class
+   names on lists and buttons, so a few browser defaults (bullets, button borders, absolute flyouts) need resetting. Every rule is
+   kept at LOW specificity so a theme rule always wins when it sets the same property. */
+
+/* ---- GridView pager: the kit paints every `.pager span` as the current page; disabled links and the screen-reader text must not look current. */
+tr.pager span.aspNetDisabled{background:transparent!important;border-color:transparent!important;color:inherit!important;opacity:.4;cursor:default}
+tr.pager a[role="button"],tr.pager a{cursor:pointer}
+
+/* ---- Menu: ul.static / ul.dynamic are lists; ASP.NET positions the dynamic ones with script, the adapters do it here. */
+ul.static li{position:relative}
+ul.dynamic{position:absolute;top:100%;left:0;z-index:1000;list-style:none;margin:0}
+ul.dynamic ul.dynamic{top:0;left:100%}
+div.mn-vertical ul.static>li>ul.dynamic{top:0;left:100%}
+ul.static a[role="menuitem"],ul.dynamic a[role="menuitem"]{cursor:pointer}
+ul.static a.disabled,ul.dynamic a.disabled{opacity:.5;pointer-events:none}
+
+/* ---- TreeView: nested lists, +/- toggle and rows (the kit styled ASP.NET's nested tables, not lists). */
+.wf-treeview ul{list-style:none;margin:0;padding:0}
+.wf-treeview li{list-style:none}
+.wf-treeview .d-flex{display:flex;align-items:center}
+.wf-treeview button{background:none;border:0;margin:0;padding:0 .35em;font:inherit;line-height:1;color:inherit;cursor:pointer}
+.wf-treeview input[type="checkbox"]{margin:0 .4em 0 0}
+.wf-treeview img{vertical-align:middle;margin-right:.3em}
+
+/* ---- Tabs: the adapters use <button> for the tab (the kit styles the AjaxControlToolkit span/anchor). */
+ul.ajax__tab_header{list-style:none;margin:0;padding:0}
+ul.ajax__tab_header>li{display:inline-block}
+button.ajax__tab_tab{background:transparent;border-style:solid;border-width:0 0 2px;border-color:transparent;font:inherit;cursor:pointer}
+button.ajax__tab_tab:disabled{cursor:not-allowed;opacity:.5}
+
+/* ---- Breadcrumb (SiteMapPath): the separator glyph comes from the theme; keep the empty span from collapsing the layout. */
+span.sep[data-separator]{display:inline-block}

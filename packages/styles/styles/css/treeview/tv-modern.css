@@ -1,0 +1,16 @@
+/* tv-modern : asp:TreeView
+   <asp:TreeView CssClass="tv-modern" RootNodeStyle-CssClass="root" ParentNodeStyle-CssClass="parent" LeafNodeStyle-CssClass="leaf" SelectedNodeStyle-CssClass="selected" />
+   TreeView draws the +/- glyphs as images; set ExpandImageUrl / CollapseImageUrl for custom icons. */
+div.tv-modern{display:inline-block;min-width:240px;font:14px "Segoe UI",system-ui,sans-serif;color:#1f2937;background:#ffffff;border:1px solid #e5e7eb;border-radius:8px;padding:8px}
+div.tv-modern table{border-collapse:collapse;border-spacing:0}
+div.tv-modern td{padding:1px 0;vertical-align:middle;white-space:nowrap}
+div.tv-modern a{color:#1f2937;text-decoration:none;border-radius:8px}
+div.tv-modern a:not(:has(>img)){display:inline-block;padding:3px 8px}
+div.tv-modern a:not(:has(>img)):hover{background:#f0f7ff}
+div.tv-modern a.root{font-weight:700}
+div.tv-modern a.parent{font-weight:600}
+div.tv-modern a.leaf{color:#6b7280}
+div.tv-modern a.selected{background:#dbeafe;color:#1e40af;font-weight:600}
+div.tv-modern img{border:0;vertical-align:middle;}
+div.tv-modern div[id$="Nodes"]{border-left:1px dotted #e5e7eb;margin-left:9px}
+div.tv-modern input[type="checkbox"]{accent-color:#2563eb;vertical-align:middle}

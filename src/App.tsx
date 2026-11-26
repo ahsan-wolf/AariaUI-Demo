@@ -7,14 +7,16 @@ import { GlobalSearchModal } from './components/GlobalSearchModal';
 import { HomePage } from './pages/HomePage';
 import { ControlDetailPage } from './pages/ControlDetailPage';
 import { MigrationCenterPage } from './pages/MigrationCenterPage';
+import { ContactDialog } from './components/ContactDialog';
 import { DocsViewerPage } from './pages/DocsViewerPage';
 import { ApiDocsPage } from './pages/ApiDocsPage';
 import { StyleSheetsPage } from './pages/StyleSheetsPage';
+import { EditionsPage } from './pages/EditionsPage';
 import { ApiRoute, DEFAULT_API_ROUTE, formatApiHash, parseApiHash } from './lib/apiRoute';
 import './styles/theme.css';
 import './styles/docs.css';
 
-type Page = 'home' | 'controls' | 'migration' | 'docs' | 'api' | 'styles';
+type Page = 'home' | 'controls' | 'migration' | 'docs' | 'api' | 'styles' | 'editions';
 
 export const App: React.FC = () => {
   const initialApiRoute = parseApiHash(window.location.hash);
@@ -24,6 +26,7 @@ export const App: React.FC = () => {
   const [framework, setFramework] = useState<Framework>('react');
   const [theme, setTheme] = useState<Theme>('dark');
   const [searchOpen, setSearchOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -112,6 +115,7 @@ export const App: React.FC = () => {
           {activePage === 'home' && (
             <HomePage
               onNavigate={handleNavigate}
+              onContact={() => setContactOpen(true)}
               framework={framework}
               onFrameworkChange={setFramework}
             />
@@ -132,9 +136,13 @@ export const App: React.FC = () => {
 
           {activePage === 'styles' && <StyleSheetsPage />}
 
+          {activePage === 'editions' && <EditionsPage onSelectControl={handleSelectControl} />}
+
           {activePage === 'api' && <ApiDocsPage route={apiRoute} onNavigate={handleOpenApi} />}
         </main>
       </div>
+
+      <ContactDialog isOpen={contactOpen} onClose={() => setContactOpen(false)} />
 
       <GlobalSearchModal
         isOpen={searchOpen}
@@ -154,10 +162,10 @@ export const App: React.FC = () => {
         }}
       >
         <p>
-          <strong>Aaira Controls Framework</strong> &mdash; Enterprise UI Suite for React, Angular &amp; WebForms Modernization.
+          <strong>Aaira Controls Framework</strong> &mdash; UI controls for React, Angular &amp; plain JS, and a WebForms modernization toolkit.
         </p>
         <p style={{ marginTop: '4px' }}>
-          Licensed under MIT &bull; Zero DOM Core Architecture &bull; 103/103 Automated Unit Tests Passing.
+          Free packages: MIT &bull; Pro &amp; Enterprise packages: commercial license &bull; Zero DOM Core Architecture &bull; 153/153 Automated Unit Tests Passing.
         </p>
       </footer>
     </div>

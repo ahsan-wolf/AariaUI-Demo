@@ -1,0 +1,33 @@
+/* md-classic : popup dialog (WebFormsModal / ModalBehavior). Added family, same palette as lg-classic/gv-classic.
+   <div class="modal fade show d-block md-classic" role="dialog" aria-modal="true"> > .modal-dialog > .modal-content
+   > .modal-header (h5.modal-title, button.btn-close) + .modal-body + .modal-footer (button.btn.btn-secondary, button.btn.btn-primary)
+   Backdrop colour: override --wf-backdrop on the adapter (the adapter sets it inline) or use background-color:...!important here. */
+.md-classic{position:fixed;inset:0;z-index:1050;display:flex!important;align-items:center;justify-content:center;box-sizing:border-box;padding:16px;overflow:auto;background-color:var(--wf-backdrop,rgba(0,0,0,.5));font:13px/1.45 Verdana,Arial,sans-serif;color:#333333;animation:md-classic-fade .15s ease-out}
+.md-classic .modal-dialog{box-sizing:border-box;width:100%;max-width:500px;margin:0;animation:md-classic-in .18s ease-out}
+.md-classic .modal-content{display:flex;flex-direction:column;max-height:calc(100vh - 32px);background:#ffffff;color:#333333;border:1px solid #7a96b5;border-radius:0;box-shadow:3px 3px 10px rgba(0,0,0,.35);overflow:hidden}
+.md-classic .modal-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;background:linear-gradient(#5b8bc5,#3d6ca5);color:#ffffff;border-bottom:1px solid #2f5a8f}
+.md-classic .modal-title{margin:0;font-size:18px;font-weight:700;line-height:1.3;color:inherit}
+.md-classic .btn-close{position:relative;width:28px;height:28px;padding:0;border:0;border-radius:0;background:transparent;color:#ffffff;font:inherit;font-size:0;cursor:pointer;flex:none}
+.md-classic .btn-close::before{content:"\00d7";font-size:24px;line-height:28px;display:block;text-align:center}
+.md-classic .btn-close:hover,.md-classic .btn-close:focus-visible{color:#ffe9a8;outline:0}
+.md-classic .btn-close:focus-visible{box-shadow:0 0 0 3px #3d6ca533}
+.md-classic .modal-body{padding:20px;overflow:auto;font-size:13px;color:#333333}
+.md-classic .modal-body p{margin:0 0 10px}
+.md-classic .modal-body p:last-child{margin-bottom:0}
+.md-classic .modal-body input[type=text],.md-classic .modal-body input[type=password],.md-classic .modal-body input[type=email],.md-classic .modal-body input[type=number],.md-classic .modal-body input[type=date],.md-classic .modal-body input:not([type]),.md-classic .modal-body select,.md-classic .modal-body textarea{box-sizing:border-box;width:100%;min-width:110px;padding:8px 10px;border:1px solid #7a96b5;border-radius:0;background:#ffffff;color:#333333;font:inherit}
+.md-classic .modal-body textarea{min-height:72px;resize:vertical}
+.md-classic .modal-body input[type=text]:focus,.md-classic .modal-body input[type=password]:focus,.md-classic .modal-body input[type=email]:focus,.md-classic .modal-body input[type=number]:focus,.md-classic .modal-body input[type=date]:focus,.md-classic .modal-body input:not([type]):focus,.md-classic .modal-body select:focus,.md-classic .modal-body textarea:focus{outline:0;border-color:#3d6ca5;box-shadow:0 0 0 3px #3d6ca533}
+.md-classic .modal-body input[type=checkbox],.md-classic .modal-body input[type=radio]{accent-color:#3d6ca5;margin-right:6px;vertical-align:middle}
+.md-classic .modal-body label{color:#666666;font-weight:600;font-size:12px}
+.md-classic .modal-body input.invalid,.md-classic .modal-body input.is-invalid{border-color:#cc0000!important}
+.md-classic .modal-body a{color:#3d6ca5;text-decoration:none}
+.md-classic .modal-body a:hover{text-decoration:underline}
+.md-classic .modal-footer{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:12px 20px;background:#d9e4f1;border-top:1px solid #7a96b5}
+.md-classic .btn{border-radius:0;padding:8px 20px;font:inherit;font-weight:600;cursor:pointer;background:#d9e4f1;color:#333333;border:1px solid #7a96b5}
+.md-classic .btn-primary{border-radius:0;padding:8px 20px;font:inherit;font-weight:600;cursor:pointer;background:#3d6ca5;color:#ffffff;border:1px solid #3d6ca5}
+.md-classic .btn:hover{filter:brightness(1.08)}
+.md-classic .btn:focus-visible{outline:0;box-shadow:0 0 0 3px #3d6ca533}
+.md-classic .btn:disabled{opacity:.55;cursor:not-allowed;filter:none}
+@keyframes md-classic-fade{from{opacity:0}to{opacity:1}}
+@keyframes md-classic-in{from{opacity:0;transform:translateY(-12px) scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.md-classic,.md-classic .modal-dialog{animation:none}}

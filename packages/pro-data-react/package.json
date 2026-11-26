@@ -1,0 +1,35 @@
+{
+  "name": "@wf-controls/pro-data-react",
+  "version": "1.0.0",
+  "description": "React adapters for @wf-controls/pro-data (WebFormsGridView, WebFormsRepeater, WebFormsDataList)",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahsan-wolf/webforms-ts-controls.git",
+    "directory": "packages/pro-data-react"
+  },
+  "type": "module",
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "dependencies": {
+    "@wf-controls/core": "2.0.0",
+    "@wf-controls/pro-data": "1.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "typescript": "^6.0.2"
+  }
+}

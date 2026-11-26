@@ -4,7 +4,7 @@ import { IconSearch, IconSun, IconMoon } from './Icons';
 
 interface HeaderProps {
   activePage: string;
-  onNavigate: (page: 'home' | 'controls' | 'migration' | 'docs' | 'api' | 'styles') => void;
+  onNavigate: (page: 'home' | 'controls' | 'migration' | 'docs' | 'api' | 'styles' | 'editions') => void;
   framework: Framework;
   onFrameworkChange: (fw: Framework) => void;
   theme: Theme;
@@ -28,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div>
           <span className="brand-title">Aaira Controls</span>
         </div>
-        <span className="brand-badge">Enterprise UI</span>
+        <span className="brand-badge">Free &middot; Pro &middot; Enterprise</span>
       </div>
 
       <nav className="nav-links">
@@ -45,6 +45,12 @@ export const Header: React.FC<HeaderProps> = ({
           Controls Gallery
         </button>
         <button
+          className={`nav-link-btn ${activePage === 'styles' ? 'active' : ''}`}
+          onClick={() => onNavigate('styles')}
+        >
+          Style Sheets
+        </button>
+        <button
           className={`nav-link-btn ${activePage === 'migration' ? 'active' : ''}`}
           onClick={() => onNavigate('migration')}
         >
@@ -57,16 +63,16 @@ export const Header: React.FC<HeaderProps> = ({
           API Docs
         </button>
         <button
-          className={`nav-link-btn ${activePage === 'styles' ? 'active' : ''}`}
-          onClick={() => onNavigate('styles')}
-        >
-          Style Sheets
-        </button>
-        <button
           className={`nav-link-btn ${activePage === 'docs' ? 'active' : ''}`}
           onClick={() => onNavigate('docs')}
         >
           Docs
+        </button>
+        <button
+          className={`nav-link-btn ${activePage === 'editions' ? 'active' : ''}`}
+          onClick={() => onNavigate('editions')}
+        >
+          Editions &amp; Licensing
         </button>
       </nav>
 
@@ -89,7 +95,7 @@ export const Header: React.FC<HeaderProps> = ({
             className={`framework-pill-btn ${framework === 'jquery' ? 'active' : ''}`}
             onClick={() => onFrameworkChange('jquery')}
           >
-            jQuery
+            Plain JS
           </button>
         </div>
 

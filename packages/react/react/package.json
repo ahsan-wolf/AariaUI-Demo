@@ -1,0 +1,33 @@
+{
+  "name": "@wf-controls/react",
+  "version": "2.0.0",
+  "description": "React adapters for WebForms-TS-Controls",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahsan-wolf/webforms-ts-controls.git",
+    "directory": "packages/react"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "dependencies": {
+    "@wf-controls/core": "2.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "typescript": "^6.0.2"
+  }
+}

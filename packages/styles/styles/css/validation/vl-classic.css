@@ -1,0 +1,9 @@
+/* vl-classic : RequiredFieldValidator, CompareValidator, RangeValidator, RegularExpressionValidator, CustomValidator, ValidationSummary
+   <asp:RequiredFieldValidator CssClass="vl-classic" Display="Dynamic" ... />   <asp:ValidationSummary CssClass="vl-classic" />
+   Input highlighting: add validation-input-highlight.js (adds .is-invalid to the failing control). */
+span.vl-classic{color:#b00020!important;font:600 12px/1.4 Verdana,Arial,sans-serif;margin-left:6px}
+
+div.vl-classic{color:#b00020!important;background:#fde8e8;border:1px solid #b00020;border-left-width:4px;border-radius:0;padding:10px 14px;font:13px/1.4 Verdana,Arial,sans-serif;margin:8px 0}
+div.vl-classic ul{margin:4px 0 0;padding-left:18px}
+div.vl-classic li{margin:2px 0}
+input.is-invalid,select.is-invalid,textarea.is-invalid{border-color:#b00020!important;background-color:#fde8e8!important;outline:0;box-shadow:0 0 0 2px #b0002033}

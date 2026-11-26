@@ -1,0 +1,16 @@
+/* tb-dark : tab strips
+   (a) AjaxControlToolkit TabContainer:  <ajaxToolkit:TabContainer CssClass="tb-dark" />   (replaces the default ajax__tab_xp skin)
+   (b) asp:Menu + asp:MultiView:          <asp:Menu CssClass="tb-dark" Orientation="Horizontal" />  and  <asp:Panel CssClass="tb-dark-panel"> around the MultiView */
+.tb-dark{font:14px "Segoe UI",system-ui,sans-serif;color:#e5e7eb}
+.tb-dark .ajax__tab_header{display:flex;flex-wrap:wrap;border-bottom:2px solid #374151}
+.tb-dark .ajax__tab_outer,.tb-dark .ajax__tab_inner{display:inline-block}
+.tb-dark .ajax__tab_tab{display:inline-block;padding:9px 18px;margin-bottom:-2px;cursor:pointer;color:#9ca3af;font-weight:600;border-bottom:2px solid transparent;border-radius:6px 6px 0 0}
+.tb-dark .ajax__tab_hover .ajax__tab_tab,.tb-dark .ajax__tab_tab:hover{color:#e5e7eb;background:#243049}
+.tb-dark .ajax__tab_active .ajax__tab_tab{color:#a5b4fc;background:#1f2937;border-bottom-color:#6366f1}
+.tb-dark .ajax__tab_body{border:1px solid #374151;border-top:0;padding:16px;background:#111827;border-radius:0 0 6px 6px}
+div.tb-dark ul{list-style:none;margin:0;padding:0}
+div.tb-dark ul.static{display:flex;flex-wrap:wrap;border-bottom:2px solid #374151}
+div.tb-dark a.static{display:block;padding:9px 18px;margin-bottom:-2px;color:#9ca3af;font-weight:600;text-decoration:none;border-bottom:2px solid transparent;border-radius:6px 6px 0 0}
+div.tb-dark a.static:hover{color:#e5e7eb;background:#243049}
+div.tb-dark a.static.selected,div.tb-dark a.static.active{color:#a5b4fc;background:#1f2937;border-bottom-color:#6366f1}
+.tb-dark-panel{border:1px solid #374151;border-top:0;padding:16px;background:#111827;color:#e5e7eb;font:14px "Segoe UI",system-ui,sans-serif;border-radius:0 0 6px 6px}

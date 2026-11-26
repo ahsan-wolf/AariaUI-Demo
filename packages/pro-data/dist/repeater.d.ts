@@ -1,0 +1,63 @@
+import { DataBindingEventArgs, EventDispatcher, RepeaterCommandEventArgs, RepeaterItemEventArgs, RepeaterValueEventArgs, RepeaterCancelableItemEventArgs, RepeaterUpdateEventArgs } from "@wf-controls/core";
+import { DataTable, DataView } from "@wf-controls/core";
+import { IDataSourceControl } from "@wf-controls/core";
+export type RepeaterDataSource<T> = readonly T[] | DataTable | DataView | IDataSourceControl;
+export interface RepeaterOptions<T> {
+    id: string;
+    dataKeyField?: keyof T | undefined;
+    dataSource?: RepeaterDataSource<T> | undefined;
+    dataSourceId?: string | undefined;
+    cssClass?: string | undefined;
+    itemCssClass?: string | undefined;
+    alternatingItemCssClass?: string | undefined;
+    dataMember?: string | undefined;
+    itemHeaderVisible?: boolean | undefined;
+    virtualMode?: boolean | undefined;
+    allowUserToAddItems?: boolean | undefined;
+    allowUserToDeleteItems?: boolean | undefined;
+    emptyText?: string | undefined;
+}
+export declare class RepeaterController<T extends object> {
+    readonly options: RepeaterOptions<T>;
+    /** False when "data.repeater" is not licensed: rows are capped and editing is disabled (evaluation mode). */
+    readonly licensed: boolean;
+    get evaluationNotice(): string | undefined;
+    private source;
+    private currentIndex;
+    private resetDepth;
+    private editIndex;
+    readonly dataBinding: EventDispatcher<this, DataBindingEventArgs>;
+    readonly dataBound: EventDispatcher<this, DataBindingEventArgs>;
+    readonly itemCreated: EventDispatcher<this, RepeaterItemEventArgs<T>>;
+    readonly itemDataBound: EventDispatcher<this, RepeaterItemEventArgs<T>>;
+    readonly itemCommand: EventDispatcher<this, RepeaterCommandEventArgs<T>>;
+    readonly currentItemIndexChanged: EventDispatcher<this, RepeaterItemEventArgs<T>>;
+    readonly itemEditing: EventDispatcher<this, RepeaterCancelableItemEventArgs<T>>;
+    readonly itemUpdating: EventDispatcher<this, RepeaterUpdateEventArgs<T>>;
+    readonly itemUpdated: EventDispatcher<this, RepeaterItemEventArgs<T>>;
+    readonly itemCancelingEdit: EventDispatcher<this, RepeaterCancelableItemEventArgs<T>>;
+    readonly onDrawItem: EventDispatcher<this, RepeaterItemEventArgs<T>>;
+    readonly onItemCloned: EventDispatcher<this, RepeaterItemEventArgs<T>>;
+    readonly onItemValueNeeded: EventDispatcher<this, RepeaterValueEventArgs<T>>;
+    readonly onItemValuePushed: EventDispatcher<this, RepeaterValueEventArgs<T>>;
+    readonly stateChanged: EventDispatcher<this, {
+        reason: string;
+    }>;
+    constructor(options: RepeaterOptions<T>);
+    get items(): readonly T[];
+    get currentItemIndex(): number;
+    get editItemIndex(): number;
+    get itemCount(): number;
+    get isResetting(): boolean;
+    getDataKey(item: T, index: number): unknown;
+    dataBind(data?: RepeaterDataSource<T> | undefined): Promise<void>;
+    setCurrentItemIndex(index: number): Promise<void>;
+    beginResetItemTemplate(): Promise<void>;
+    endResetItemTemplate(): Promise<void>;
+    addItem(item: T): Promise<void>;
+    deleteItem(index: number): Promise<void>;
+    beginEdit(index: number): Promise<boolean>;
+    updateItem(index: number, values: Partial<T>): Promise<boolean>;
+    cancelEdit(): Promise<boolean>;
+    executeCommand(itemIndex: number, commandName: string, commandArgument?: unknown): Promise<void>;
+}
